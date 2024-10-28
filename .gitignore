@@ -1,3 +1,9 @@
 # Static
 /img/
 /res/
+
+# MS Visual Studio
+/src/**/Resources
+*.csproj.user
+*.suo
+*.vs
