@@ -2,6 +2,10 @@
 /img/
 /res/
 
+# Compiled
+bin/
+obj/
+
 # MS Visual Studio
 /src/**/Resources
 *.csproj.user
