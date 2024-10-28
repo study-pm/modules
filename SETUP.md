@@ -12,6 +12,8 @@
 - [Instal MS SQL Server](#instal-ms-sql-server)
 - [Install SSMS](#install-ssms)
   - [Unattended install](#unattended-install)
+- [Toubleshooting](#toubleshooting)
+  - [SSMS Server connection](#ssms-server-connection)
 
 ## Overview
 
@@ -136,3 +138,31 @@ Follow these steps to install SSMS in the background with no GUI prompts.
     You can also pass `/Passive` instead of `/Quiet` to see the setup UI.
 
 3. If all goes well, you can see SSMS installed at *%systemdrive%\SSMSto\Common7\IDE\Ssms.exe* based on the example. If something went wrong, you could inspect the error code returned and review the log file in `%TEMP%\SSMSSetup`.
+
+## Toubleshooting
+
+### SSMS Server connection
+
+![SSMS 2022 Server name](./img/Brpd0.png)
+
+If you don't see any server instance in the Server name field of SQL Server Login section consider the following steps:
+
+1. Check if you have already installed the MS Server. [Install MS SQL Server](#instal-ms-sql-server) Developer or Express version if you don't have any. Details are layed out in [the respective section](#instal-ms-sql-server).
+
+2. Check if your SQL Server is up and running. Go to your system's Task Manager -> Services. You should see your server name as a running server (usually *MSSQLSERVER* for Developer or *MSSQ$SQLEXPRESS* for Express edition).
+
+    ![MS SQL Server services](./img/mssqlserver-services.png)
+
+    If you can't see any, launch the required service. You can manage your server and connections in the SQL Server 2022 Configuration Manager.
+
+    ![MS SQL Server 2022 Configuration Manager](./img/ms-sql-server-2022-manager.png)
+
+3. Select `<Browse for more...>` and choose your local server.
+
+    ![SSMS 2022 Browse for more](./img/H2LGM.png)
+
+    ![SSMS 2022 Choose server](./img/n1flE.png)
+
+4. You may encounter `'A connection was successfuly established with the server, but then an error occurred during the login processs. (provider: SSL provider, error: 0 - The certificate chain was issued by an authority that is not trusted.)'` error while connecting to you local server. Click the *Yes* button to trust the server certificate.
+
+   ![SSMS 2022 Trust certificate](./img/sql-server-connection.png)
