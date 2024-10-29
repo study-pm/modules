@@ -13,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using CookingBook.AppData;
+
 namespace CookingBook
 {
     /// <summary>
@@ -23,9 +25,10 @@ namespace CookingBook
         public MainWindow()
         {
             InitializeComponent();
+           
+            AppConnect.modelOdb = new CookingBookEntities();
             AppData.AppFrame.frmMain = CookingBook;
             CookingBook.Navigate(new Pages.Authorization());
-
         }
     }
 }

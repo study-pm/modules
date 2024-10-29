@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CookingBook"
         mc:Ignorable="d"
-        Title="Книга рецептов" Height="450" Width="800"
+        Title="Книга рецептов" Height="800" Width="800"
         Icon="/big_703435.jpg"
 >
     <Grid>
@@ -13,7 +13,7 @@
             <Image Height="100" Source="/big_703435.jpg" Stretch="Fill" Width="300"/>
         </StackPanel>
 
-        <Frame Name="CookingBook" Content="Frame" Margin="0,202,0,0"/>
+        <Frame Name="CookingBook" Content="Frame" Margin="0,202,0,0" NavigationUIVisibility="Hidden" />
 
     </Grid>
 </Window>
