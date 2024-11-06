@@ -20,7 +20,12 @@
             <PasswordBox Name="pass2Box" HorizontalAlignment="Left" Width="200" PasswordChanged="pass2_PasswordChanged"  />
             <Label Content="Дата рождения" HorizontalAlignment="Left" />
             <DatePicker Name="birthdatePick" Width="200" HorizontalAlignment="Left"></DatePicker>
-            <Label Content="Дата рождения" HorizontalAlignment="Left" />
+            <Label Content="Стаж" HorizontalAlignment="Left" />
+            <TextBox Name="experienceInput" HorizontalAlignment="Left" Width="200" />
+            <Label Content="Введите почту" HorizontalAlignment="Left" />
+            <TextBox Name="emailInput" HorizontalAlignment="Left" Width="200" />
+            <Label Content="Введите телефон" HorizontalAlignment="Left" />
+            <TextBox Name="phoneInput" HorizontalAlignment="Left" Width="200" />
             <Button Name="submitBtn" Content="Зарегистрироваться" Background="Green" Foreground="White" HorizontalAlignment="Left" Width="200" Margin="0 40 0 5" Click="submitBtn_Click" />
             <Button Name="backBtn" Content="Назад" Background="Green" Foreground="White" HorizontalAlignment="Left" Width="200" Click="backBtn_Click"/>
         </StackPanel>
