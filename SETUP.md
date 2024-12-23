@@ -9,6 +9,11 @@
       - [Using installer](#using-installer)
       - [Using winget tool](#using-winget-tool)
 - [Fetch code](#fetch-code)
+- [Instal MS SQL Server](#instal-ms-sql-server)
+- [Install SSMS](#install-ssms)
+  - [Unattended install](#unattended-install)
+- [Toubleshooting](#toubleshooting)
+  - [SSMS Server connection](#ssms-server-connection)
 
 ## Overview
 
@@ -81,3 +86,83 @@ $ winget install --id Git.Git -e --source winget
     ```sh
     $ git submodule update --init --recursive --remote --merge
     ```
+
+## Instal MS SQL Server
+1. Go to [SQL Server downloads page](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) to download a free specialized edition version:
+   - [SQL Server 2022 Developer](https://go.microsoft.com/fwlink/p/?linkid=2215158&clcid=0x409&culture=en-us&country=us) is a full-featured free edition, licensed for use as a development and test database in a non-production environment.
+   - [SQL Server 2022 Express](https://go.microsoft.com/fwlink/p/?linkid=2216019&clcid=0x409&culture=en-us&country=us) is a free edition of SQL Server, ideal for development and production for desktop, web, and small server applications.
+2. Open the downloaded installer: *SQL2022-SSEI-Dev.exe* or *SQL2022-SSEI-Expr.exe* depending on the chosen version.
+3. Select an installation type (e.g. *Basic*), accept Microsoft SQL Server License Terms, choose the installation location (if needed) and click the Install button.
+4. On successful installation the server settings will be showed (see example settings bellow):
+   - Instance Name: `MSSQLSERVER` (Developer) or `SQLEXPRESS` (Express)
+   - SQL Administrator: *`PC-name`*`\`*`user-name`*
+   - Features Installed: `SQLENGINE`
+   - Version: `16.0.1000.6, RTM`
+   - Connection String: `Server=localhost;Database=master;Trusted_Connection=True;` (Developer) or `Server=localhost\SQLEXPRESS;Database=master;Trusted_Connection=True; (Express)`
+   - SQL Server Install Log Folder: `C:\Program Files\Microsoft SQL Server\160\Setup Bootstrap\Log\20241028_132046`
+   - Installation Media Folder: `C:\SQL2022\Developer_ENU` (Developer) or `C:\SQL2022\Express_ENU` (Express)
+   - Installation Resources Folder: `C:\Program Files\Microsoft SQL Server\160\SSEI\Resources`
+5. You can also *Connect Now* to directly connect via the server shell or *Install SSMS* from this window.
+
+## Install SSMS
+1. Go to [Download SQL Server Management Studio (SSMS) page](https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16) and follow the instructions or simply follow this link to [Download SQL Server Management Studio (SSMS) 20.2](https://aka.ms/ssmsfullsetup).
+2. Run the downloaded installer (e.g.: *SSMS-Setup-ENU.exe*) and wait for the installation process to complete. If you come across the Microsoft OLE DB Driver error, simply restart your system and try running the installer once more.
+3. Open the SQL Server Management Studio. *Connect to Server* window will appear. Choose the *Server name* in the Login section (the name of the insalled MS SQL Server). If you don't see any, check [the respective troubleshooting section](#ssms-server-connection).
+
+### Unattended install
+You can install SSMS using PowerShell.
+
+Follow these steps to install SSMS in the background with no GUI prompts.
+
+1. Launch PowerShell with elevated permissions.
+
+2. Type the following command.
+
+   ```ps
+    $media_path = "<path where SSMS-Setup-ENU.exe file is located>"
+    $install_path = "<root location where all SSMS files will be installed>"
+    $params = " /Install /Quiet SSMSInstallRoot=$install_path"
+
+    Start-Process -FilePath $media_path -ArgumentList $params -Wait
+    ```
+
+    For example:
+    ```ps
+    $media_path = "C:\Installers\SSMS-Setup-ENU.exe"
+    $install_path = "$env:SystemDrive\SSMSto"
+    $params = "/Install /Quiet SSMSInstallRoot=`"$install_path`""
+
+    Start-Process -FilePath $media_path -ArgumentList $params -Wait
+    ```
+
+    You can also pass `/Passive` instead of `/Quiet` to see the setup UI.
+
+3. If all goes well, you can see SSMS installed at *%systemdrive%\SSMSto\Common7\IDE\Ssms.exe* based on the example. If something went wrong, you could inspect the error code returned and review the log file in `%TEMP%\SSMSSetup`.
+
+## Toubleshooting
+
+### SSMS Server connection
+
+![SSMS 2022 Server name](./img/Brpd0.png)
+
+If you don't see any server instance in the Server name field of SQL Server Login section consider the following steps:
+
+1. Check if you have already installed the MS Server. [Install MS SQL Server](#instal-ms-sql-server) Developer or Express version if you don't have any. Details are layed out in [the respective section](#instal-ms-sql-server).
+
+2. Check if your SQL Server is up and running. Go to your system's Task Manager -> Services. You should see your server name as a running server (usually *MSSQLSERVER* for Developer or *MSSQ$SQLEXPRESS* for Express edition).
+
+    ![MS SQL Server services](./img/mssqlserver-services.png)
+
+    If you can't see any, launch the required service. You can manage your server and connections in the SQL Server 2022 Configuration Manager.
+
+    ![MS SQL Server 2022 Configuration Manager](./img/ms-sql-server-2022-manager.png)
+
+3. Select `<Browse for more...>` and choose your local server.
+
+    ![SSMS 2022 Browse for more](./img/H2LGM.png)
+
+    ![SSMS 2022 Choose server](./img/n1flE.png)
+
+4. You may encounter `'A connection was successfuly established with the server, but then an error occurred during the login processs. (provider: SSL provider, error: 0 - The certificate chain was issued by an authority that is not trusted.)'` error while connecting to you local server. Click the *Yes* button to trust the server certificate.
+
+   ![SSMS 2022 Trust certificate](./img/sql-server-connection.png)
