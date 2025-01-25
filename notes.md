@@ -14,6 +14,9 @@
     - [LINQ: сортировка orderby](#linq-сортировка-orderby)
     - [LINQ: сортировка сложных объектов](#linq-сортировка-сложных-объектов)
     - [LINQ: множественные критерии сортировки](#linq-множественные-критерии-сортировки)
+  - [Лекция Подключение БД](#лекция-подключение-бд)
+    - [Строка подключения для MS SQL Server](#строка-подключения-для-ms-sql-server)
+    - [Получение информации о подключении](#получение-информации-о-подключении)
 
 ## Общее
 [6720ad8d5040133e8429e595](https://e-learn.petrocollege.ru/course/view.php?id=6620#section-0)
@@ -603,4 +606,250 @@ Tom - 33
 *С помощью метода расширения*:
 ```cs
 var sortedUsers = users.OrderBy(u => u.Name).ThenBy(u => u.Age);
+```
+
+### Лекция Подключение БД
+[6720d6c15040133e8429e59c](https://e-learn.petrocollege.ru/mod/lesson/view.php?id=302825)
+
+SQL Server — одна из наиболее популярных систем управления базами данных, а при работе с фреймворком .NET, возможно, наиболее часто выбираемая СУБД. И в этой части руководства рассмотрим подключение к MS SQL Server.
+
+#### Строка подключения для MS SQL Server
+Для работы с MS SQL Server естественно нам потребуется MS SQL Server. Можно выбрать как полноценный MS SQL Server (в весиях Enterprise, Developer), так и MS SQL Server Express.
+
+Про установку MS SQL Server в выпусках Developer или Express можно почитать в статье [Установка MS SQL Server 2019](https://metanit.com/sql/sqlserver/1.2.php).
+
+Также можно использовать специально предназначенный для целей разработки и тестирования легковесный движок MS SQL Server Express LocalDB, про установку которого можно почитать в статье [Установка SQL Server Express LocalDB](https://metanit.com/sql/sqlserver/1.4.php).
+
+Вначале необходимо определить строку подключения, которая содержит набор параметров сервера MS SQL Server. Строка подключения представляет набор параметров в виде пар `ключ=значение`, которые отделяются друг от друга точкой с запятой.
+
+Прежде всего, определение строки подключения зависит от типа подключения: либо мы подлючаемся по логину и паролю, либо мы используем доверенное подключение (trusted connection), где не требуются логин и пароль (например, при подключении к локальному серверу SQL Server).
+
+Если подключение производится по логину и паролю, то общий вид строки подключения выглядит следующим образом:
+
+```cs
+Server=адрес_сервера;Database=имя_базы_данных;User Id=логин;Password=пароль;
+```
+
+В данном случае строка подключения состоит из четырех параметров:
+
+- `Server`: указывает на название сервера
+
+- `Database`: указывает на название базы данных на сервере
+
+- `User Id`: логин
+
+- `Password`: пароль
+
+Если мы используем так называемое доверенное подключение (trusted connection) и применяем аутентификацию Windwows, например, при подключении к локальному серверу, который запущен на том же компьютере, то строка подключения в общем виде выглядит следующим образом:
+
+```cs
+Server=адрес_сервера;Database=имя_базы_данных;Trusted_Connection=True;
+```
+
+Вместо параметров `User Id` и `Password`, здесь применяется параметр `Trusted_Connection=True`. Значение `True` указывает, что будет применяться аутентификация на основе учетных записей Windows.
+
+Список основных параметров строки подключения, которые могут использоваться:
+
+- `Application Name`: название приложения. Может принимать в качестве значения любую строку. Значение по умолчанию: ".Net SqlClient Data Provide"
+
+- `AttachDBFileName`: хранит полный путь к прикрепляемой базе данных
+
+- `Connect Timeout`: временной период в секундах, через который ожидается установка подключения. Принимает одно из значений из интервала 0–32767. По умолчанию равно 15.
+
+  В качестве альтернативного названия параметра может использоваться `Connection Timeout`
+
+- `Server`: название экземпляра SQL Servera, с которым будет идти взаимодействие. Это может быть название локального сервера, например, "./SQLEXPRESS", "localhost", либо сетевой адрес.
+
+  В качестве альтернативного названия параметра можно использовать `Data Source`, `Address`, `Addr` и `NetworkAddress`
+
+- `Encrypt`: устанавливает шифрование SSL при подключении. Может принимать значения `true`, `false`, `yes` и `no`. По умолчанию значение `false`
+
+- `Database`: хранит имя базы данных
+
+  В качестве альтернативного названия параметра можно использовать `Initial Catalog`
+
+- `Trusted_Connection`: задает режим аутентификации. Может принимать значения `true`, `false`, `yes`, `no` и `sspi`. По умолчанию значение `false`
+
+  Если значение `true`, то для аутентификации будет использоваться текущая учетная запись Windows. Подходит для подключения к локальному серверу.
+
+  В качестве альтернативного названия параметра может использоваться `Integrated Security`
+
+- `Packet Size`: размер сетевого пакета в байтах. Может принимать значение, которое кратно 512. По умолчанию равно 8192
+
+- `Persist Security Info`: указывает, должна ли конфиденциальная информация передаваться обратно при подключении. Может принимать значения `true`, `false`, `yes` и `no`. По умолчанию значение `false`
+
+- `Pooling`: если значение равно `true`, любое новое подключение при его закрытии добавляется в пул подключений. В следующий раз при создании такого же подключения (которое имеет ту же самую строку подключения) оно будет извлекаться из пула. Может принимать значения `true`, `false`, `yes` и `no`. По умолчанию значение `true`
+
+- `Workstation ID`: указывает на рабочую станцию — имя локального компьютера, на котором запущен SQL Server
+
+- `Password`: пароль пользователя
+
+- `User ID`: логин пользователя
+
+В данном случае мы будем использовать к локальному серверу. Если мы подключаемся к полноценному серверу MS SQL Server (например, версия Developer Edition), то в качестве адреса сервера, как правило, выступает `localhost`:
+
+```cs
+string connectionString = "Server=localhost;Database=master;Trusted_Connection=True;";
+// альтернатива
+// string connectionString = "Server=.;Database=master;Trusted_Connection=True;";
+```
+
+Если установлен MS SQL Server Express, то адрес сервера — ".\SQLEXPRESS"
+
+```cs
+string connectionString = "Server=.\SQLEXPRESS;Database=master;Trusted_Connection=True;";
+```
+
+Для подключения к localdb применяется адрес `(localdb)\mssqllocaldb`:
+
+```cs
+string connectionString = "Server=(localdb)\\mssqllocaldb;Database=master;Trusted_Connection=True"
+```
+
+Для работы с базой данных MS SQL Server в .NET 5 и выше (а также .NET Core 3.0/3.1) необходимо установить в проект через nuget пакет Microsoft.Data.SqlClient:
+
+![Picture 1.1](./img/671399405040133e8429e521-1.1.png)
+
+Для создания подключения к MS SQL Server применяется класс `SqlConnection` из пространства имен `Microsoft.Data.SqlClient`.
+
+Этот класс имеет три конструктора:
+
+```cs
+SqlConnection()
+SqlConnection(String)
+SqlConnection(String, SqlCredential)
+```
+
+Второй и третий конструкторы в качестве первого параметра принимают строку подключения. Третий конструктор также принимает объект `SqlCredential`, который фактически представляет логин и пароль.
+
+Теперь проверим подключение на примере сервера `LocalDB`:
+```cs
+using Microsoft.Data.SqlClient;
+using System;
+using System.Data;
+using System.Threading.Tasks;
+
+namespace HelloApp
+{
+    class Program
+    {
+        static async Task Main(string[] args)
+        {
+            string connectionString = "Server=(localdb)\\mssqllocaldb;Database=master;Trusted_Connection=True;";
+
+            // Создание подключения
+            SqlConnection connection = new SqlConnection(connectionString);
+            try
+            {
+                // Открываем подключение
+                await connection.OpenAsync();
+                Console.WriteLine("Подключение открыто");
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                // если подключение открыто
+                if (connection.State == ConnectionState.Open)
+                {
+                    // закрываем подключение
+                    await connection.CloseAsync();
+                    Console.WriteLine("Подключение закрыто...");
+                }
+            }
+            Console.WriteLine("Программа завершила работу.");
+            Console.Read();
+        }
+    }
+}
+```
+
+В данном случае подключение осуществляется к серверу `LocalDB` и его базе данных `master` (по умолчанию база данных `master` уже должна быть на любом MS SQL Servere).
+
+Для начала взаимодействия с базой данных нам надо открыть подключение с помощью методов `Open()` (синхронный) или `OpenAsync()` (асинхронный).
+
+По окончании работы с `SqlConnection` необходимо закрыть подключение к серверу, вызвав метод `Close()`/`CloseAsync()` или `Dispose()`/`DisposeAsync()`. В данном случае вначале проверяем, что подключение открыто и, если оно открыто, вызываем асинхронный метод `OpenAsync()`.
+
+В итоге, если указана валидная строка подключения, то мы должны увидеть на консоли следующие строки:
+```
+Подключение открыто
+Подключение закрыто...
+Программа завершила работу.
+```
+
+Вместо явного закрытия подключения также можно использовать конструкцию `using`, которая автоматически закрывает подключение:
+```cs
+using Microsoft.Data.SqlClient;
+using System;
+using System.Threading.Tasks;
+
+namespace HelloApp
+{
+    class Program
+    {
+        static async Task Main(string[] args)
+        {
+            string connectionString = "Server=(localdb)\\mssqllocaldb;Database=master;Trusted_Connection=True;";
+            using(SqlConnection connection = new SqlConnection(connectionString))
+            {
+                await connection.OpenAsync();
+                Console.WriteLine("Подключение открыто");
+            }
+            Console.WriteLine("Подключение закрыто...");
+            Console.WriteLine("Программа завершила работу.");
+            Console.Read();
+        }
+    }
+}
+```
+
+#### Получение информации о подключении
+Объект `SqlConnection` обладает рядом свойств, которые позволяют получить информацию о подключении:
+```cs
+using Microsoft.Data.SqlClient;
+using System;
+using System.Threading.Tasks;
+
+namespace HelloApp
+{
+    class Program
+    {
+        static async Task Main(string[] args)
+        {
+            string connectionString = "Server=(localdb)\\mssqllocaldb;Database=master;Trusted_Connection=True;";
+
+            using(SqlConnection connection = new SqlConnection(connectionString))
+            {
+                await connection.OpenAsync();
+                Console.WriteLine("Подключение открыто");
+                // Вывод информации о подключении
+                Console.WriteLine("Свойства подключения:");
+                Console.WriteLine($"\tСтрока подключения: {connection.ConnectionString}");
+                Console.WriteLine($"\tБаза данных: {connection.Database}");
+                Console.WriteLine($"\tСервер: {connection.DataSource}");
+                Console.WriteLine($"\tВерсия сервера: {connection.ServerVersion}");
+                Console.WriteLine($"\tСостояние: {connection.State}");
+                Console.WriteLine($"\tWorkstationld: {connection.WorkstationId}");
+            }
+            Console.WriteLine("Подключение закрыто...");
+            Console.WriteLine("Программа завершила работу.");
+            Console.Read();
+        }
+    }
+}
+```
+
+```
+Подключение открыто
+Свойства подключения:
+	Строка подключения:
+	База данных: master
+	Сервер: (localdb)\mssqllocaldb
+	Версия сервера: 15.00.2000
+	Состояние: Open
+	WorkstationId: EUGENEPC
+Подключение закрыто...
+Программа завершила работу.
 ```
