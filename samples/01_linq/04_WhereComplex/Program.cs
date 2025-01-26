@@ -3,7 +3,8 @@
 namespace WhereComplex
 {
     internal class Program
-    {        class User
+    {
+        class User
         {
             public string Name { get; set; }
             public int Age { get; set; }
