@@ -17,6 +17,7 @@
   - [Лекция Подключение БД](#лекция-подключение-бд)
     - [Строка подключения для MS SQL Server](#строка-подключения-для-ms-sql-server)
     - [Получение информации о подключении](#получение-информации-о-подключении)
+  - [Пример подключения](#пример-подключения)
 
 ## Общее
 [6720ad8d5040133e8429e595](https://e-learn.petrocollege.ru/course/view.php?id=6620#section-0)
@@ -852,4 +853,28 @@ namespace HelloApp
 	WorkstationId: EUGENEPC
 Подключение закрыто...
 Программа завершила работу.
+```
+
+### Пример подключения
+[679511615040133e8429ecc9](https://e-learn.petrocollege.ru/mod/page/view.php?id=302826)
+
+```cs
+SqlConnection myConnection = new SqlConnection("Server = pcsqlstud01;database = 10171655;  Integrated Security=True;");
+
+try
+{
+    myConnection.Open();
+    SqlCommand myCommand = new SqlCommand("Select * from Cars", myConnection);
+    string selectquery = "Select * from Cars";
+    SqlDataAdapter adpt = new SqlDataAdapter(selectquery, myConnection);
+
+    DataTable table = new DataTable();
+    adpt.Fill(table);
+    dataGridView1.DataSource = table;
+}
+catch (Exception e)
+{
+    Console.WriteLine(e.ToString());
+}
+
 ```
