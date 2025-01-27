@@ -1,0 +1,19 @@
+﻿<Window x:Class="CookingBook.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CookingBook"
+        mc:Ignorable="d"
+        Title="Книга рецептов" Height="800" Width="800"
+        Icon="/big_703435.jpg"
+>
+    <Grid>
+        <StackPanel Margin="0,10,0,300" HorizontalAlignment="Center">
+            <Image Height="100" Source="/big_703435.jpg" Stretch="Fill" Width="300"/>
+        </StackPanel>
+
+        <Frame Name="CookingBook" Content="Frame" Margin="0,202,0,0" NavigationUIVisibility="Hidden" />
+
+    </Grid>
+</Window>
