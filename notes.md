@@ -727,6 +727,27 @@ string connectionString = "Server=(localdb)\\mssqllocaldb;Database=master;Truste
 
 ![Picture 1.1](./img/671399405040133e8429e521-1.1.png)
 
+<details>
+<summary><em>How to install SQLClient</em></summary>
+
+1. "Open Manage NuGet Packages..." from the context menu of Solution Explorer.
+
+    ![Manage NuGet Packages](./img/manage-nuget-packages.png)
+
+2. Go "Browse" tab and put the "SqlClient" string into the search box.
+
+    ![Search for SQL Client](./img/search-sql-client.png)
+
+3. Choose between the "Microsoft.Data.SqlClient" (preferred) or "System.Data.SqlClient" packages, click the download arrow and proceed to the installation process accepting all the agreements.
+
+Пространство имен `Microsoft.Data.SqlClient` по сути является новой версией пространства имен `System.Data.SqlClient`. `Microsoft.Data.SqlClient` обычно поддерживает те же API и обратную совместимость, что и `System.Data.SqlClient`. Для большинства приложений переход с `System.Data.SqlClient` на `Microsoft.Data.SqlClient` не составляет проблем. Добавьте зависимость NuGet в `Microsoft.Data.SqlClient`, после чего обновите ссылки и инструкции using в `Microsoft.Data.SqlClient`.
+
+В этой версии пространства имен есть несколько различий в менее используемых API по сравнению с `System.Data.SqlClient`, которые могут повлиять на некоторые приложения. Для этих различий обратитесь к полезному памятку по переносу.[^introduction-microsoft-data-sqlclient-namespace]
+
+[^introduction-microsoft-data-sqlclient-namespace]: [Введение в пространство имен Microsoft.Data.SqlClient](https://learn.microsoft.com/ru-ru/sql/connect/ado-net/introduction-microsoft-data-sqlclient-namespace?view=sql-server-ver16)
+
+</details>
+
 Для создания подключения к MS SQL Server применяется класс `SqlConnection` из пространства имен `Microsoft.Data.SqlClient`.
 
 Этот класс имеет три конструктора:
