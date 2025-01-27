@@ -74,6 +74,8 @@ foreach (string s in selectedTeams)
 var selectedTeams = teams.Where(t => t.ToUpper( ).StartsWith("Б")).OrderBy(t => t);
 ```
 
+[Code Example](./samples/01_LINQ/01_Basics/Program.cs)
+
 #### Методы расширения LINQ
 - **`Select`**: определяет проекцию выбранных значений
 
@@ -185,7 +187,7 @@ x => x // ввод x, возвращает x
 }
 ```
 
-*Преобразовать массив строк в массив типа `int` и отсортировать по возрастанию*:
+*[Преобразовать массив строк в массив типа `int` и отсортировать по возрастанию](./samples/01_LINQ/02_LambdaExp/Program.cs)*:
 ```cs
 string[ ] numbers = { "40", "2012", "176", "5" };
 
@@ -279,6 +281,8 @@ IEnumerable<string> sequence =  names
                                 .Select(n => n);
 ```
 
+[Example Code](./samples/01_LINQ/03_Where/Program.cs)
+
 #### LINQ: Сложные фильтры where
 *Выбрать всех пользователей старше 25 лет*
 ```cs
@@ -295,10 +299,10 @@ class User
 
 List<User> users = new List<User>
 {
-  new User { Name="Том", Age=23, Lanugages = new List<string> {"английский", "немецкий"} },
-  new User { Name="Боб", Age=27, Lanugages = new List<string> {"английский", "французский"} },
-  new User { Name="Джон", Age=29, Lanugages = new List<string> {"английский", "испанский"} },
-  new User { Name="Элис", Age=24, Lanugages = new List<string> {"испанский", "немецкий"} }
+  new User { Name="Том", Age=23, Languages = new List<string> {"английский", "немецкий"} },
+  new User { Name="Боб", Age=27, Languages = new List<string> {"английский", "французский"} },
+  new User { Name="Джон", Age=29, Languages = new List<string> {"английский", "испанский"} },
+  new User { Name="Элис", Age=24, Languages = new List<string> {"испанский", "немецкий"} }
 }
 
 var selectedUsers = from user in users
@@ -347,12 +351,14 @@ var selectedUsers = from user in users
 ```cs
 var selectedUsers = users.SelectMany(u => u.Languages,
                     (u, l) => new { User = u, Lang = l })
-                    .Where(u => u.Lang = "английский" && u.User.Age < 28)
+                    .Where(u => u.Lang == "английский" && u.User.Age < 28)
                     .Select(u => u.User);
 
 ```
 
 **`SelectMany`** принимает последовательность, которую надо проецировать, и функцию преобразования, которая применяется к каждому элементу; возвращает 8 пар "пользователь - язык" (`new { User = u, Lang = l }`), к которым потом применяется фильтр `Where`.
+
+[Example Code](./samples/01_LINQ/04_WhereComplex/Program.cs)
 
 #### LINQ: проекция select
 Проекция позволяет получить из текущего типа выборки какой-то другой тип.
@@ -413,6 +419,8 @@ var items = users.Select(u => new
 });
 ```
 
+[Example Code](./samples/01_LINQ/05_Select/Program.cs)
+
 #### LINQ: переменные и `let`
 Переменные для промежуточных вычислений.
 
@@ -444,6 +452,8 @@ Mr. Элис
 
 С помощью метода расширения нельзя :(
 
+[Example Code](./samples/01_LINQ/06_Let/Program.cs)
+
 #### LINQ: выборка из нескольких источников
 ```cs
 class Phone
@@ -471,7 +481,7 @@ List<Phone> phones = new List<Phone>( )
 
 var people =  from user in users
               from phone in phones
-              select new { Name = user.Name, Phone = phone. Name };
+              select new { Name = user.Name, Phone = phone.Name };
 
 foreach (var p in people)
   Console.WriteLine($"{p.Name} = {p.Phone}");
@@ -489,13 +499,15 @@ Tom - iPhone 6
 
 </details>
 
+[Example Code](./samples/01_LINQ/07_MultiSrc/Program.cs)
+
 #### LINQ: сортировка orderby
 Оператор `orderby` принимает критерий сортировки (по умолчанию — по возрастанию):
 
 - **`ascending`** — по возрастанию;
 - **`descending`** — по убыванию.
 
-Отсортировать по возрастанию:
+*Отсортировать по возрастанию*:
 ```cs
 int [] numbers = { 3, 12, 4, 10, 34, 20, 55, -66, 77, 88, 4 };
 var orderedNumbers =  from i in numbers
@@ -573,6 +585,8 @@ Tom - 21
 var sortedUsers = users.OrderBy(u => u.Name);
 ```
 
+[Example Code](./samples/01_LINQ/08_Orderby/Program.cs)
+
 #### LINQ: множественные критерии сортировки
 *Отсортировать по возрастанию*:
 ```cs
@@ -608,6 +622,8 @@ Tom - 33
 ```cs
 var sortedUsers = users.OrderBy(u => u.Name).ThenBy(u => u.Age);
 ```
+
+[Example Code](./samples/01_LINQ/09_MultiCriteria/Program.cs)
 
 ### Лекция Подключение БД
 [6720d6c15040133e8429e59c](https://e-learn.petrocollege.ru/mod/lesson/view.php?id=302825)
