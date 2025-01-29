@@ -1167,7 +1167,7 @@ catch (Exception e)
     </Style>
     ```
 
-    и применить к элементу *`TextBlock`**: `Style="{StaticResource Title}`.
+    и применить к элементу **`TextBlock`**: `Style="{StaticResource Title}"`.
 
     В нижней строке сетки `Grid` разместить **`Frame`**. Дать ему имя ***FrmMain***, скрыть в нем панель навигации: `NavigationUIVisibility="Hidden"`.
 
