@@ -1141,9 +1141,54 @@ catch (Exception e)
 
     ![DB Connect](./img/679831c85040133e8429ecfa-11.png)
 
+    ```cs
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+
+    namespace AcademyApp.ApplicationData
+    {
+        internal class AppConnect
+        {
+            public static AcademyEntities modelOdb;
+        }
+    }
+    ```
+
 2. Подключить ту же самую модель как объект к главному окну **`MainWindow`**.
 
     ![DB Connect](./img/679831c85040133e8429ecfa-12.png)
+
+    ```cs
+    using AcademyApp.ApplicationData;
+    using System.Text;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Data;
+    using System.Windows.Documents;
+    using System.Windows.Input;
+    using System.Windows.Media;
+    using System.Windows.Media.Imaging;
+    using System.Windows.Navigation;
+    using System.Windows.Shapes;
+
+    namespace AcademyApp
+    {
+        /// <summary>
+        /// Interaction logic for MainWindow.xaml
+        /// </summary>
+        public partial class MainWindow : Window
+        {
+            public MainWindow()
+            {
+                InitializeComponent();
+                AppConnect.modelOdb = new AcademyEntities();
+            }
+        }
+    }
+    ```
 
 **На этом Подключение БД к проекту завершено!**
 
@@ -1182,15 +1227,66 @@ catch (Exception e)
 
     ![App Interface](./img/679831c85040133e8429ecfa-14.png)
 
+    ```cs
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Windows.Controls;
+
+    namespace AcademyApp.ApplicationData
+    {
+        internal class AppFrame
+        {
+            public static Frame frameMain;
+        }
+    }
+    ```
+
     Пропишите фрейм в коде главного окна:
 
     ![App Interface](./img/679831c85040133e8429ecfa-15.png)
+
+    ```cs
+    using AcademyApp.ApplicationData;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Data;
+    using System.Windows.Documents;
+    using System.Windows.Input;
+    using System.Windows.Media;
+    using System.Windows.Media.Imaging;
+    using System.Windows.Navigation;
+    using System.Windows.Shapes;
+
+    namespace AcademyApp
+    {
+        /// <summary>
+        /// Interaction logic for MainWindow.xaml
+        /// </summary>
+        public partial class MainWindow : Window
+        {
+            public MainWindow()
+            {
+                InitializeComponent();
+                AppConnect.modelOdb = new AcademyEntities();
+                AppFrame.frameMain = FrmMain;
+            }
+        }
+    }
+    ```
 
 ##### Добавление страниц
 Для каждой вновь добавляемой страницы приложения будем организовывать в проекте отдельную папку.
 
 ###### Страница авторизации
-1. Создайте в проекте папку ***PageMain***. В ней создайте страницу ***PageLogin***. Установите высоту 350, ширину 800. 
+1. Создайте в проекте папку *PagesMain*** (***Pages***). В ней создайте страницу ***PageLogin***. Установите высоту 350, ширину 800.
 
    - Организуйте разметку страницы в соответствии с рисунком.
    - Используйте контейнер `StackPanel`, расположите его в центре страницы.
@@ -1205,6 +1301,42 @@ catch (Exception e)
 2. Данная страница авторизации должна загружаться при запуске приложения. Для этого нужно в главном окне внутри фрейма инициализировать нашу страницу:
 
     ![Auth Page](./img/679831c85040133e8429ecfa-18.png)
+
+    ```cs
+    using AcademyApp.ApplicationData;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Data;
+    using System.Windows.Documents;
+    using System.Windows.Input;
+    using System.Windows.Media;
+    using System.Windows.Media.Imaging;
+    using System.Windows.Navigation;
+    using System.Windows.Shapes;
+
+    namespace AcademyApp
+    {
+        /// <summary>
+        /// Interaction logic for MainWindow.xaml
+        /// </summary>
+        public partial class MainWindow : Window
+        {
+            public MainWindow()
+            {
+                InitializeComponent();
+                AppConnect.modelOdb = new AcademyEntities();
+                AppFrame.frameMain = FrmMain;
+
+                FrmMain.Navigate(new Pages.PageLogin());
+            }
+        }
+    }
+    ```
 
 **Запустите проект, убедитесь, что страница авторизации загружается в окне приложения!**
 
