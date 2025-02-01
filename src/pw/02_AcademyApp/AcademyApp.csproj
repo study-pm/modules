@@ -155,6 +155,7 @@
       <DependentUpon>Model1.edmx</DependentUpon>
       <LastGenOutput>Model1.cs</LastGenOutput>
     </Content>
+    <Resource Include="Resources\ws_logo.jpg" />
     <Resource Include="Resources\world_skills_logo.png" />
   </ItemGroup>
   <ItemGroup>

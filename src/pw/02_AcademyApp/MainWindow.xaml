@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AcademyApp"
         mc:Ignorable="d"
+        Icon="/Resources/ws_logo.jpg"
         Title="Academy" Height="450" Width="800">
     <Window.Resources>
         <Style TargetType="TextBlock" x:Key="Title">
