@@ -42,6 +42,7 @@
       - [Функционал прохождения регистрации ученика](#функционал-прохождения-регистрации-ученика)
   - [Задание Регистрация WPF](#задание-регистрация-wpf)
   - [Данные](#данные-1)
+  - [Вывод данных](#вывод-данных)
 
 ## Общее
 [6720ad8d5040133e8429e595](https://e-learn.petrocollege.ru/course/view.php?id=6620#section-0)
@@ -1591,3 +1592,101 @@ https://e-learn.petrocollege.ru/pluginfile.php/542788/mod_assign/introattachment
 [679c880a5040133e8429ed59](https://e-learn.petrocollege.ru/mod/resource/view.php?id=309444)
 
 Сделать интернет-магазин.
+
+### Вывод данных
+[679e34c15040133e8429ed70](https://e-learn.petrocollege.ru/mod/resource/view.php?id=324518)
+
+После разработки авторизации и регистрации добавить возможность вывода списка студентов.
+
+Пример таблицы с информацией о студентах представлен на рисунке 1.
+
+![Picture 1](./img/679e34c15040133e8429ed70-1.png)
+
+Для вывода списка информации о студентах необходимо создать `ListView`. Пример оформления представлен на Рисунке 2.
+
+```xml
+<Grid>
+  <Grid.ColumnDefinitions>
+    <ColumnDefinition/>
+  </Grid.ColumnDefinitions>
+  <Grid.RowDefinitions>
+    <RowDefinition Height="33"/>
+    <RowDefinition Height="497"/>
+    <RowDefinition Height="50"/>
+  </Grid.RowDefinitions>
+  <ListView x:Name="listProducts" Grid.Row="1" ScrollViewer.CanContentScroll="False">
+    <ListView.ItemTemplate>
+      <DataTemplate>
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinitions Width="100"/>
+            <ColumnDefinitions Width="700"/>
+            <ColumnDefinitions Width="200"/>
+          </Grid.ColumnDefinitions>
+          <Image Source="{Binding CurrentPhoto}" Grid.Column="0"/>
+          <StackPanel Grid.Column="1" Width="auto" Orientation="Vertical" HorizontalAlignment="Left">
+            <TextBlock Width="auto" TextWrapping="Wrap" Height="auto">
+              <Run Text="ФИО: "/>
+              <Run Text="{Binding FIO}"/>
+            </TextBlock>
+            <TextBlock Width="auto" TextWrapping="Wrap" Height="auto">
+              <Run Text="Курс: "/>
+              <Run Text="{Binding Course}"/>
+            </TextBlock>
+            <TextBlock Width="auto" TextWrapping="Wrap" Height="auto">
+              <Run Text="Специальность: "/>
+              <Run Text="{Binding Specialty}"/>
+            </TextBlock>
+          </StackPanel>
+          <StackPanel Grid.Column="2" Width="auto" Orientation="Vertical" HorizontalAlignment="Left">
+            <TextBlock Width="auto" TextWrapping="Wrap" Height="auto">
+              <Run Text="Пол: "/>
+              <Run Text="{Binding Gender}"/>
+            </TextBlock>
+          </StackPanel>
+        </Grid>
+      </DataTemplate>
+    </ListView.ItemTemplate>
+  </ListView>
+  <TextBlock x:Name="tbCounter" Text="Не найдено" Grid.Row="2" Width="95" HorizontalAlignment="Left" Height="22" Margin="695,0,0,0">
+</Grid>
+</Page>
+```
+
+Для присоединения базы к `ListView` необходимо добавить следующий код
+```cs
+public PageTask()
+{
+  InitializeComponent();
+  List<Student> products = AppConnect.model101.Students.ToList();
+
+  if (products.Count > 0)
+  {
+    tbCounter.Text = "Найдено " + products.Count + " товаров";
+  }
+  else
+  {
+    tbCounter.Text = "Не найдено";
+  }
+  listProducts.ItemSource = products;
+}
+```
+
+Для вывода изображений в классе `Student` необходимо прописать свойство
+```cs
+public string Specialty { get; set; }
+public string Image { get; set; }
+public string CurrentPhoto {
+  get
+  {
+    if (String.IsNullOrEmpty(Image) || String.IsNullOrWhiteSpace(Image))
+    {
+      return "/Images/picture.png";
+    }
+    else
+    {
+      return "/Images/" + Image;
+    }
+  }
+}
+```
