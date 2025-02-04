@@ -43,6 +43,7 @@
   - [Задание Регистрация WPF](#задание-регистрация-wpf)
   - [Данные](#данные-1)
   - [Вывод данных](#вывод-данных)
+  - [Фильтрация, поиск, сортировка](#фильтрация-поиск-сортировка)
 
 ## Общее
 [6720ad8d5040133e8429e595](https://e-learn.petrocollege.ru/course/view.php?id=6620#section-0)
@@ -1688,5 +1689,63 @@ public string CurrentPhoto {
       return "/Images/" + Image;
     }
   }
+}
+```
+
+### Фильтрация, поиск, сортировка
+[679f415a5040133e8429ed7c](https://e-learn.petrocollege.ru/mod/resource/view.php?id=325841)
+
+```cs
+Product[] FindProduct()
+{
+  // В переменную product записываем список из таблицы Product
+  var product = AppConnect.modelOdb.Product.ToList();
+  var productall = product;
+  // Поиск по названию продуктов
+  if (TextSearch != null)
+  {
+    // ProductName1 (первое значение) - таблица с названиями
+    // ProductName1 (второе значение) - столбик с названиями в таблице
+    product = product.Where(x => x.ProductName1.ProductName1.ToLower().Contains(TextSearch.Text.ToLower())).ToList();
+  }
+  // Фильтрация по скидке
+  if (ComboFilter.SelectedIndex > 0)
+  {
+    switch (ComboFilter.SelectedIndex)
+    {
+      case 1:
+        product = product.Where(x => x.ProductDiscountAmount > 0 && x.ProductDiscountAmount < 10).ToList();
+        break;
+      case 2:
+        product = product.Where(x => x.ProductDiscountAmount >= 10 && x.ProductDiscountAmount < 15).ToList();
+        break;
+      case 3:
+        product = product.Where(x => x.ProductDiscountAmount >= 15 && x.ProductDiscountAmount >= 15).ToList();
+        break;
+    }
+  }
+  // Сортировка по возрастанию и убыванию цены
+  if (ComboSort.SelectedIndex > 0)
+  {
+    switch (ComboSort.SelectedIndex)
+    {
+      case 1:
+        product = product.OrderBy(x => x.ProductCost).ToList();
+        break;
+      case 2:
+        product = product.OrderByDescending(x => x.ProductCost).ToList();
+        break;
+    }
+  }
+  // Количество элементов найденных
+  if (product.Count > 0)
+  {
+    LabelCount.Content = "Найдено" + product.Count + " из " + productall.Count;
+  }
+  else
+  {
+    LabelCount.Content = "Ничего не найдено ";
+  }
+  return product.ToArray();
 }
 ```
