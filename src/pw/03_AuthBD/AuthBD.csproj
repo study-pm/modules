@@ -162,7 +162,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\samovar.png" />
-    <Resource Include="Resources\russian_cuisine.png" />
     <Resource Include="Resources\flag_ru.jpeg" />
     <Resource Include="Resources\rc_logo.png" />
     <Content Include="AppData\DataModel.Context.tt">
