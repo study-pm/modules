@@ -44,6 +44,7 @@
   - [Данные](#данные-1)
   - [Вывод данных](#вывод-данных)
   - [Фильтрация, поиск, сортировка](#фильтрация-поиск-сортировка)
+  - [Формирование qr кода](#формирование-qr-кода)
 
 ## Общее
 [6720ad8d5040133e8429e595](https://e-learn.petrocollege.ru/course/view.php?id=6620#section-0)
@@ -1749,5 +1750,32 @@ Product[] FindProduct()
     LabelCount.Content = "Ничего не найдено ";
   }
   return product.ToArray();
+}
+```
+
+### Формирование qr кода
+[67a23bdd5040133e8429eddd](https://e-learn.petrocollege.ru/mod/resource/view.php?id=329511)
+
+Скачать и установить библиотеку `Aspose.BarCode.Generation`.
+
+Метод создания и вывода картинки на экран в переменную `img` (Элемент в *xml* `Image` с именем `img`)
+```cs
+int a = 1;
+private void btn1_Click(object sender, RoutedEventArgs e)
+{
+  BitmapImage bitmap = new BitmapImage();
+  BarcodeGenerator gen = new BarcodeGenerator(EncodeTypes.QR, "https://bom.firpo.ru/Public/86");
+  gen.Parameters.Barcode.XDimension.Pixels = 34;
+
+  string dataDir = @"C:\Users\t.spiridonova\source\repos\WpfApp1\WpfApp1\";
+  gen.Save(dataDir + a.ToString()+"1.png", BarCodeImageFormat.Png);
+
+  //BitmapImage bitmap = new BitmapImage();
+  bitmap.BeginInit();
+  bitmap.UriSource = new Uri(dataDir + a.ToString() + "1.png");
+  bitmap.EndInit();
+
+  img.Source = bitmap;
+  a++;
 }
 ```
