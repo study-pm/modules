@@ -45,6 +45,7 @@
   - [Вывод данных](#вывод-данных)
   - [Фильтрация, поиск, сортировка](#фильтрация-поиск-сортировка)
   - [Формирование qr кода](#формирование-qr-кода)
+  - [Формирование pdf документа](#формирование-pdf-документа)
 
 ## Общее
 [6720ad8d5040133e8429e595](https://e-learn.petrocollege.ru/course/view.php?id=6620#section-0)
@@ -1779,3 +1780,98 @@ private void btn1_Click(object sender, RoutedEventArgs e)
   a++;
 }
 ```
+
+### Формирование pdf документа
+[67a508be5040133e8429ee4e](https://e-learn.petrocollege.ru/mod/resource/view.php?id=329512)
+
+Подключение библиотек:
+```cs
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+// using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using System.Xml.Linq;
+using Детское_творчество.AppData;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+using Image = iTextSharp.text.Image;
+using System.Windows.Markup;
+using System.Windows.Documents;
+using Paragraph = iTextSharp.text.Paragraph;
+```
+
+Метод создания pdf документа:
+```cs
+private void CreatePDF()
+{
+  // Создаем новый документ PDF
+  Document doc = new Document();
+
+  try
+  {
+    // Указываем путь для сохранения PDF-файла
+    PdfWriter.GetInstance(doc, new FileStream("..\\..\\output.pdf", FileMode.Create));
+
+    doc.Open();
+    BaseFont baseFont = BaseFont.CreateFont("C:\\Windows\\Fonts\\Arial\\.ttf", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+
+    // Create a Font object using the BaseFont
+    Font font = new Font(baseFont, 12);
+    Font font1 = new Font(baseFont, 25,3,BaseColor.BLUE);
+    Paragraph paragraph1 = new Paragraph("СПИСОК ТОВАРОВ", font1);
+    paragraph1.Alignment = Element.ALIGN_CENTER;
+    doc.Add(paragraph1);
+    decimal sum = 0;
+    // Получаем данные из List и добавляем их в PDF
+    foreach (var item in AppConnect.modelOdb.Product.ToList())
+    {
+      if (item is Product) // Замените YourDataType на тип данных, используемый в вашем ListBox
+      {
+        Product data = (Product)item;
+
+        // Добавляем данные из ListBox в PDF
+        Image img = Image.GetInstance(@"H:\C#\WPF\ДЭ Детское творчество\Детское творчество\Детское творчество\Детское творчество\" + data.CorrectImage);
+        img.ScaleAbsolute(100f, 100f); // Устанавливаем размер изображения
+        doc.Add(img);
+        doc.Add(new Paragraph("Название: "+data.ProductName1.ProductName1,font));
+        doc.Add(new Paragraph("Описание: "+data.ProductDescription, font));
+        doc.Add(new Paragraph(""+data.ProductManufacturer, font));
+        doc.Add(new Paragraph("Стоимость: "+data.ProductCost.ToString() + " руб.", font));
+        doc.Add(new Paragraph("Размер скидки: " + data.ProductDiscountAmount + "%", font));
+
+        sum += data.ProductCost;
+      }
+    }
+    Paragraph paragraph = new Paragraph("Сумма = " + sum.ToString(), font);
+    paragraph.Alignment = Element.ALIGN_RIGHT;
+    doc.Add(paragraph);
+  }
+  catch (DocumentException de)
+  {
+    Console.Error.WriteLine(de.Message);
+  }
+  catch (IOException ioe)
+  {
+    Console.Error.WriteLine(ioe.Message);
+  }
+  finally
+  {
+    doc.Close();
+  }
+}
+```
+
+Результат:
+
+![Result](./img/67a508be5040133e8429ee4e_1.png)
