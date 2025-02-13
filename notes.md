@@ -757,7 +757,7 @@ string connectionString = "Server=(localdb)\\mssqllocaldb;Database=master;Truste
 
 Для работы с базой данных MS SQL Server в .NET 5 и выше (а также .NET Core 3.0/3.1) необходимо установить в проект через nuget пакет Microsoft.Data.SqlClient:
 
-![Picture 1.1](./img/671399405040133e8429e521-1.1.png)
+![Picture 1.1](./img/6720d6c15040133e8429e59c-1.1.png)
 
 <details>
 <summary><em>How to install SQLClient</em></summary>
