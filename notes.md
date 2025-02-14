@@ -2,6 +2,7 @@
 [671399405040133e8429e521](https://e-learn.petrocollege.ru/course/view.php?id=6620)
 
 - [Общее](#общее)
+  - [Разбор заданий №2](#разбор-заданий-2)
 - [53-02в 53-03в / Прикладное программирование: технологии C#.Net](#53-02в-53-03в--прикладное-программирование-технологии-cnet)
   - [Основы LINQ](#основы-linq)
     - [Методы расширения LINQ](#методы-расширения-linq)
@@ -53,6 +54,11 @@
 
 ## Общее
 [6720ad8d5040133e8429e595](https://e-learn.petrocollege.ru/course/view.php?id=6620#section-0)
+
+### Разбор заданий №2
+[67ae05215040133e8429ef14](https://e-learn.petrocollege.ru/mod/url/view.php?id=303215)
+
+Нажмите на ссылку https://nationalteam.worldskills.ru/skills/programmnye-resheniya-dlya-biznesa/, чтобы открыть ресурс.
 
 ## 53-02в 53-03в / Прикладное программирование: технологии C#.Net
 [6720ae035040133e8429e596](https://e-learn.petrocollege.ru/course/view.php?id=6620#section-2)
