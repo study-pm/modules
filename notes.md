@@ -1578,7 +1578,7 @@ _Пояснения к коду_:
     Изменения для этого вносим в разметку: добавляем элемент `TextBlock` и в его свойстве `Text` указываем источник текста – `Title` открытой страницы (содержимого фрейма).
 
     ```xml
-    Text="{Binding ElementName=FrmMain},
+    Text="{Binding ElementName=FrmMain,
           Path=Content.Title}"
     ```
 
