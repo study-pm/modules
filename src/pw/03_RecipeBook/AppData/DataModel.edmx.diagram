@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="a9a7ff87c9234730bacbf85a53b60a23" Name="Diagram1">
+        <EntityTypeShape EntityType="CookingBookModel.Author" Width="1.5" PointX="0.75" PointY="5.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CookingBookModel.Category" Width="1.5" PointX="0.75" PointY="2.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CookingBookModel.CookingStep" Width="1.5" PointX="5.25" PointY="4.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CookingBookModel.Ingredient" Width="1.5" PointX="3" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CookingBookModel.RecipeIngredient" Width="1.5" PointX="5.25" PointY="7.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CookingBookModel.Recipe" Width="1.5" PointX="3" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CookingBookModel.RecipeTag" Width="1.5" PointX="8.25" PointY="5.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CookingBookModel.Review" Width="1.5" PointX="5.25" PointY="12.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CookingBookModel.Tag" Width="1.5" PointX="6" PointY="1.75" IsExpanded="true" />
+        <AssociationConnector Association="CookingBookModel.FK_Recipes_Authors" ManuallyRouted="false" />
+        <AssociationConnector Association="CookingBookModel.FK_Recipes_Categories1" ManuallyRouted="false" />
+        <AssociationConnector Association="CookingBookModel.FK_CookingSteps_Recipes" ManuallyRouted="false" />
+        <AssociationConnector Association="CookingBookModel.FK_RecipeIngredients_Ingredients" ManuallyRouted="false" />
+        <AssociationConnector Association="CookingBookModel.FK_RecipeIngredients_Recipes" ManuallyRouted="false" />
+        <AssociationConnector Association="CookingBookModel.FK_RecipeTags_Recipes" ManuallyRouted="false" />
+        <AssociationConnector Association="CookingBookModel.FK_Reviews_Recipes" ManuallyRouted="false" />
+        <AssociationConnector Association="CookingBookModel.FK_RecipeTags_Tags" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
