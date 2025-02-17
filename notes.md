@@ -1783,7 +1783,7 @@ var userObj = AppConnect.modelOdb.User.
 
     ![Login page](./img/679858275040133e8429ecfc-4.png)
 
-[Solution](./src/pw/03_AuthBD/MainWindow.xaml)
+[Solution](./src/pw/02_BookAuth/MainWindow.xaml)
 
 ### Регистрация WPF
 [6799fb9c5040133e8429ed29](https://e-learn.petrocollege.ru/mod/assign/view.php?id=358550)
