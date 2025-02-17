@@ -1760,6 +1760,8 @@ var userObj = AppConnect.modelOdb.User.
 
 **Запустите проект, убедитесь, что на экран выводится каждое из организованных в коде приветствий и уведомлений!**
 
+[Solution Example](./samples/03_AcademyApp/MainWindow.xaml)
+
 ### Задание на авторизацию и создание бд
 [679858275040133e8429ecfc](https://e-learn.petrocollege.ru/mod/assign/view.php?id=358549)
 
