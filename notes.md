@@ -1937,6 +1937,8 @@ https://e-learn.petrocollege.ru/pluginfile.php/542788/mod_assign/introattachment
 
 4. Подключить страницу к авторизации
 
+[Solution](./src/pw/03_RecipeBook/MainWindow.xaml)
+
 ### Данные
 [679c880a5040133e8429ed59](https://e-learn.petrocollege.ru/mod/resource/view.php?id=309444)
 
