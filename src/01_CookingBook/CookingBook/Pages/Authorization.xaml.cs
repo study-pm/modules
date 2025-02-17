@@ -40,6 +40,7 @@ namespace CookingBook.Pages
                 {
                     MessageBox.Show("Здравствуйте, " + userObj.AuthorName + "!", "Уведомление",
                         MessageBoxButton.OK, MessageBoxImage.Information);
+                    NavigationService.Navigate(new Pages.Recipes());
                 }
             }
             catch (Exception ex)

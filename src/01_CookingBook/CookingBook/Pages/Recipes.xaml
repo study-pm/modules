@@ -1,0 +1,61 @@
+﻿<Page x:Class="CookingBook.Pages.Recipes"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:CookingBook.Pages"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="Recipes">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="33"/>
+            <RowDefinition Height="497"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <ListView x:Name="listProducts" Grid.Row="1" Margin="0,52,0,0">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="400" />
+                            <ColumnDefinition Width="200" />
+                        </Grid.ColumnDefinitions>
+                        <Image Source="{Binding CurrentPhoto}" Grid.Column="0" />
+                        <StackPanel Grid.Column="1" Width="auto" Orientation="Vertical" HorizontalAlignment="Left">
+                            <TextBlock Width="auto" TextWrapping="Wrap" Height="auto">
+                                <Run Text="Название: "/>
+                                <Run Text="{Binding RecipeName}"/>
+                            </TextBlock>
+                            <TextBlock Width="auto" TextWrapping="Wrap" Height="auto">
+                                <Run Text="Категория: "/>
+                                <Run Text="{Binding Categories.CategoryName}"/>
+                            </TextBlock>
+                            <TextBlock Width="auto" TextWrapping="Wrap" Height="auto">
+                                <Run Text="Описание: "/>
+                                <Run Text="{Binding Description}"/>
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Width="auto" Orientation="Vertical" HorizontalAlignment="Left">
+                            <TextBlock Width="auto" TextWrapping="Wrap" Height="auto">
+                                <Run Text="Время: "/>
+                                <Run Text="{Binding CookingTime}"/>
+                                <Run Text="мин"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <ComboBox x:Name="ComboFilter" HorizontalAlignment="Left" Margin="228,11,0,0" VerticalAlignment="Top" Width="209" SelectionChanged="ComboFilter_SelectionChanged" />
+        <ComboBox x:Name="ComboSort" HorizontalAlignment="Left" Margin="475,11,0,0" VerticalAlignment="Top" Width="209" SelectionChanged="ComboSort_SelectionChanged" />
+        <TextBlock x:Name="tbCounter" HorizontalAlignment="Left" Text="Не найдено" Grid.Row="2" Width="167" VerticalAlignment="Top" />
+        <TextBox x:Name="TextSearch" HorizontalAlignment="Left" Margin="22,11,0,0" Grid.Row="0" TextWrapping="Wrap" Width="180" VerticalAlignment="Top" TextChanged="TextSearch_TextChanged" />
+    </Grid>
+</Page>

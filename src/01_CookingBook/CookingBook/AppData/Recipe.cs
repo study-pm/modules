@@ -30,6 +30,15 @@ namespace CookingBook.AppData
         public Nullable<int> AuthorID { get; set; }
         public Nullable<int> CookingTime { get; set; }
         public string Image { get; set; }
+        public string CurrentPhoto
+        {
+            get
+            {
+                if (String.IsNullOrEmpty(Image) || String.IsNullOrWhiteSpace(Image))
+                    return @"\Images\no_image.jpg";
+                else return @"\Images\" + Image;
+            }
+        }
     
         public virtual Author Author { get; set; }
         public virtual Category Category { get; set; }
