@@ -1922,6 +1922,8 @@ _Пояснения к коду_:
 
     ![Picture 5](./img/6799fb9c5040133e8429ed29-5.png)
 
+[Solution Example](samples/04_AcademyAppRegister/MainWindow.xaml)
+
 ### Задание Регистрация WPF
 [679b50185040133e8429ed46](https://e-learn.petrocollege.ru/mod/assign/view.php?id=358551)
 
