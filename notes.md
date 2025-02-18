@@ -2044,6 +2044,8 @@ public string CurrentPhoto {
 }
 ```
 
+[Example Solution](samples/05_AcademyApp_List/MainWindow.xaml)
+
 ### Фильтрация, поиск, сортировка
 [679f415a5040133e8429ed7c](https://e-learn.petrocollege.ru/mod/resource/view.php?id=325841)
 
