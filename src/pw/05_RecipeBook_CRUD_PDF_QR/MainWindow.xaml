@@ -1,0 +1,42 @@
+﻿<Window x:Class="RecipeBook.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RecipeBook"
+        mc:Ignorable="d"
+        Icon="Resources\samovar.png"
+        Title="Книга рецептов" Height="800" Width="800">
+    <Window.Resources>
+        <Style TargetType="TextBlock" x:Key="Article">
+            <Setter Property="Foreground" Value="#FF3D9898"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="0 10"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <!-- App Header -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <Image Source=".\Resources\rc_logo.png" Width="50" Height="50" />
+            <StackPanel HorizontalAlignment="Center">
+                <TextBlock FontFamily="Sitka Small" FontSize="25" FontWeight="Bold" FontStyle="Italic" Foreground="#c0392b">Русская кухня</TextBlock>
+                <TextBlock FontFamily="Arial" FontSize="16" Foreground="#006dd8" Width="112">книга рецептов</TextBlock>
+            </StackPanel>
+            <Image Source=".\Resources\samovar.png" Width="60" />
+        </StackPanel>
+
+        <!-- App Body -->
+        <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 20 0 0">
+            <TextBlock Style="{StaticResource Article}" Text="{Binding ElementName=FrmMain, Path=Content.Title}" />
+            <Frame x:Name="FrmMain" Content="Frame Main" NavigationUIVisibility="Hidden"></Frame>
+        </StackPanel>
+    </Grid>
+</Window>

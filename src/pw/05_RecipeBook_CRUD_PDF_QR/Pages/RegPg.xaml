@@ -1,0 +1,212 @@
+﻿<Page x:Class="RecipeBook.Pages.RegPg"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:RecipeBook.Pages"
+      mc:Ignorable="d"
+      d:DesignHeight="540" d:DesignWidth="300"
+      Title="Регистрация">
+    <Page.Resources>
+        <Style TargetType="Button" x:Key="Button">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="0 5"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="MinHeight" Value="40"/>
+            <Setter Property="Width" Value="120"/>
+            <Setter Property="BorderThickness" Value="2"/>
+        </Style>
+        <Style TargetType="DatePicker" x:Key="InputDate">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="0 0 0 5"/>
+            <Setter Property="Padding" Value="4"/>
+        </Style>
+        <Style TargetType="Label" x:Key="Label">
+            <Setter Property="Foreground" Value="#FF0067CC"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="0 5"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
+        <Style TargetType="PasswordBox" x:Key="InputPassword">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="0 0 0 5"/>
+            <Setter Property="Padding" Value="5"/>
+        </Style>
+        <Style TargetType="TextBlock" x:Key="Placeholder">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontStyle" Value="Italic"/>
+            <Setter Property="Foreground" Value="DarkGray"/>
+            <Setter Property="Padding" Value="10 5"/>
+            <Setter Property="Visibility" Value="Collapsed"/>
+        </Style>
+        <Style TargetType="TextBlock" x:Key="Asterisk">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="Red"/>
+            <Setter Property="Text" Value="*"/>
+            <Setter Property="ToolTip" Value="Обязательно для заполнения"/>
+        </Style>
+        <Style TargetType="TextBlock" x:Key="Question">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#FFCCA900"/>
+            <Setter Property="Text" Value=" ?"/>
+        </Style>
+        <Style TargetType="TextBox" x:Key="InputText">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="0 0 0 5"/>
+            <Setter Property="Padding" Value="5"/>
+        </Style>
+    </Page.Resources>
+    <Grid>
+        <StackPanel Width="250">
+
+            <StackPanel>
+                <StackPanel>
+                    <Label Style="{StaticResource Label}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock>Введите имя </TextBlock>
+                            <TextBlock Style="{StaticResource Asterisk}" />
+                        </StackPanel>
+                    </Label>
+                    <TextBox x:Name="txbName" Style="{StaticResource InputText}"
+                             LostFocus="txbName_LostFocus" TextChanged="txbName_TextChanged" />
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel>
+                <Label Style="{StaticResource Label}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock>Введите логин</TextBlock>
+                        <TextBlock Style="{StaticResource Asterisk}" />
+                    </StackPanel>
+                </Label>
+                <TextBox x:Name="txbLogin" Style="{StaticResource InputText}"
+                         LostFocus="txbLogin_LostFocus" TextChanged="txbLogin_TextChanged" />
+            </StackPanel>
+
+            <StackPanel>
+                <Label Style="{StaticResource Label}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock>Введите пароль</TextBlock>
+                        <TextBlock Style="{StaticResource Asterisk}" />
+                        <TextBlock Style="{StaticResource Question}">
+                            <TextBlock.ToolTip>
+                                <StackPanel>
+                                    <TextBlock>Пароль должен содержать не менее 10 символов,</TextBlock>
+                                    <TextBlock>включая латинские буквы в верхнем и нижнем регистрах,</TextBlock>
+                                    <TextBlock>цифры и специальные символы</TextBlock>
+                                </StackPanel>
+                            </TextBlock.ToolTip>
+                        </TextBlock>
+                    </StackPanel>
+                </Label>
+                <Grid>
+                    <PasswordBox x:Name="psbPass1" Style="{StaticResource InputPassword}"
+                                 LostFocus="psbPass1_LostFocus" PasswordChanged="psbPass1_PasswordChanged" />
+                    <TextBlock x:Name="txblPass" IsHitTestVisible="False" Text="m#P_5*2#s@a^p$V%" Visibility="Visible" >
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource Placeholder}" />
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+            </StackPanel>
+
+            <StackPanel>
+                <Label Style="{StaticResource Label}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock>Повторите пароль</TextBlock>
+                        <TextBlock Style="{StaticResource Asterisk}" />
+                    </StackPanel>
+                </Label>
+                <PasswordBox x:Name="psbPass2" Style="{StaticResource InputPassword}"
+                             LostFocus="psbPass2_LostFocus" PasswordChanged="psbPass2_PasswordChanged"/>
+            </StackPanel>
+
+            <DockPanel>
+                <StackPanel Width="120" DockPanel.Dock="Left">
+                    <Label Style="{StaticResource Label}">Дата рождения</Label>
+                    <DatePicker x:Name="dtpBirth" Style="{StaticResource InputDate}"></DatePicker>
+                </StackPanel>
+                <StackPanel Width="120" DockPanel.Dock="Right" HorizontalAlignment="Right">
+                    <Label Style="{StaticResource Label}">Стаж</Label>
+                    <Grid>
+                        <TextBox x:Name="txbExp" Style="{StaticResource InputText}"
+                                 LostFocus="txbExp_LostFocus" TextChanged="txbExp_TextChanged" />
+                        <TextBlock IsHitTestVisible="False" Text="полных лет" >
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock" BasedOn="{StaticResource Placeholder}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Text, ElementName=txbExp}" Value="">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
+                </StackPanel>
+            </DockPanel>
+
+            <StackPanel>
+                <Label Style="{StaticResource Label}">Введите почту</Label>
+                <Grid>
+                    <TextBox x:Name="txbEmail" Style="{StaticResource InputText}"
+                             LostFocus="txbEmail_LostFocus" TextChanged="txbEmail_TextChanged" />
+                    <TextBlock IsHitTestVisible="False" Text="username@host" >
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource Placeholder}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=txbEmail}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+            </StackPanel>
+
+            <StackPanel>
+                <Label Style="{StaticResource Label}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock>Введите телефон</TextBlock>
+                            <TextBlock Style="{StaticResource Question}">
+                                <TextBlock.ToolTip>
+                                    <StackPanel>
+                                        <TextBlock>Телефон должен соответствовать указанному формату:</TextBlock>
+                                        <TextBlock>содержать ровно 10 цифр (без кода страны и начального '+')</TextBlock>
+                                    </StackPanel>
+                                </TextBlock.ToolTip>
+                        </TextBlock>
+                    </StackPanel>
+                </Label>
+                <Grid>
+                    <TextBox x:Name="txbPhone" Style="{StaticResource InputText}"
+                             LostFocus="txbPhone_LostFocus" TextChanged="txbPhone_TextChanged" />
+                    <TextBlock IsHitTestVisible="False" Text="9012345678">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource Placeholder}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=txbPhone}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+            </StackPanel>
+            <DockPanel Margin="0 5">
+                <Button x:Name="registerBtn" Style="{StaticResource Button}" DockPanel.Dock="Left"
+                        BorderBrush="#549d5e" Background="#87e08e" IsDefault="True" Click="registerBtn_Click">
+                    Создать</Button>
+                <Button x:Name="backBtn" Style="{StaticResource Button}" DockPanel.Dock="Right" HorizontalAlignment="Right"
+                        BorderBrush="#cfa95b" Background="#ffd000" Content="Назад"
+                        Click="backBtn_Click" />
+            </DockPanel>
+        </StackPanel>
+    </Grid>
+</Page>

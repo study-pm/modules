@@ -1,0 +1,228 @@
+﻿<Page x:Class="RecipeBook.Pages.RecipePg"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:RecipeBook.Pages"
+      mc:Ignorable="d"
+      d:DesignHeight="800" d:DesignWidth="800"
+      Title="Рецепт">
+    <Page.Resources>
+        <SolidColorBrush x:Key="HeaderColor" Color="#FF0067CC"/>
+        <SolidColorBrush x:Key="HeaderHighlightColor" Color="#0091e1"/>
+        <SolidColorBrush x:Key="HeaderActiveColor" Color="#5fbcfa"/>
+
+        <ControlTemplate x:Key="SortableHeaderTemplate" TargetType="Button">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{TemplateBinding Content}" VerticalAlignment="Center" Margin="0 5"
+                           TextDecorations="Underline" FontWeight="Bold" />
+                <TextBlock Grid.Column="1" Text="{TemplateBinding Tag}" VerticalAlignment="Center" Padding="5" />
+            </Grid>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="{StaticResource HeaderHighlightColor}" />
+                    <Setter Property="Cursor" Value="Hand" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+        <Style x:Key="SortableHeaderStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="{StaticResource HeaderColor}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="{StaticResource HeaderHighlightColor}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="Button" x:Key="Button">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="0 10"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="MinHeight" Value="40"/>
+            <Setter Property="Width" Value="120"/>
+            <Setter Property="BorderThickness" Value="2"/>
+        </Style>
+        <Style TargetType="DatePicker" x:Key="InputDate">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="0 0 0 5"/>
+            <Setter Property="Padding" Value="4"/>
+        </Style>
+        <Style TargetType="Label" x:Key="Label">
+            <Setter Property="Foreground" Value="#FF0067CC"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="2"/>
+        </Style>
+        <Style TargetType="TextBlock" x:Key="Header">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#b35919"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Margin" Value="0 5 0 5"/>
+        </Style>
+        <Style TargetType="TextBlock" x:Key="HeaderText">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="2"/>
+        </Style>
+        <Style TargetType="TextBlock" x:Key="MainText">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="TextAlignment" Value="Justify"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition MaxWidth="720" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="{Binding RecipeName}" Style="{StaticResource Header}" />
+        <DockPanel Grid.Row="1" VerticalAlignment="Top">
+            <Image Source="{Binding CurrentPhoto}" MaxHeight="100" DockPanel.Dock="Left" Margin="0 5" />
+            <Image x:Name="BarcodeImage" Width="100" Height="100" DockPanel.Dock="Right" Margin="0 5"
+                   ToolTip="Смотреть рецепт в интернете"
+                   />
+            <StackPanel Margin="10 0">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="center">
+                    <Label Style="{StaticResource Label}">
+                        <TextBlock Text="Категория: "></TextBlock>
+                    </Label>
+                    <TextBlock Style="{StaticResource HeaderText}" Text="{Binding Category.CategoryName}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="center">
+                    <Label Style="{StaticResource Label}">
+                        <TextBlock Text="Время приготовления: "></TextBlock>
+                    </Label>
+                    <TextBlock Style="{StaticResource HeaderText}">
+                        <Run Text="{Binding CookingTime}" />
+                        <Run Text="мин." />
+                    </TextBlock>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="center">
+                    <Label Style="{StaticResource Label}">
+                        <TextBlock Text="Автор: "></TextBlock>
+                    </Label>
+                    <TextBlock Style="{StaticResource HeaderText}" Text="{Binding Author.Login}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="center">
+                    <Label Style="{StaticResource Label}">
+                        <TextBlock Text="Теги: "></TextBlock>
+                    </Label>
+                    <TextBlock x:Name="txblTags" Style="{StaticResource HeaderText}" Text=""/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="center">
+                    <Label Style="{StaticResource Label}">
+                        <TextBlock Text="Средняя оценка: "></TextBlock>
+                    </Label>
+                    <TextBlock x:Name="txblRate" Style="{StaticResource HeaderText}" />
+                </StackPanel>
+            </StackPanel>
+        </DockPanel>
+        <TextBlock Grid.Row="2" Style="{StaticResource MainText}" Text="{Binding Description}"/>
+        <TextBlock Grid.Row="3" Text="Продукты" Style="{StaticResource Header}" />
+        <ListView Grid.Row="4" x:Name="ingredientsList" ScrollViewer.CanContentScroll="False"
+  ScrollViewer.HorizontalScrollBarVisibility="Hidden" Height="100">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="500" />
+                            <ColumnDefinition Width="50" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding Ingredient.IngredientName}" />
+                        <TextBlock Grid.Column="1">
+                            <Run Text="{Binding Quantity}"/>
+                            <Run Text="г/шт."/>
+                        </TextBlock>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <TextBlock Grid.Row="5" Text="Пошаговый рецепт" Style="{StaticResource Header}" />
+        <ListView Grid.Row="6" x:Name="stepsList" ScrollViewer.CanContentScroll="False"
+          ScrollViewer.HorizontalScrollBarVisibility="Hidden" Height="100">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition Width="650" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding StepNumber}" />
+                        <TextBlock Grid.Column="1" Text="{Binding StepDescription}" TextWrapping="Wrap" TextAlignment="Justify" />
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <TextBlock Grid.Row="7" Text="Отзывы" Style="{StaticResource Header}" />
+        <ListView Grid.Row="8" x:Name="reviewsList" ScrollViewer.CanContentScroll="False"
+            ScrollViewer.HorizontalScrollBarVisibility="Hidden" Height="95">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="0 5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="{Binding ReviewText}" />
+                        <TextBlock Grid.Row="1">
+                            <Run Text="Оценка: " FontWeight="Bold"/>
+                            <Run Text="{Binding Rating}"/>
+                        </TextBlock>
+
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <DockPanel Grid.Row="9" VerticalAlignment="Center">
+            <Button x:Name="btnPrint" Content="Версия для печати"
+                    ToolTip="Сформировать PDF-документ" Style="{StaticResource SortableHeaderStyle}"
+                    Click="btnPrint_Click"
+                >
+                <Button.Template>
+                    <StaticResource ResourceKey="SortableHeaderTemplate"/>
+                </Button.Template>
+            </Button>
+            <Button x:Name="btnBack" Style="{StaticResource Button}" DockPanel.Dock="Right" HorizontalAlignment="Right"
+                BorderBrush="#cfa95b" Background="#ffd000" Content="Назад"
+                Click="backBtn_Click" />
+            <Button x:Name="btnEdit" Style="{StaticResource Button}" DockPanel.Dock="Right" HorizontalAlignment="Right"
+                BorderBrush="#549d5e" Background="#87e08e" Content="Редактировать" Margin="10" Visibility="Collapsed"
+                    Click="btnEdit_Click"
+            />
+            <Button x:Name="btnDelete" Style="{StaticResource Button}" DockPanel.Dock="Right" HorizontalAlignment="Right"
+                BorderBrush="red" Background="#ef8f8f" Content="Удалить" Visibility="Collapsed" Click="btnDelete_Click"
+            />
+        </DockPanel>
+    </Grid>
+</Page>
