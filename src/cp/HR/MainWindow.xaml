@@ -31,11 +31,11 @@
         <StackPanel x:Name="Footer" DockPanel.Dock="Bottom" MinHeight="20" Style="{StaticResource FooterStyle}">
             <TextBlock Foreground="LightGray" Padding="5">Status bar data here: Opening... Saving... Closing...</TextBlock>
         </StackPanel>
-        <Grid Margin="30" MaxWidth="1400">
+        <Grid Margin="30" MaxWidth="1920">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition MinWidth="150" Width="250"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
-                <ColumnDefinition Width="*" MinWidth="400" MaxWidth="1000"></ColumnDefinition>
+                <ColumnDefinition Width="*" MinWidth="400" MaxWidth="1440"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition MinWidth="150" Width="250"></ColumnDefinition>
             </Grid.ColumnDefinitions>
