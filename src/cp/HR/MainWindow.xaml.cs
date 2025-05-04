@@ -25,5 +25,15 @@ namespace HR
         {
             InitializeComponent();
         }
+
+        private void SignInItem_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Log In");
+        }
+
+        private void HomeItem_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Go home");
+        }
     }
 }

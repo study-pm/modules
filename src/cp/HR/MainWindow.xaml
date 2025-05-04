@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:HR"
         mc:Ignorable="d"
         Icon="Img/graduation-cap-solid.png"
-        Title="Моя школа" Height="720" Width="1080" MinHeight="400" MinWidth="400"
+        Title="Моя школа" Height="720" Width="1280" MinHeight="400" MinWidth="400"
         Style="{StaticResource WindowStyle}"
 >
     <DockPanel>
@@ -28,6 +28,43 @@
                     <TextBlock HorizontalAlignment="Center" Margin="5" Foreground="Beige">Гость</TextBlock>
                 </StackPanel>
                 <WrapPanel MinHeight="50">
+                    <Menu Margin="30">
+                        <MenuItem x:Name="HomeItem" Header="_Главная" Style="{StaticResource MainMenuItem}" Click="HomeItem_Click" />
+                        <MenuItem Header="_Сотрудники" Style="{StaticResource MainMenuItem}">
+                            <MenuItem Header="_Руководство" Style="{StaticResource SubMenuItemStyle}" />
+                            <MenuItem Header="_Педагогический состав" Style="{StaticResource SubMenuItemStyle}" />
+                            <MenuItem Header="_Внешние совместители" Style="{StaticResource SubMenuItemStyle}" />
+                        </MenuItem>
+                        <MenuItem Header="_Подразделения" Style="{StaticResource MainMenuItem}">
+                            <MenuItem Header="_Администрация" Style="{StaticResource SubMenuItemStyle}" />
+                            <MenuItem Header="МО _начальных классов" Style="{StaticResource SubMenuItemStyle}" />
+                            <MenuItem Header="МО _математики и информатики" Style="{StaticResource SubMenuItemStyle}" />
+                            <MenuItem Header="МО _филологического образования" Style="{StaticResource SubMenuItemStyle}" />
+                            <MenuItem Header="МО _иностранного языка" Style="{StaticResource SubMenuItemStyle}" />
+                            <MenuItem Header="МО _естественнонаучного цикла" Style="{StaticResource SubMenuItemStyle}" />
+                            <MenuItem Header="МО _общественных дисциплин" Style="{StaticResource SubMenuItemStyle}" />
+                            <MenuItem Header="МО _эстетического цикла" Style="{StaticResource SubMenuItemStyle}" />
+                            <MenuItem Header="МО физической _культуры" Style="{StaticResource SubMenuItemStyle}" />
+                            <MenuItem Header="_Педагоги-организаторы" Style="{StaticResource SubMenuItemStyle}" />
+                            <MenuItem Header="Педагоги _дополнительного образования" Style="{StaticResource SubMenuItemStyle}" />
+                            <MenuItem Header="_Служба сопровождения" Style="{StaticResource SubMenuItemStyle}" />
+                            <MenuItem Header="_Воспитатели группы продленного дня" Style="{StaticResource SubMenuItemStyle}" />
+                            <MenuItem Header="Медиа_тека" Style="{StaticResource SubMenuItemStyle}" />
+                        </MenuItem>
+                        <MenuItem Header="_Учебная работа" Style="{StaticResource MainMenuItem}">
+                            <MenuItem Header="_Предметы" Style="{StaticResource SubMenuItemStyle}" />
+                            <MenuItem Header="П_реподаватели" Style="{StaticResource SubMenuItemStyle}" />
+                        </MenuItem>
+                        <MenuItem Header="_Воспитательная работа" Style="{StaticResource MainMenuItem}">
+                            <MenuItem Header="_Классы" Style="{StaticResource SubMenuItemStyle}" />
+                            <MenuItem Header="Классные _руководители" Style="{StaticResource SubMenuItemStyle}" />
+                        </MenuItem>
+                        <MenuItem Header="_Дополнительное образование" Style="{StaticResource MainMenuItem}">
+                            <MenuItem Header="_Педагоги ОДОД" Style="{StaticResource SubMenuItemStyle}" />
+                            <MenuItem Header="_Кружки и секции" Style="{StaticResource SubMenuItemStyle}" />
+                        </MenuItem>
+                        <MenuItem x:Name="SignInItem" Header="В_ход" Style="{StaticResource MainMenuItem}" Click="SignInItem_Click" />
+                    </Menu>
                 </WrapPanel>
             </DockPanel>
         </Border>
