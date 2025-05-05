@@ -8,7 +8,7 @@ namespace HR.Utilities
 {
     internal static class Utils
     {
-        public static Task<bool> MockAsync(int delay)
+        public static Task<bool> MockAsync(int delay, bool isSuccess = true)
         {
             var tcs = new TaskCompletionSource<bool>();
             var timer = new System.Timers.Timer(delay);
@@ -17,7 +17,8 @@ namespace HR.Utilities
             {
                 timer.Stop();
                 timer.Dispose();
-                tcs.SetResult(true);
+                if (isSuccess) tcs.SetResult(true);
+                else tcs.SetException(new Exception("Mock failure"));
             };
 
             timer.AutoReset = false; // To make it one-time only
