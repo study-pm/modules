@@ -78,6 +78,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Pages\HomePg.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Res\MenuStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -90,6 +94,9 @@
   <ItemGroup>
     <Compile Include="Pages\AuthPg.xaml.cs">
       <DependentUpon>AuthPg.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\HomePg.xaml.cs">
+      <DependentUpon>HomePg.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

@@ -33,7 +33,7 @@ namespace HR
 
         private void HomeItem_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Go home");
+            mainFrame.Navigate(new HomePg());
         }
     }
 }

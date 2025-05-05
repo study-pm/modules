@@ -37,12 +37,20 @@
     </Style>
     <Style x:Key="MainFrameStyle" TargetType="Frame">
         <Setter Property="Background" Value="#fff" />
+        <Setter Property="FontSize" Value="24" />
     </Style>
     <Style x:Key="PageStyle" TargetType="Page">
         <Setter Property="FontSize" Value="14" />
     </Style>
     <Style x:Key="Panel" TargetType="Panel">
         <Setter Property="Background" Value="#fff"/>
+    </Style>
+    <Style TargetType="TextBlock">
+        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="Normal" />
+        <Setter Property="Margin" Value="0 10" />
+        <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
     <Style x:Key="RoundedShadowBorder" TargetType="Border">
         <Setter Property="Background" Value="White"/>
