@@ -22,24 +22,11 @@ namespace HR
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static Frame frame {  get; set; }
         public MainWindow()
         {
             InitializeComponent();
-        }
-
-        private void SignInItem_Click(object sender, RoutedEventArgs e)
-        {
-            mainFrame.Navigate(new AuthPg());
-        }
-
-        private void SignOnItem_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Sign On");
-        }
-
-        private void HomeItem_Click(object sender, RoutedEventArgs e)
-        {
-            mainFrame.Navigate(new HomePg());
+            MainWindow.frame = mainFrame;
         }
     }
 }

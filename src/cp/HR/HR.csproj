@@ -58,6 +58,9 @@
     <Compile Include="Controls\AppStatus.xaml.cs">
       <DependentUpon>AppStatus.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\TopHeader.xaml.cs">
+      <DependentUpon>TopHeader.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SplashWindow.xaml.cs">
       <DependentUpon>SplashWindow.xaml</DependentUpon>
     </Compile>
@@ -68,6 +71,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\Header.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\TopHeader.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
