@@ -28,7 +28,12 @@ namespace HR
 
         private void SignInItem_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Log In");
+            mainFrame.Navigate(new AuthPg());
+        }
+
+        private void SignOnItem_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Sign On");
         }
 
         private void HomeItem_Click(object sender, RoutedEventArgs e)

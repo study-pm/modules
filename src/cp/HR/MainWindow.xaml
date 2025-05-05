@@ -63,7 +63,10 @@
                             <MenuItem Header="_Педагоги ОДОД" Style="{StaticResource SubMenuItemStyle}" />
                             <MenuItem Header="_Кружки и секции" Style="{StaticResource SubMenuItemStyle}" />
                         </MenuItem>
-                        <MenuItem x:Name="SignInItem" Header="В_ход" Style="{StaticResource MainMenuItem}" Click="SignInItem_Click" />
+                        <MenuItem Header="П_ользователь" Style="{StaticResource MainMenuItem}">
+                            <MenuItem x:Name="SignInItem" Header="_Вход" Style="{StaticResource SubMenuItemStyle}" Click="SignInItem_Click" />
+                            <MenuItem x:Name="SignOnItem" Header="_Регистрация" Style="{StaticResource SubMenuItemStyle}" Click="SignOnItem_Click" />
+                        </MenuItem>
                     </Menu>
                 </WrapPanel>
             </DockPanel>
