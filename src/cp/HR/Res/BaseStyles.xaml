@@ -45,7 +45,7 @@
     <Style x:Key="Panel" TargetType="Panel">
         <Setter Property="Background" Value="#fff"/>
     </Style>
-    <Style TargetType="TextBlock">
+    <Style x:Key="Paragraph" TargetType="TextBlock">
         <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontWeight" Value="Normal" />
