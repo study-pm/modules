@@ -7,8 +7,13 @@
              mc:Ignorable="d"
              d:DesignHeight="100" d:DesignWidth="1080">
     <UserControl.Resources>
-        <local:PageToIsCheckedConverter x:Key="CheckedConverter" />
-        <local:PageToIsEnabledConverter x:Key="EnabledConverter" />
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Res/TopMenuStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <local:PageToIsCheckedConverter x:Key="CheckedConverter" />
+            <local:PageToIsEnabledConverter x:Key="EnabledConverter" />
+        </ResourceDictionary>
     </UserControl.Resources>
     <Border CornerRadius="5">
         <Border.Effect>
