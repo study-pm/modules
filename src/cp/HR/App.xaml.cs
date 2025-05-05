@@ -8,6 +8,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
+using HR.Utilities;
 
 namespace HR
 {
@@ -37,79 +40,38 @@ namespace HR
             // Application.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
         }
 
-        private Task<int?> GetCurrentUser()
+        private async Task<int?> GetCurrentUser()
         {
-            // solution directory
-            string solutionRoot = FindSolutionRoot();
-            // user local files
-            string folderPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            // current working folder
-            string currentDir = Environment.CurrentDirectory;
-            // current execution folder
-            string exeDir = AppDomain.CurrentDomain.BaseDirectory;
-            if (string.IsNullOrEmpty(solutionRoot))
-            {
-                // Return null to prevent throwing exception
-                return Task.FromResult<int?>(null);
-            }
-            string uidFilePath = Path.Combine(solutionRoot, "Local", "user.uid");
-            uidFilePath = Path.Combine(exeDir, "local", "user.uid");
+            string basePath = AppDomain.CurrentDomain.BaseDirectory;
+            string uidFilePath = Path.Combine(basePath, "local", "user.uid");
 
             bool fileExists = File.Exists(uidFilePath);
 
             if (!fileExists)
             {
                 // Return null if uid file doesn't exist
-                return Task.FromResult<int?>(null);
+                return null;
             }
 
             string uidContent = File.ReadAllText(uidFilePath);
             if (!int.TryParse(uidContent, out int userId))
             {
                 // Return null if invalid format
-                return Task.FromResult<int?>(null);
+                return null;
             }
 
             // Mock checking user existences from DB
-            var tcs = new TaskCompletionSource<int?>();
-            int mockDelay = 3000;
-            var timer = new System.Timers.Timer(mockDelay);
-
-            timer.Elapsed += (sender, args) =>
-            {
-                timer.Stop();
-                timer.Dispose();
-                tcs.SetResult(userId);
-            };
-
-            timer.AutoReset = false; // To make it one-time only
-            timer.Start();
-
-            return tcs.Task;
-        }
-        public static string FindSolutionRoot()
-        {
-            string currentDir = AppDomain.CurrentDomain.BaseDirectory;
-            DirectoryInfo directory = new DirectoryInfo(currentDir);
-
-            while (directory != null)
-            {
-                if (Directory.GetFiles(directory.FullName, "*.sln").Length > 0)
-                {
-                    return directory.FullName;
-                }
-                directory = directory.Parent;
-            }
-            return null;
+            await Utils.MockAsync(3000);
+            return 1;
         }
         private async void Application_Startup(object sender, StartupEventArgs e)
         {
             try
             {
                 //var splash = new SplashWindow(); // Custom splash window
+                // splash.Show(); // Shows splash window
                 var splash = new SplashScreen("Img/graduation-cap-solid.png");
-                // splash.Show(true); // true auto close after loading
-                splash.Show(false); // show splash screen without auto closing
+                splash.Show(false); // show splash screen without auto closing (true to auto-close)
 
                 UserId = await GetCurrentUser();
 
