@@ -62,13 +62,18 @@
                         </Trigger>
                         <Trigger Property="IsHighlighted" Value="True">
                             <Setter TargetName="Border" Property="Background" Value="#337ab7" />
-                            <Setter TargetName="Border" Property="Cursor" Value="Hand" />
+                            <Setter Property="Foreground" Value="#fff" />
+                            <Setter Property="Cursor" Value="Hand" />
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Border" Property="Background" Value="#3884c7" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
                             <Setter TargetName="Border" Property="Background" Value="#21a0df" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Foreground" Value="Gray" />
+                            <Setter Property="Foreground" Value="LightGray" />
+                            <Setter Property="Background" Value="#3884c7" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

@@ -6,6 +6,10 @@
              xmlns:local="clr-namespace:HR.Controls"
              mc:Ignorable="d"
              d:DesignHeight="100" d:DesignWidth="1080">
+    <UserControl.Resources>
+        <local:PageToIsCheckedConverter x:Key="CheckedConverter" />
+        <local:PageToIsEnabledConverter x:Key="EnabledConverter" />
+    </UserControl.Resources>
     <Border CornerRadius="5">
         <Border.Effect>
             <DropShadowEffect Color="#264d7f7f" Direction="270" ShadowDepth="5" BlurRadius="10" Opacity="0.25"/>
@@ -25,7 +29,9 @@
             </StackPanel>
             <WrapPanel MinHeight="50">
                 <Menu Margin="30">
-                    <MenuItem x:Name="HomeItem" Header="_Главная" Style="{StaticResource MainMenuItem}" Click="HomeItem_Click" />
+                    <MenuItem x:Name="HomeItem" Header="_Главная" Style="{StaticResource MainMenuItem}"
+                              IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=HomePg}"
+                              Click="HomeItem_Click" />
                     <MenuItem Header="_Сотрудники" Style="{StaticResource MainMenuItem}">
                         <MenuItem Header="_Руководство" Style="{StaticResource SubMenuItemStyle}" />
                         <MenuItem Header="_Педагогический состав" Style="{StaticResource SubMenuItemStyle}" />
@@ -59,7 +65,9 @@
                         <MenuItem Header="_Педагоги ОДОД" Style="{StaticResource SubMenuItemStyle}" />
                         <MenuItem Header="_Кружки и секции" Style="{StaticResource SubMenuItemStyle}" />
                     </MenuItem>
-                    <MenuItem Header="П_ользователь" Style="{StaticResource MainMenuItem}">
+                    <MenuItem Header="П_ользователь" Style="{StaticResource MainMenuItem}"
+                              IsChecked="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource CheckedConverter}, ConverterParameter='AuthPg'}"
+                              >
                         <MenuItem x:Name="SignInItem" Header="_Вход" Style="{StaticResource SubMenuItemStyle}" Click="SignInItem_Click" />
                         <MenuItem x:Name="SignOnItem" Header="_Регистрация" Style="{StaticResource SubMenuItemStyle}" Click="SignOnItem_Click" />
                     </MenuItem>
