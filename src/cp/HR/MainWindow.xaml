@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HR"
+        xmlns:uc="clr-namespace:HR.Controls"
         mc:Ignorable="d"
         Icon="Img/graduation-cap-solid.png"
         ResizeMode="CanResize" WindowStartupLocation="CenterScreen"
@@ -72,9 +73,7 @@
                 </WrapPanel>
             </DockPanel>
         </Border>
-        <StackPanel x:Name="Footer" DockPanel.Dock="Bottom" MinHeight="20" Style="{StaticResource FooterStyle}">
-            <TextBlock Foreground="LightGray" Padding="5">Status bar data here: Opening... Saving... Closing...</TextBlock>
-        </StackPanel>
+        <uc:AppStatus DockPanel.Dock="Bottom"></uc:AppStatus>
         <Grid Margin="30" MaxWidth="1920">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition MinWidth="150" Width="250"></ColumnDefinition>

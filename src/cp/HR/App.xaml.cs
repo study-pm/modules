@@ -80,6 +80,9 @@ namespace HR
                 mainWindow.Show();
 
                 splash.Close(TimeSpan.FromMilliseconds(200));
+                if (IsAuth) StatusInformer.ReportSuccess("Пользовательский режим");
+                else StatusInformer.ReportInfo("Гостевой режим");
+                // StatusInformer.ReportProgress("Загрузка данных...");
             }
             catch (Exception ex)
             {
