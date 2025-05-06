@@ -4,6 +4,15 @@
     <SolidColorBrush x:Key="cyanDarkBrush" Color="#009ca2" />
     <SolidColorBrush x:Key="cyanLightBrush" Color="#8bd3d5" />
     <SolidColorBrush x:Key="baseBackgroundBrush" Color="#edf1f7" />
+    <SolidColorBrush x:Key="BlueBrush" Color="#21a0df" />
+    <SolidColorBrush x:Key="DisabledBackgroundBrush" Color="Gray" />
+    <SolidColorBrush x:Key="DisabledForegroundBrush" Color="LightGray" />
+    <SolidColorBrush x:Key="DisabledBorderBrush" Color="DarkGray" />
+    <SolidColorBrush x:Key="WhiteDarkBrush" Color="#f5f5f5" />
+    <SolidColorBrush x:Key="GreenBrush" Color="#50b319" />
+    <SolidColorBrush x:Key="GreenDarkBrush" Color="#669d1e" />
+    <SolidColorBrush x:Key="GreenLightBrush" Color="#c3dda2" />
+    <SolidColorBrush x:Key="GreenMediumBrush" Color="#82b43c" />
     <SolidColorBrush x:Key="magentaDarkBrush" Color="#e53582" />
     <SolidColorBrush x:Key="magentaNormalBrush" Color="#ef91bc" />
     <SolidColorBrush x:Key="magentaLightBrush" Color="#f3c2d9" />
@@ -35,9 +44,6 @@
     <Style x:Key="MainFrameStyle" TargetType="Frame">
         <Setter Property="Background" Value="#fff" />
         <Setter Property="FontSize" Value="24" />
-    </Style>
-    <Style x:Key="PageStyle" TargetType="Page">
-        <Setter Property="FontSize" Value="14" />
     </Style>
     <Style x:Key="Panel" TargetType="Panel">
         <Setter Property="Background" Value="#fff"/>

@@ -14,7 +14,7 @@
         </Setter>
     </Style>
     <Style x:Key="MainMenuItem" TargetType="MenuItem">
-        <Setter Property="Foreground" Value="#f5f5f5" />
+        <Setter Property="Foreground" Value="{StaticResource WhiteDarkBrush}" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Padding" Value="10" />
         <Setter Property="Cursor" Value="Arrow"/>

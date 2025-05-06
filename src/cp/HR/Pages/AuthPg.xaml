@@ -5,16 +5,74 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:HR.Pages"
       xmlns:uc="clr-namespace:HR.Controls"
+      xmlns:utils="clr-namespace:HR.Utilities"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="AuthPg"
-      Style="{StaticResource PageStyle}"
       >
-
+    <Page.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <utils:InverseBooleanConverter x:Key="InvBoolConv"/>
+        <utils:NotEmptyValidationRule x:Key="NotEmptyValidationRule"/>
+    </Page.Resources>
     <StackPanel>
+
         <uc:Header HeaderText="Аутентификация"></uc:Header>
-        <TextBlock>Auth Page</TextBlock>
-        <TextBlock FontFamily="Open Sans">Auth Page</TextBlock>
-        <TextBlock FontFamily="{StaticResource Roboto}" Foreground="Black">Auth Page</TextBlock>
+
+        <TextBlock Style="{StaticResource Paragraph}">
+            Введите свои учетные данные для входа. Все поля должны быть заполнены.
+        </TextBlock>
+
+        <StackPanel MaxWidth="300" Margin="0 20 0 0">
+
+            <StackPanel Style="{StaticResource FormElement}">
+                <Label>Пользователь</Label>
+                <TextBox x:Name="LoginTxb"
+                         IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
+                         utils:ValidationHelper.AutoErrorVisibility="True"
+                         utils:ValidationHelper.EnableTouchedTracking="True"
+                         >
+                    <TextBox.Text>
+                        <Binding Path="Login" UpdateSourceTrigger="PropertyChanged"
+                                 ValidatesOnDataErrors="True" NotifyOnValidationError="True">
+                            <Binding.ValidationRules>
+                                <utils:NotEmptyValidationRule/>
+                                <utils:MinLengthValidationRule/>
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+            </StackPanel>
+
+            <StackPanel Style="{StaticResource FormElement}">
+                <Label>Пароль</Label>
+                <PasswordBox x:Name="PasswordPwb"
+                             IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
+                             Tag="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             utils:ValidationHelper.AutoErrorVisibility="True"
+                             utils:ValidationHelper.EnableTouchedTracking="True"
+                             PasswordChanged="PasswordPwb_PasswordChanged"
+                             />
+            </StackPanel>
+
+            <Grid Margin="0 10 0 0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="ResetBtn" Grid.Column="0" Content="Сброс" IsCancel="True"
+                        Style="{StaticResource BlueBtn}"
+                        IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
+                        Click="ResetBtn_Click"
+                        />
+                <Button x:Name="SignInBtn" Grid.Column="2" Content="Вход" IsDefault="True"
+                        Style="{StaticResource GreenBtn}"
+                        IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
+                        Click="SignInBtn_Click"
+                        />
+            </Grid>
+
+        </StackPanel>
     </StackPanel>
 </Page>
