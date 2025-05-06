@@ -37,7 +37,6 @@
                                  ValidatesOnDataErrors="True" NotifyOnValidationError="True">
                             <Binding.ValidationRules>
                                 <utils:NotEmptyValidationRule/>
-                                <utils:MinLengthValidationRule/>
                             </Binding.ValidationRules>
                         </Binding>
                     </TextBox.Text>
