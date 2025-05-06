@@ -116,7 +116,11 @@ namespace HR.Pages
                 passwordBinding.UpdateSource();
             }
 
-            // Сброс "Touched"
+            // Errors reset
+            HR.Utilities.ValidationHelper.SetShowErrors(LoginTxb, true);
+            HR.Utilities.ValidationHelper.SetShowErrors(PasswordPwb, true);
+
+            // Touched reset
             HR.Utilities.ValidationHelper.SetTouched(LoginTxb, false);
             HR.Utilities.ValidationHelper.SetTouched(PasswordPwb, false);
         }
@@ -130,6 +134,36 @@ namespace HR.Pages
         }
         private async void SignInBtn_Click(object sender, RoutedEventArgs e)
         {
+            // 0. Синхронизируем Password свойство с PasswordBox
+            Password = PasswordPwb.Password;
+
+            // 1. Принудительно показываем ошибки (эмулируем "Touched" и "ShowErrors")
+            HR.Utilities.ValidationHelper.SetShowErrors(LoginTxb, true);
+            HR.Utilities.ValidationHelper.SetShowErrors(PasswordPwb, true);
+            HR.Utilities.ValidationHelper.SetTouched(LoginTxb, true);
+            HR.Utilities.ValidationHelper.SetTouched(PasswordPwb, true);
+            HR.Utilities.ValidationHelper.SetErrorTextBlockVisibility(LoginTxb, Visibility.Visible);
+            HR.Utilities.ValidationHelper.SetErrorTextBlockVisibility(PasswordPwb, Visibility.Visible);
+
+            // 2. Принудительно обновляем биндинги (если вдруг не обновились)
+            var loginBinding = LoginTxb.GetBindingExpression(TextBox.TextProperty);
+            loginBinding?.UpdateSource();
+
+            // ЯВНО вызываем ValidatePassword, чтобы ошибка обновилась
+            ValidatePassword();
+
+            // 3. Проверяем наличие ошибок
+            bool hasLoginError = Validation.GetHasError(LoginTxb);
+            bool hasPasswordError = Validation.GetHasError(PasswordPwb);
+            var errors = Validation.GetErrors(PasswordPwb);
+
+            if (hasLoginError || hasPasswordError)
+            {
+                MessageBox.Show("Пожалуйста, исправьте ошибки в форме.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // 4. Если ошибок нет - выполняем вход
             IsInProgress = true;
             int? uid = await SignIn();
             IsInProgress = false;

@@ -58,6 +58,7 @@ namespace HR.Utilities
     }
     public static class ValidationHelper
     {
+        // Автоматическое управление видимостью ошибок (автоматически скрывать/показывать при фокусе)
         public static readonly DependencyProperty AutoErrorVisibilityProperty =
             DependencyProperty.RegisterAttached(
                 "AutoErrorVisibility",
@@ -84,16 +85,30 @@ namespace HR.Utilities
                 }
             }
         }
+
+        // Управление ручным показом ошибок (используется в шаблоне ошибки)
+        public static readonly DependencyProperty ShowErrorsProperty =
+            DependencyProperty.RegisterAttached(
+                "ShowErrors",
+                typeof(bool),
+                typeof(ValidationHelper),
+                new PropertyMetadata(false));
+
+        public static bool GetShowErrors(DependencyObject obj) => (bool)obj.GetValue(ShowErrorsProperty);
+        public static void SetShowErrors(DependencyObject obj, bool value) => obj.SetValue(ShowErrorsProperty, value);
+
+        // Флаг "Touched" - был ли пользователь в поле (для UX-дружественной валидации)
         public static readonly DependencyProperty TouchedProperty =
-        DependencyProperty.RegisterAttached(
-            "Touched",
-            typeof(bool),
-            typeof(ValidationHelper),
-            new PropertyMetadata(false));
+            DependencyProperty.RegisterAttached(
+                "Touched",
+                typeof(bool),
+                typeof(ValidationHelper),
+                new PropertyMetadata(false));
 
         public static bool GetTouched(DependencyObject obj) => (bool)obj.GetValue(TouchedProperty);
         public static void SetTouched(DependencyObject obj, bool value) => obj.SetValue(TouchedProperty, value);
 
+        // Включение трекинга "Touched" (автоматически ставит Touched=true при первом выходе из поля)
         public static readonly DependencyProperty EnableTouchedTrackingProperty =
             DependencyProperty.RegisterAttached(
                 "EnableTouchedTracking",
@@ -109,25 +124,39 @@ namespace HR.Utilities
             if (d is UIElement element)
             {
                 if ((bool)e.NewValue)
-                    element.LostFocus += Element_LostFocus;
+                    element.LostFocus += Element_LostFocus_Touched;
                 else
-                    element.LostFocus -= Element_LostFocus;
+                    element.LostFocus -= Element_LostFocus_Touched;
             }
         }
 
+        // --- Обработчики событий ---
+
         private static void Element_GotFocus(object sender, RoutedEventArgs e)
         {
+            SetShowErrors(sender as DependencyObject, false);
+            // Если нужно, можно скрывать ошибку при фокусе
             SetErrorTextBlockVisibility(sender as UIElement, Visibility.Collapsed);
         }
 
         private static void Element_LostFocus(object sender, RoutedEventArgs e)
         {
+            SetShowErrors(sender as DependencyObject, true);
             SetErrorTextBlockVisibility(sender as UIElement, Visibility.Visible);
+
             if (sender is DependencyObject d)
                 SetTouched(d, true);
         }
 
-        private static void SetErrorTextBlockVisibility(UIElement element, Visibility visibility)
+        private static void Element_LostFocus_Touched(object sender, RoutedEventArgs e)
+        {
+            if (sender is DependencyObject d)
+                SetTouched(d, true);
+        }
+
+        // --- Вспомогательные методы для ручного управления видимостью сообщения об ошибке ---
+
+        public static void SetErrorTextBlockVisibility(UIElement element, Visibility visibility)
         {
             if (element == null) return;
 
@@ -158,6 +187,13 @@ namespace HR.Utilities
                     return result;
             }
             return null;
+        }
+
+        // --- Утилита для сброса "Touched" (например, после Reset) ---
+        public static void ResetTouched(params UIElement[] elements)
+        {
+            foreach (var el in elements)
+                SetTouched(el, false);
         }
     }
 

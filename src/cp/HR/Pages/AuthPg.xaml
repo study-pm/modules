@@ -72,6 +72,10 @@
                         />
             </Grid>
 
+            <TextBlock Style="{StaticResource Paragraph}">
+                Нет учетной записи? Вы можете <Hyperlink>зарегистрироваться</Hyperlink>.
+            </TextBlock>
+
         </StackPanel>
     </StackPanel>
 </Page>
