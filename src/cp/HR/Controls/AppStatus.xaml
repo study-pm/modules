@@ -12,6 +12,7 @@
             <Setter Property="Background" Value="#2f2f2f"/>
         </Style>
         <Style TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource Roboto}"/>
             <Setter Property="Margin" Value="5 0"/>
         </Style>
         <Style TargetType="Viewbox">
