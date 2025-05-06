@@ -81,6 +81,7 @@ namespace HR.Controls
         }
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            if (MainWindow.frame == null) return;
             MainWindow.frame.Navigated += Nav_Navigated;
         }
         private void Nav_Navigated(object sender, NavigationEventArgs e)
