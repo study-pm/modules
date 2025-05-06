@@ -24,11 +24,13 @@
             </Grid.ColumnDefinitions>
             <StackPanel Background="White" Style="{StaticResource Panel}"></StackPanel>
             <GridSplitter Width="5"></GridSplitter>
-            <Border Grid.Column="2" Style="{StaticResource RoundedShadowBorder}" Padding="30" Margin="30 0">
-                <Frame x:Name="mainFrame" Source="Pages/HomePg.xaml" NavigationUIVisibility="Hidden"
-                   Style="{StaticResource MainFrameStyle}"
-            />
-            </Border>
+            <Grid Grid.Column="2" Margin="30 0">
+                <Border Style="{StaticResource RoundedShadowBorder}" Padding="30" />
+                <Border CornerRadius="5" Background="White" Padding="30">
+                    <Frame x:Name="mainFrame" Source="Pages/HomePg.xaml" NavigationUIVisibility="Hidden"
+                       Style="{StaticResource MainFrameStyle}"/>
+                </Border>
+            </Grid>
             <GridSplitter Grid.Column="3" Width="5" ResizeBehavior="PreviousAndNext"></GridSplitter>
             <StackPanel Grid.Column="4" Background="White" Style="{StaticResource Panel}"></StackPanel>
         </Grid>
