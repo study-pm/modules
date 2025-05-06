@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using HR.Utilities;
 
 namespace HR.Controls
@@ -66,6 +68,8 @@ namespace HR.Controls
                 OnPropertyChanged(nameof(Status));
                 Timestamp = DateTime.Now;
                 OnPropertyChanged(nameof(Timestamp));
+                if (value == StatusType.Progress) StartAnimation();
+                else StopAnimation();
             }
         }
         public AppStatus()
@@ -78,5 +82,34 @@ namespace HR.Controls
                 Status = args.Type;
             };
         }
+        private DispatcherTimer _animTimer;
+        private int _animStep = 0;
+
+        private void StartAnimation()
+        {
+            Prosess1.Visibility = Visibility.Visible;
+            _animTimer = new DispatcherTimer();
+            _animTimer.Interval = TimeSpan.FromMilliseconds(500); // скорость анимации
+            _animTimer.Tick += AnimTimer_Tick;
+            _animTimer.Start();
+        }
+
+        private void AnimTimer_Tick(object sender, EventArgs e)
+        {
+            _animStep = (_animStep + 1) % 3;
+            Prosess1.Visibility = _animStep == 0 ? Visibility.Visible : Visibility.Collapsed;
+            Prosess2.Visibility = _animStep == 1 ? Visibility.Visible : Visibility.Collapsed;
+            Prosess3.Visibility = _animStep == 2 ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        // Если нужно остановить анимацию:
+        private void StopAnimation()
+        {
+            _animTimer?.Stop();
+            Prosess1.Visibility = Visibility.Collapsed;
+            Prosess2.Visibility = Visibility.Collapsed;
+            Prosess3.Visibility = Visibility.Collapsed;
+        }
+
     }
 }
