@@ -165,8 +165,11 @@ namespace HR.Pages
 
             // 4. Если ошибок нет - выполняем вход
             IsInProgress = true;
+            StatusInformer.ReportProgress("Загрузка данных...");
             int? uid = await SignIn();
             IsInProgress = false;
+            if (uid == null) StatusInformer.ReportWarning("Пользователь не обнаружен");
+            else StatusInformer.ReportSuccess("Успешный вход в систему");
         }
         private void ResetBtn_Click(object sender, RoutedEventArgs e)
         {
