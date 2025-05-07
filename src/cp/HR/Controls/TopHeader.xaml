@@ -73,7 +73,7 @@
                     <MenuItem Header="П_ользователь" Style="{StaticResource MainMenuItem}"
                               IsChecked="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource CheckedConverter}, ConverterParameter='AuthPg'}"
                               >
-                        <MenuItem x:Name="SignInItem" Header="_Вход" Style="{StaticResource SubMenuItemStyle}" Click="SignInItem_Click" />
+                        <MenuItem x:Name="SignInItem" Header="В_ход" Style="{StaticResource SubMenuItemStyle}" Click="SignInItem_Click" />
                         <MenuItem x:Name="SignOnItem" Header="_Регистрация" Style="{StaticResource SubMenuItemStyle}" Click="SignOnItem_Click" />
                     </MenuItem>
                 </Menu>
