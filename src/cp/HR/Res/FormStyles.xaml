@@ -80,6 +80,13 @@
                             </MultiTrigger.Conditions>
                             <Setter Property="Background" Value="#e0f9d2"/>
                         </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsFocused" Value="True"/>
+                                <Condition Property="util:ValidationHelper.Touched" Value="False"/>
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Background" Value="{StaticResource baseBackgroundBrush}"/>
+                        </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
@@ -130,7 +137,7 @@
                                 <Condition Property="util:ValidationHelper.Touched" Value="True"/>
                             </MultiTrigger.Conditions>
                             <Setter Property="BorderBrush" Value="Red"/>
-                            <Setter Property="BorderThickness" Value="2"/>
+                            <Setter Property="BorderThickness" Value="1"/>
                         </MultiTrigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
@@ -138,6 +145,13 @@
                                 <Condition Property="IsFocused" Value="True"/>
                             </MultiTrigger.Conditions>
                             <Setter Property="Background" Value="#e0f9d2"/>
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsFocused" Value="True"/>
+                                <Condition Property="util:ValidationHelper.Touched" Value="False"/>
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Background" Value="{StaticResource baseBackgroundBrush}"/>
                         </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
