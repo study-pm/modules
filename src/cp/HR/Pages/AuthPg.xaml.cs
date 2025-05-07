@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -142,24 +143,32 @@ namespace HR.Pages
             HR.Utilities.ValidationHelper.SetShowErrors(PasswordPwb, true);
             HR.Utilities.ValidationHelper.SetTouched(LoginTxb, true);
             HR.Utilities.ValidationHelper.SetTouched(PasswordPwb, true);
-            HR.Utilities.ValidationHelper.SetErrorTextBlockVisibility(LoginTxb, Visibility.Visible);
-            HR.Utilities.ValidationHelper.SetErrorTextBlockVisibility(PasswordPwb, Visibility.Visible);
 
             // 2. Принудительно обновляем биндинги (если вдруг не обновились)
-            var loginBinding = LoginTxb.GetBindingExpression(TextBox.TextProperty);
-            loginBinding?.UpdateSource();
-
+            ValidationHelper.ForceValidate(LoginTxb, TextBox.TextProperty);
+            // ValidationHelper.ForceValidate(PasswordPwb, PasswordBox.TagProperty); -- это не делаем, т.к. Password валидируется отдельно
             // ЯВНО вызываем ValidatePassword, чтобы ошибка обновилась
             ValidatePassword();
 
             // 3. Проверяем наличие ошибок
             bool hasLoginError = Validation.GetHasError(LoginTxb);
             bool hasPasswordError = Validation.GetHasError(PasswordPwb);
-            var errors = Validation.GetErrors(PasswordPwb);
+
+            // Принудительно обновляем UI в случае ошибок
+            if (hasLoginError)
+            {
+                LoginTxb.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.Render);
+                HR.Utilities.ValidationHelper.SetErrorTextBlockVisibility(LoginTxb, Visibility.Visible);
+            }
+            if (hasPasswordError)
+            {
+                PasswordPwb.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.Render);
+                HR.Utilities.ValidationHelper.SetErrorTextBlockVisibility(PasswordPwb, Visibility.Visible);
+            }
 
             if (hasLoginError || hasPasswordError)
             {
-                MessageBox.Show("Пожалуйста, исправьте ошибки в форме.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Пожалуйста, исправьте ошибки в форме.", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
