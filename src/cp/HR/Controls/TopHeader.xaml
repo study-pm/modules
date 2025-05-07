@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:HR.Controls"
+             xmlns:utils="clr-namespace:HR.Utilities"
              mc:Ignorable="d"
              d:DesignHeight="100" d:DesignWidth="1080">
     <UserControl.Resources>
@@ -11,8 +12,8 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Res/TopMenuStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <local:PageToIsCheckedConverter x:Key="CheckedConverter" />
-            <local:PageToIsEnabledConverter x:Key="EnabledConverter" />
+            <utils:PageToIsCheckedConverter x:Key="CheckedConverter" />
+            <utils:PageToIsEnabledConverter x:Key="EnabledConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
     <Border CornerRadius="5">
@@ -34,15 +35,15 @@
             </StackPanel>
             <WrapPanel MinHeight="50">
                 <Menu Margin="30">
-                    <MenuItem x:Name="HomeItem" Header="_Главная" Style="{StaticResource MainMenuItem}"
+                    <MenuItem x:Name="HomeItem" Header="_Главная"
                               IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=HomePg}"
                               Click="HomeItem_Click" />
-                    <MenuItem Header="_Сотрудники" Style="{StaticResource MainMenuItem}">
+                    <MenuItem Header="_Сотрудники">
                         <MenuItem Header="_Руководство" Style="{StaticResource SubMenuItemStyle}" />
                         <MenuItem Header="_Педагогический состав" Style="{StaticResource SubMenuItemStyle}" />
                         <MenuItem Header="_Внешние совместители" Style="{StaticResource SubMenuItemStyle}" />
                     </MenuItem>
-                    <MenuItem Header="_Подразделения" Style="{StaticResource MainMenuItem}">
+                    <MenuItem Header="_Подразделения">
                         <MenuItem Header="_Администрация" Style="{StaticResource SubMenuItemStyle}" />
                         <MenuItem Header="МО _начальных классов" Style="{StaticResource SubMenuItemStyle}" />
                         <MenuItem Header="МО _математики и информатики" Style="{StaticResource SubMenuItemStyle}" />
@@ -58,19 +59,19 @@
                         <MenuItem Header="_Воспитатели группы продленного дня" Style="{StaticResource SubMenuItemStyle}" />
                         <MenuItem Header="Медиа_тека" Style="{StaticResource SubMenuItemStyle}" />
                     </MenuItem>
-                    <MenuItem Header="_Учебная работа" Style="{StaticResource MainMenuItem}">
+                    <MenuItem Header="_Учебная работа">
                         <MenuItem Header="_Предметы" Style="{StaticResource SubMenuItemStyle}" />
                         <MenuItem Header="П_реподаватели" Style="{StaticResource SubMenuItemStyle}" />
                     </MenuItem>
-                    <MenuItem Header="_Воспитательная работа" Style="{StaticResource MainMenuItem}">
+                    <MenuItem Header="_Воспитательная работа">
                         <MenuItem Header="_Классы" Style="{StaticResource SubMenuItemStyle}" />
                         <MenuItem Header="Классные _руководители" Style="{StaticResource SubMenuItemStyle}" />
                     </MenuItem>
-                    <MenuItem Header="_Дополнительное образование" Style="{StaticResource MainMenuItem}">
+                    <MenuItem Header="_Дополнительное образование">
                         <MenuItem Header="_Педагоги ОДОД" Style="{StaticResource SubMenuItemStyle}" />
                         <MenuItem Header="_Кружки и секции" Style="{StaticResource SubMenuItemStyle}" />
                     </MenuItem>
-                    <MenuItem Header="П_ользователь" Style="{StaticResource MainMenuItem}"
+                    <MenuItem Header="П_ользователь"
                               IsChecked="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource CheckedConverter}, ConverterParameter='AuthPg'}"
                               >
                         <MenuItem x:Name="SignInItem" Header="В_ход" Style="{StaticResource SubMenuItemStyle}" Click="SignInItem_Click" />

@@ -45,5 +45,49 @@ namespace HR.Utilities
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
             => throw new NotImplementedException();
     }
+    public class PageToIsEnabledConverter : IValueConverter
+    {
+        // value - имя текущей страницы (string)
+        // parameter - имя страницы для пункта меню (string)
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            string currentPage = value as string;
+            string menuPage = parameter as string;
+
+            if (string.IsNullOrEmpty(currentPage) || string.IsNullOrEmpty(menuPage))
+                return true; // пункт меню доступен по умолчанию
+
+            // Если текущая страница совпадает с пунктом меню - пункт не доступен (IsEnabled = false)
+            return !string.Equals(currentPage, menuPage, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+    public class PageToIsCheckedConverter : IValueConverter
+    {
+        // value - текущая страница (string)
+        // parameter - строка с перечнем страниц, связанных с пунктом меню, разделенных запятыми
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            string currentPage = value as string;
+            string pagesParam = parameter as string;
+
+            if (string.IsNullOrEmpty(currentPage) || string.IsNullOrEmpty(pagesParam))
+                return true;
+
+            var pages = pagesParam.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                                  .Select(p => p.Trim());
+
+            return pages.Contains(currentPage, StringComparer.OrdinalIgnoreCase);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 
 }
