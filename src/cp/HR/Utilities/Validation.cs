@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Media;
@@ -121,17 +122,21 @@ namespace HR.Utilities
 
         private static void OnEnableTouchedTrackingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is UIElement element)
+            if (!(d is UIElement element)) return;
+
+            if ((bool)e.NewValue)
             {
-                if ((bool)e.NewValue)
-                    element.LostFocus += Element_LostFocus_Touched;
-                else
-                    element.LostFocus -= Element_LostFocus_Touched;
+                if (element is TextBox tb) tb.TextChanged += Element_TextInput;
+                else if (element is PasswordBox pb) pb.PasswordChanged += Element_TextInput;
+            }
+            else
+            {
+                if (element is TextBox tb) tb.TextChanged += Element_TextInput;
+                else if (element is PasswordBox pb) pb.PasswordChanged += Element_TextInput;
             }
         }
 
-        // --- Обработчики событий ---
-
+        // --- Event handlers --- //
         private static void Element_GotFocus(object sender, RoutedEventArgs e)
         {
             SetShowErrors(sender as DependencyObject, false);
@@ -143,19 +148,39 @@ namespace HR.Utilities
         {
             SetShowErrors(sender as DependencyObject, true);
             SetErrorTextBlockVisibility(sender as UIElement, Visibility.Visible);
-
-            if (sender is DependencyObject d)
-                SetTouched(d, true);
         }
-
-        private static void Element_LostFocus_Touched(object sender, RoutedEventArgs e)
+        private static void Element_TextInput(object sender, RoutedEventArgs e)
         {
             if (sender is DependencyObject d)
                 SetTouched(d, true);
         }
 
-        // --- Вспомогательные методы для ручного управления видимостью сообщения об ошибке ---
+        // --- Utility methods for manual elements management --- //
+        private static TextBlock FindTextBlock(DependencyObject parent)
+        {
+            if (parent == null) return null;
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+                if (child is TextBlock tb)
+                    return tb;
+                var result = FindTextBlock(child);
+                if (result != null)
+                    return result;
+            }
+            return null;
+        }
+        public static void ForceValidate(FrameworkElement element, DependencyProperty property)
+        {
+            var binding = element.GetBindingExpression(property);
+            binding?.UpdateSource();
+        }
 
+        public static void ResetTouched(params UIElement[] elements)
+        {
+            foreach (var el in elements)
+                SetTouched(el, false);
+        }
         public static void SetErrorTextBlockVisibility(UIElement element, Visibility visibility)
         {
             if (element == null) return;
@@ -172,28 +197,6 @@ namespace HR.Utilities
                 if (textBlock != null)
                     textBlock.Visibility = visibility;
             }
-        }
-
-        private static TextBlock FindTextBlock(DependencyObject parent)
-        {
-            if (parent == null) return null;
-            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
-            {
-                var child = VisualTreeHelper.GetChild(parent, i);
-                if (child is TextBlock tb)
-                    return tb;
-                var result = FindTextBlock(child);
-                if (result != null)
-                    return result;
-            }
-            return null;
-        }
-
-        // --- Утилита для сброса "Touched" (например, после Reset) ---
-        public static void ResetTouched(params UIElement[] elements)
-        {
-            foreach (var el in elements)
-                SetTouched(el, false);
         }
     }
 
