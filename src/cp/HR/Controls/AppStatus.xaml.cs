@@ -97,9 +97,9 @@ namespace HR.Controls
         private void AnimTimer_Tick(object sender, EventArgs e)
         {
             _animStep = (_animStep + 1) % 3;
-            Prosess1.Visibility = _animStep == 0 ? Visibility.Visible : Visibility.Collapsed;
-            Prosess2.Visibility = _animStep == 1 ? Visibility.Visible : Visibility.Collapsed;
-            Prosess3.Visibility = _animStep == 2 ? Visibility.Visible : Visibility.Collapsed;
+            Prosess2.Visibility = _animStep == 0 ? Visibility.Visible : Visibility.Collapsed;
+            Prosess3.Visibility = _animStep == 1 ? Visibility.Visible : Visibility.Collapsed;
+            Prosess1.Visibility = _animStep == 2 ? Visibility.Visible : Visibility.Collapsed;
         }
 
         // Если нужно остановить анимацию:
