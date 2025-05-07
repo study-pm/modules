@@ -8,17 +8,19 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="HomePg">
 
-    <StackPanel>
-        <TextBlock Style="{StaticResource Paragraph}">
+    <ScrollViewer Style="{StaticResource MainView}">
+        <StackPanel>
+            <TextBlock Style="{StaticResource Paragraph}">
             Добро пожаловать в приложение "Моя школа"!
-        </TextBlock>
-        <TextBlock Style="{StaticResource Paragraph}">
+            </TextBlock>
+            <TextBlock Style="{StaticResource Paragraph}">
             Программа позволяет просматривать основную информацию о сотрудниках образовательного учреждения,
             структурных подразделениях, должностях, учебных предметах, классном руководстве и дополнительном образовании.
-        </TextBlock>
-        <TextBlock Style="{StaticResource Paragraph}">
+            </TextBlock>
+            <TextBlock Style="{StaticResource Paragraph}">
             Зарегистрированные пользователи, в зависимости от уровня доступа, могут редактировать и добавлять информацию,
             а также получают дополнительные возможности, такие как импорт и экспорт данных и многое другое.
-        </TextBlock>
-    </StackPanel>
+            </TextBlock>
+        </StackPanel>
+    </ScrollViewer>
 </Page>

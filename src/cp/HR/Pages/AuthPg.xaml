@@ -15,6 +15,7 @@
         <utils:InverseBooleanConverter x:Key="InvBoolConv"/>
         <utils:NotEmptyValidationRule x:Key="NotEmptyValidationRule"/>
     </Page.Resources>
+    <ScrollViewer Style="{StaticResource MainView}">
     <StackPanel>
 
         <uc:Header HeaderText="Аутентификация"></uc:Header>
@@ -79,4 +80,5 @@
 
         </StackPanel>
     </StackPanel>
+    </ScrollViewer>
 </Page>
