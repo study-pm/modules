@@ -236,6 +236,18 @@
             <TextBlock Foreground="Red" Margin="0,2,0,0" Visibility="Collapsed"
                        Text="{Binding [0].ErrorContent}"
             />
+            <Popup Placement="Bottom"
+                   HorizontalOffset="20"
+                   VerticalOffset="-20"
+                   StaysOpen="False"
+                   AllowsTransparency="True"
+                   IsOpen="False">
+                <Border Background="#80FF2200" Padding="8" CornerRadius="4" >
+                    <TextBlock Foreground="White" FontSize="12"
+                               Text="{Binding [0].ErrorContent}"
+                               />
+                </Border>
+            </Popup>
         </StackPanel>
     </ControlTemplate>
 </ResourceDictionary>

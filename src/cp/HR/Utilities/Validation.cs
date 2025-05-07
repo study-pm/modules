@@ -198,6 +198,37 @@ namespace HR.Utilities
                     textBlock.Visibility = visibility;
             }
         }
+        public static void OpenPopup(UIElement element)
+        {
+            if (element == null) return;
+
+            var adornerLayer = AdornerLayer.GetAdornerLayer(element);
+            if (adornerLayer == null) return;
+
+            var adorners = adornerLayer.GetAdorners(element);
+            if (adorners == null) return;
+
+            foreach (var adorner in adorners)
+            {
+                var popup = FindPopup(adorner);
+                if (popup != null)
+                    popup.IsOpen = true;
+            }
+        }
+        private static Popup FindPopup(DependencyObject parent)
+        {
+            if (parent == null) return null;
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+                if (child is Popup popup)
+                    return popup;
+                var result = FindPopup(child);
+                if (result != null)
+                    return result;
+            }
+            return null;
+        }
     }
 
 }
