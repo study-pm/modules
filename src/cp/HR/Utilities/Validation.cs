@@ -229,6 +229,29 @@ namespace HR.Utilities
             }
             return null;
         }
+        public static void ValidatePassword(PasswordBox passwordBox, string password, int minLength = 8)
+        {
+            if (passwordBox == null) throw new ArgumentNullException(nameof(passwordBox));
+
+            var rule = new PasswordLengthValidationRule { MinLength = minLength };
+            var result = rule.Validate(password, CultureInfo.CurrentCulture);
+
+            var bindingExpression = passwordBox.GetBindingExpression(PasswordBox.TagProperty);
+            if (bindingExpression == null) return;
+
+            if (result.IsValid)
+            {
+                Validation.ClearInvalid(bindingExpression);
+            }
+            else
+            {
+                var validationError = new ValidationError(rule, bindingExpression)
+                {
+                    ErrorContent = result.ErrorContent
+                };
+                Validation.MarkInvalid(bindingExpression, validationError);
+            }
+        }
     }
 
 }
