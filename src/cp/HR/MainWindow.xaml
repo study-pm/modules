@@ -14,25 +14,35 @@
     <DockPanel>
         <uc:TopHeader DockPanel.Dock="Top" />
         <uc:AppStatus DockPanel.Dock="Bottom" />
-        <Grid Margin="30" MaxWidth="1920">
+        <Grid x:Name="MainLayoutContainer" Margin="0 30" MaxWidth="1920">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition MinWidth="200" Width="250"></ColumnDefinition>
+                <ColumnDefinition MaxWidth="400" Width="300"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="*" MinWidth="400" MaxWidth="1440"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
-                <ColumnDefinition MinWidth="150" Width="250"></ColumnDefinition>
+                <ColumnDefinition MaxWidth="400" Width="300"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <StackPanel Style="{StaticResource Panel}"></StackPanel>
-            <GridSplitter Grid.Column="1" Width="5" ResizeBehavior="PreviousAndNext"></GridSplitter>
-            <Grid Grid.Column="2" Margin="30 0">
-                <Border Style="{StaticResource RoundedShadowBorder}" Padding="30" />
-                <Border CornerRadius="5" Background="White" Padding="5">
-                    <Frame x:Name="mainFrame" Source="Pages/HomePg.xaml" NavigationUIVisibility="Hidden"
-                       Style="{StaticResource MainFrameStyle}"/>
+            <Grid x:Name="LeftAside" Grid.Column="0" Margin="30 0">
+                <Border Style="{StaticResource RoundedShadowBorder}" />
+                <Border Style="{StaticResource RoundedBorder}">
+                    <StackPanel Style="{StaticResource Panel}"></StackPanel>
                 </Border>
             </Grid>
-            <GridSplitter Grid.Column="3" Width="5" ResizeBehavior="PreviousAndNext"></GridSplitter>
-            <uc:AsideRight Grid.Column="4" />
+            <GridSplitter x:Name="LeftSplitter" Grid.Column="1" />
+            <Grid x:Name="Main" Grid.Column="2" Margin="0">
+                <Border Style="{StaticResource RoundedShadowBorder}" />
+                <Border Style="{StaticResource RoundedBorder}">
+                    <Frame x:Name="mainFrame" Source="Pages/HomePg.xaml" NavigationUIVisibility="Hidden"
+                           Style="{StaticResource MainFrameStyle}"/>
+                </Border>
+            </Grid>
+            <GridSplitter x:Name="RightSplitter" Grid.Column="3"></GridSplitter>
+            <Grid x:Name="RightAside" Grid.Column="4" Margin="30 0">
+                <Border Style="{StaticResource RoundedShadowBorder}" />
+                <Border Style="{StaticResource RoundedBorder}">
+                    <uc:AsideRight />
+                </Border>
+            </Grid>
         </Grid>
     </DockPanel>
 </Window>

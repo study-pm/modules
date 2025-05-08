@@ -60,13 +60,29 @@
         <Setter Property="Margin" Value="0 10" />
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
+    <Style TargetType="GridSplitter">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="ResizeBehavior" Value="PreviousAndNext"/>
+        <Setter Property="Width" Value="5"/>
+        <Style.Triggers>
+            <Trigger Property="IsDragging" Value="True">
+                <Setter Property="Background" Value="#40000000"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
     <Style x:Key="RoundedShadowBorder" TargetType="Border">
         <Setter Property="Background" Value="White"/>
         <Setter Property="CornerRadius" Value="5"/>
+        <Setter Property="Padding" Value="30"/>
         <Setter Property="Effect">
             <Setter.Value>
                 <DropShadowEffect Color="#264d7f7f" Direction="270" ShadowDepth="5" BlurRadius="10" Opacity="0.15"/>
             </Setter.Value>
         </Setter>
+    </Style>
+    <Style x:Key="RoundedBorder" TargetType="Border">
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="CornerRadius" Value="5"/>
+        <Setter Property="Padding" Value="5"/>
     </Style>
 </ResourceDictionary>
