@@ -85,4 +85,67 @@
         <Setter Property="CornerRadius" Value="5"/>
         <Setter Property="Padding" Value="5"/>
     </Style>
+
+    <!-- Apple-style Thumb -->
+    <Style x:Key="AppleScrollThumb" TargetType="Thumb">
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Thumb">
+                    <Border x:Name="ThumbBorder"
+                        CornerRadius="2"
+                        Background="#29000000"
+                        SnapsToDevicePixels="True"/>
+                        <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ThumbBorder" Property="Background" Value="#59000000"/>
+                            </Trigger>
+                            <Trigger Property="IsDragging" Value="True">
+                            <Setter TargetName="ThumbBorder" Property="Background" Value="#7F000000"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <!-- Apple-style ScrollBar -->
+    <Style TargetType="ScrollBar">
+        <Setter Property="Width" Value="8"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ScrollBar">
+                    <Grid Width="5" Background="Transparent">
+                        <!-- Добавляем полосу с прозрачностью 25% -->
+                        <Border Background="#10000000" CornerRadius="2" />
+                        <Track x:Name="PART_Track" IsDirectionReversed="true" Focusable="false">
+                            <Track.Thumb>
+                                <Thumb Style="{StaticResource AppleScrollThumb}" />
+                            </Track.Thumb>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton Opacity="0" IsTabStop="False"/>
+                            </Track.IncreaseRepeatButton>
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton Opacity="0" IsTabStop="False"/>
+                            </Track.DecreaseRepeatButton>
+                        </Track>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="PART_Track" Property="Visibility" Value="Collapsed"/>
+                        </Trigger>
+                        <Trigger Property="Orientation" Value="Horizontal">
+                            <Setter Property="Width" Value="Auto"/>
+                            <Setter Property="Height" Value="8"/>
+                            <Setter TargetName="PART_Track" Property="LayoutTransform">
+                                <Setter.Value>
+                                    <RotateTransform Angle="-90"/>
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>
