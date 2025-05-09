@@ -61,6 +61,9 @@
     <Compile Include="Controls\AsideRight.xaml.cs">
       <DependentUpon>AsideRight.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\IconHighlightButton.xaml.cs">
+      <DependentUpon>IconHighlightButton.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\TopHeader.xaml.cs">
       <DependentUpon>TopHeader.xaml</DependentUpon>
     </Compile>
@@ -80,6 +83,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\Header.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\IconHighlightButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
