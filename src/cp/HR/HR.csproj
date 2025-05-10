@@ -58,6 +58,9 @@
     <Compile Include="Controls\AppStatus.xaml.cs">
       <DependentUpon>AppStatus.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\AsideLeft.xaml.cs">
+      <DependentUpon>AsideLeft.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\AsideRight.xaml.cs">
       <DependentUpon>AsideRight.xaml</DependentUpon>
     </Compile>
@@ -67,6 +70,9 @@
     <Compile Include="Controls\TopHeader.xaml.cs">
       <DependentUpon>TopHeader.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\StaffPg.xaml.cs">
+      <DependentUpon>StaffPg.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SplashWindow.xaml.cs">
       <DependentUpon>SplashWindow.xaml</DependentUpon>
     </Compile>
@@ -75,6 +81,10 @@
     <Compile Include="Utilities\Utils.cs" />
     <Compile Include="Utilities\Validation.cs" />
     <Page Include="Controls\AppStatus.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\AsideLeft.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -114,6 +124,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\HomePg.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\StaffPg.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
