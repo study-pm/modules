@@ -8,11 +8,17 @@
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="StaffPg">
-
     <ScrollViewer Style="{StaticResource MainView}">
         <StackPanel>
-
             <uc:Header HeaderText="Сотрудники"></uc:Header>
+            <TextBlock Style="{StaticResource Paragraph}">
+                Данный раздел содержит информацию о сотрудниках по категориям в соответствии с
+                видами профессиональной деятельности и степенью участия в образовательном процессе.
+            </TextBlock>
+            <Button Style="{StaticResource MenuBtn}">Руководство</Button>
+            <Button Style="{StaticResource MenuBtn}">Учителя</Button>
+            <Button Style="{StaticResource MenuBtn}">Педагоги</Button>
+            <Button Style="{StaticResource MenuBtn}">Вспомогательный персонал</Button>
         </StackPanel>
     </ScrollViewer>
 </Page>
