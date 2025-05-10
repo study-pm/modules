@@ -86,7 +86,7 @@
 
             <TextBlock Style="{StaticResource Paragraph}" Margin="0 20 0 0">
                 Нет учетной записи? Вы можете
-                <Hyperlink NavigateUri="HomePg.xaml"><Bold>зарегистрироваться</Bold></Hyperlink>.
+                <Hyperlink NavigateUri="RegisterPg.xaml"><Bold>зарегистрироваться</Bold></Hyperlink>.
             </TextBlock>
 
         </StackPanel>

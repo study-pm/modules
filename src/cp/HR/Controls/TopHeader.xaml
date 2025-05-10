@@ -53,8 +53,9 @@
                               CommandTarget="{Binding ElementName=mainFrame}"
                               >
                         <MenuItem Header="_Руководство" Style="{StaticResource SubMenuItemStyle}" />
-                        <MenuItem Header="_Педагогический состав" Style="{StaticResource SubMenuItemStyle}" />
-                        <MenuItem Header="_Внешние совместители" Style="{StaticResource SubMenuItemStyle}" />
+                        <MenuItem Header="_Учителя" Style="{StaticResource SubMenuItemStyle}" />
+                        <MenuItem Header="П_едагоги" Style="{StaticResource SubMenuItemStyle}" />
+                        <MenuItem Header="Вспо_могательный персонал" Style="{StaticResource SubMenuItemStyle}" />
                     </MenuItem>
                     <MenuItem Header="_Подразделения">
                         <MenuItem Header="_Администрация" Style="{StaticResource SubMenuItemStyle}" />
