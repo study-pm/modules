@@ -58,6 +58,7 @@
     <Compile Include="Controls\AppStatus.xaml.cs">
       <DependentUpon>AppStatus.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\NavCtl.cs" />
     <Compile Include="Controls\AsideLeft.xaml.cs">
       <DependentUpon>AsideLeft.xaml</DependentUpon>
     </Compile>

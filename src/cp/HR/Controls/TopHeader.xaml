@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="HR.Controls.TopHeader"
+﻿<local:NavCtl x:Class="HR.Controls.TopHeader"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -7,7 +7,7 @@
              xmlns:utils="clr-namespace:HR.Utilities"
              mc:Ignorable="d"
              d:DesignHeight="100" d:DesignWidth="1080">
-    <UserControl.Resources>
+    <local:NavCtl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Res/TopMenuStyles.xaml" />
@@ -15,7 +15,7 @@
             <utils:PageToIsCheckedConverter x:Key="CheckedConverter" />
             <utils:PageToIsEnabledConverter x:Key="EnabledConverter" />
         </ResourceDictionary>
-    </UserControl.Resources>
+    </local:NavCtl.Resources>
     <Border CornerRadius="5">
         <Border.Effect>
             <DropShadowEffect Color="#264d7f7f" Direction="270" ShadowDepth="5" BlurRadius="10" Opacity="0.25"/>
@@ -104,4 +104,4 @@
             </WrapPanel>
         </DockPanel>
     </Border>
-</UserControl>
+</local:NavCtl>

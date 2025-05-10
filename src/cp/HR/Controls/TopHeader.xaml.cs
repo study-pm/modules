@@ -20,29 +20,11 @@ namespace HR.Controls
     /// <summary>
     /// Interaction logic for TopHeader.xaml
     /// </summary>
-    public partial class TopHeader : UserControl
+    public partial class TopHeader : NavCtl
     {
-        public static readonly DependencyProperty CurrentPageProperty =
-        DependencyProperty.Register(nameof(CurrentPage), typeof(string), typeof(TopHeader), new PropertyMetadata(null));
-
-        public string CurrentPage
-        {
-            get => (string)GetValue(CurrentPageProperty);
-            set => SetValue(CurrentPageProperty, value);
-        }
         public TopHeader()
         {
             InitializeComponent();
-            Loaded += Page_Loaded;
-        }
-        private void Page_Loaded(object sender, RoutedEventArgs e)
-        {
-            if (MainWindow.frame == null) return;
-            MainWindow.frame.Navigated += Nav_Navigated;
-        }
-        private void Nav_Navigated(object sender, NavigationEventArgs e)
-        {
-            CurrentPage = e.Content.GetType().Name;
         }
         private void HomeItem_Click(object sender, RoutedEventArgs e)
         {

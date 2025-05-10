@@ -19,28 +19,11 @@ namespace HR.Controls
     /// <summary>
     /// Interaction logic for AsideLeft.xaml
     /// </summary>
-    public partial class AsideLeft : UserControl
+    public partial class AsideLeft : NavCtl
     {
-        public static readonly DependencyProperty CurrentPageProperty =
-            DependencyProperty.Register(nameof(CurrentPage), typeof(string), typeof(AsideLeft), new PropertyMetadata(null));
-        public string CurrentPage
-        {
-            get => (string)GetValue(CurrentPageProperty);
-            set => SetValue(CurrentPageProperty, value);
-        }
         public AsideLeft()
         {
             InitializeComponent();
-            Loaded += Page_Loaded;
-        }
-        private void Page_Loaded(object sender, RoutedEventArgs e)
-        {
-            if (MainWindow.frame == null) return;
-            MainWindow.frame.Navigated += Nav_Navigated;
-        }
-        private void Nav_Navigated(object sender, NavigationEventArgs e)
-        {
-            CurrentPage = e.Content.GetType().Name;
         }
     }
 }
