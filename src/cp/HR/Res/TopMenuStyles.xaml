@@ -81,6 +81,7 @@
         </Setter>
     </Style>
     <Style x:Key="SubMenuItemStyle" TargetType="MenuItem">
+        <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Foreground" Value="{StaticResource greyDarkBrush}" />
         <Setter Property="Padding" Value="0 10" />
     </Style>
