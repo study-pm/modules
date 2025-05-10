@@ -40,12 +40,17 @@
             </StackPanel>
             <WrapPanel MinHeight="50">
                 <Menu Margin="30">
-                    <MenuItem x:Name="HomeItem" Header="_Главная"
+                    <MenuItem Header="_Главная"
                               IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=HomePg}"
-                              Click="HomeItem_Click" />
+                              Command="NavigationCommands.GoToPage"
+                              CommandParameter="Pages/HomePg.xaml"
+                              CommandTarget="{Binding ElementName=mainFrame}"
+                              />
                     <MenuItem Header="_Сотрудники"
                               IsChecked="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource CheckedConverter}, ConverterParameter='WorkersPg'}"
-                              Click="WorkersItem_Click"
+                              Command="NavigationCommands.GoToPage"
+                              CommandParameter="Pages/WorkersPg.xaml"
+                              CommandTarget="{Binding ElementName=mainFrame}"
                               >
                         <MenuItem Header="_Руководство" Style="{StaticResource SubMenuItemStyle}" />
                         <MenuItem Header="_Педагогический состав" Style="{StaticResource SubMenuItemStyle}" />
@@ -82,8 +87,18 @@
                     <MenuItem Header="П_ользователь"
                               IsChecked="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource CheckedConverter}, ConverterParameter='AuthPg'}"
                               >
-                        <MenuItem x:Name="SignInItem" Header="В_ход" Style="{StaticResource SubMenuItemStyle}" Click="SignInItem_Click" />
-                        <MenuItem x:Name="SignOnItem" Header="_Регистрация" Style="{StaticResource SubMenuItemStyle}" Click="SignOnItem_Click" />
+                        <MenuItem Header="В_ход"
+                                  Style="{StaticResource SubMenuItemStyle}"
+                                  Command="NavigationCommands.GoToPage"
+                                  CommandParameter="Pages/AuthPg.xaml"
+                                  CommandTarget="{Binding ElementName=mainFrame}"
+                                  />
+                        <MenuItem Header="_Регистрация"
+                                  Style="{StaticResource SubMenuItemStyle}"
+                                  Command="NavigationCommands.GoToPage"
+                                  CommandParameter="Pages/RegisterPg.xaml"
+                                  CommandTarget="{Binding ElementName=mainFrame}"
+                                  />
                     </MenuItem>
                 </Menu>
             </WrapPanel>

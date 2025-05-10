@@ -43,14 +43,5 @@ namespace HR.Controls
         {
             CurrentPage = e.Content.GetType().Name;
         }
-
-        private void SignInItem_Click(object sender, RoutedEventArgs e)
-        {
-            MainWindow.frame.Navigate(new AuthPg());
-        }
-        private void SignOnItem_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Sign On");
-        }
     }
 }

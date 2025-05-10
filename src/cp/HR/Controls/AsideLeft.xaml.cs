@@ -42,10 +42,5 @@ namespace HR.Controls
         {
             CurrentPage = e.Content.GetType().Name;
         }
-
-        private void WorkersItem_Click(object sender, RoutedEventArgs e)
-        {
-            MainWindow.frame.Navigate(new WorkersPg());
-        }
     }
 }

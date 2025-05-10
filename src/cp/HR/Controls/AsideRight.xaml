@@ -18,10 +18,12 @@
     </UserControl.Resources>
     <StackPanel>
         <Menu x:Name="RightMenu" Margin="10" Background="Transparent">
-            <MenuItem x:Name="SignInItem" Header="Вход"
+            <MenuItem Header="Вход"
                       Width="{Binding ElementName=RightMenu,Path=ActualWidth}"
                       IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=AuthPg}"
-                      Click="SignInItem_Click"
+                      Command="NavigationCommands.GoToPage"
+                      CommandParameter="Pages/AuthPg.xaml"
+                      CommandTarget="{Binding ElementName=mainFrame}"
                       >
                 <MenuItem.Icon>
                     <Viewbox Height="16" Width="16" ToolTip="Вход">
@@ -35,10 +37,12 @@
                     </Viewbox>
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem x:Name="SignOnItem" Header="Регистрация"
+            <MenuItem Header="Регистрация"
                       Width="{Binding ElementName=RightMenu,Path=ActualWidth}"
                       IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=RegisterPg}"
-                      Click="SignOnItem_Click"
+                      Command="NavigationCommands.GoToPage"
+                      CommandParameter="Pages/RegisterPg.xaml"
+                      CommandTarget="{Binding ElementName=mainFrame}"
                       >
                 <MenuItem.Icon>
                     <Viewbox Height="16" Width="16" ToolTip="Регистрация">
