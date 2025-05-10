@@ -41,8 +41,26 @@ namespace HR
         }
         private void GoToPage_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            // Можно добавить логику проверки, например, что параметр не пустой
-            e.CanExecute = e.Parameter is string uri && !string.IsNullOrEmpty(uri);
+            e.CanExecute = false;
+
+            if (!(e.Parameter is string uri) || string.IsNullOrEmpty(uri))
+                // Можно добавить логику проверки, например, что параметр не пустой
+                return;
+
+            try
+            {
+                var resourceUri = new Uri($"pack://application:,,,/{uri}", UriKind.Absolute);
+                var streamInfo = Application.GetResourceStream(resourceUri);
+
+                if (streamInfo == null) return;
+
+                e.CanExecute = true;
+            }
+            catch
+            {
+                // Ошибка при формировании URI или получении ресурса - команда недоступна
+                return;
+            }
         }
 
         private void GoToPage_Executed(object sender, ExecutedRoutedEventArgs e)
