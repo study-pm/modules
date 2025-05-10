@@ -44,8 +44,8 @@
                               IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=HomePg}"
                               Click="HomeItem_Click" />
                     <MenuItem Header="_Сотрудники"
-                              IsChecked="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource CheckedConverter}, ConverterParameter='StaffPg'}"
-                              Click="StaffItem_Click"
+                              IsChecked="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource CheckedConverter}, ConverterParameter='WorkersPg'}"
+                              Click="WorkersItem_Click"
                               >
                         <MenuItem Header="_Руководство" Style="{StaticResource SubMenuItemStyle}" />
                         <MenuItem Header="_Педагогический состав" Style="{StaticResource SubMenuItemStyle}" />

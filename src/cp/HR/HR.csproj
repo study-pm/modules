@@ -70,8 +70,8 @@
     <Compile Include="Controls\TopHeader.xaml.cs">
       <DependentUpon>TopHeader.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\StaffPg.xaml.cs">
-      <DependentUpon>StaffPg.xaml</DependentUpon>
+    <Compile Include="Pages\WorkersPg.xaml.cs">
+      <DependentUpon>WorkersPg.xaml</DependentUpon>
     </Compile>
     <Compile Include="SplashWindow.xaml.cs">
       <DependentUpon>SplashWindow.xaml</DependentUpon>
@@ -127,7 +127,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\StaffPg.xaml">
+    <Page Include="Pages\WorkersPg.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

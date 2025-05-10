@@ -59,9 +59,9 @@ namespace HR.Controls
         {
             MainWindow.frame.Navigate(new HomePg());
         }
-        private void StaffItem_Click(object sender, RoutedEventArgs e)
+        private void WorkersItem_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.frame.Navigate(new StaffPg());
+            MainWindow.frame.Navigate(new WorkersPg());
         }
     }
 }

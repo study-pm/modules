@@ -43,9 +43,9 @@ namespace HR.Controls
             CurrentPage = e.Content.GetType().Name;
         }
 
-        private void StaffItem_Click(object sender, RoutedEventArgs e)
+        private void WorkersItem_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.frame.Navigate(new StaffPg());
+            MainWindow.frame.Navigate(new WorkersPg());
         }
     }
 }

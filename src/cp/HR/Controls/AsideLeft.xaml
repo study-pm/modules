@@ -20,8 +20,8 @@
         <Menu x:Name="RightMenu" Margin="10" Background="Transparent">
             <MenuItem x:Name="SignInItem" Header="Сотрудники"
                   Width="{Binding ElementName=RightMenu,Path=ActualWidth}"
-                  IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=StaffPg}"
-                  Click="StaffItem_Click"
+                  IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter='WorkersPg'}"
+                  Click="WorkersItem_Click"
                   >
                 <MenuItem.Icon>
                     <Viewbox Height="16" Width="16" ToolTip="Сотрудники">

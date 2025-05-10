@@ -18,9 +18,9 @@ namespace HR.Pages
     /// <summary>
     /// Interaction logic for StaffPg.xaml
     /// </summary>
-    public partial class StaffPg : Page
+    public partial class WorkersPg : Page
     {
-        public StaffPg()
+        public WorkersPg()
         {
             InitializeComponent();
         }
