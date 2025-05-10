@@ -23,8 +23,8 @@ namespace HR
     public partial class MainWindow : Window
     {
         public static Frame frame {  get; set; }
-        private const double Breakpoint1Width = 1080;
-        private const double Breakpoint2Width = 720;
+        private const double MediumWidth = 1080;
+        private const double NarrowWidth = 720;
         private const double MinimalWidth = 220;
         private const double NormalWidth = 300;
         private const double NormalMargin = 30;
@@ -72,13 +72,13 @@ namespace HR
         }
         private void UpdateVisibility(double width)
         {
-            if (width < Breakpoint2Width)
+            if (width < NarrowWidth)
             {
                 SetLeftSide(false);
                 SetRightSide(false);
                 Main.Margin = new Thickness(NormalMargin, 0, NormalMargin, 0);
             }
-            else if (width < Breakpoint1Width)
+            else if (width < MediumWidth)
             {
                 SetLeftSide(true);
                 SetRightSide(false);
