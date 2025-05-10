@@ -178,7 +178,6 @@
         <Setter Property="FontFamily" Value="{StaticResource Roboto}"/>
         <Setter Property="FontSize" Value="15"/>
         <Setter Property="Foreground" Value="{StaticResource WhiteDarkBrush}" />
-        <Setter Property="Margin" Value="0"/>
         <Setter Property="Padding" Value="5"/>
         <Setter Property="MinHeight" Value="40"/>
         <Setter Property="MinWidth" Value="120"/>
@@ -229,6 +228,9 @@
     </Style>
     <Style x:Key="BlueBtn" TargetType="Button" BasedOn="{StaticResource FormBtn}">
         <Setter Property="Background" Value="{StaticResource BlueBrush}"/>
+    </Style>
+    <Style x:Key="MenuBtn" TargetType="Button" BasedOn="{StaticResource BlueBtn}">
+        <Setter Property="Margin" Value="0 5"/>
     </Style>
     <!-- Шаблон ошибки: сообщение под полем -->
     <ControlTemplate x:Key="ValidationErrorTemplate">
