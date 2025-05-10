@@ -71,9 +71,20 @@
                         IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
                         Click="SignInBtn_Click"
                         />
-            </Grid>
+                    <Popup x:Name="ValidationPopup"
+                           PlacementTarget="{Binding ElementName=RootGrid}" Placement="Center"
+                           VerticalOffset="40"
+                           StaysOpen="False"
+                           AllowsTransparency="True"
+                           IsOpen="False">
+                        <Border Background="#C0FF2200" Padding="8" CornerRadius="5" >
+                            <TextBlock x:Name="ValidationMessage" Foreground="White" FontSize="12"
+                            />
+                        </Border>
+                    </Popup>
+                </Grid>
 
-            <TextBlock Style="{StaticResource Paragraph}">
+            <TextBlock Style="{StaticResource Paragraph}" Margin="0 20 0 0">
                 Нет учетной записи? Вы можете
                 <Hyperlink NavigateUri="HomePg.xaml"><Bold>зарегистрироваться</Bold></Hyperlink>.
             </TextBlock>

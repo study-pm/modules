@@ -168,7 +168,8 @@ namespace HR.Pages
 
             if (hasLoginError || hasPasswordError)
             {
-                MessageBox.Show("Пожалуйста, исправьте ошибки в форме.", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ValidationMessage.Text = "Устраните ошибки в форме";
+                ValidationPopup.IsOpen = true;
                 return;
             }
 
