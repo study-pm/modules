@@ -32,8 +32,25 @@ namespace HR
         {
             InitializeComponent();
             MainWindow.frame = mainFrame;
+            // Handle window resize and elements visibility
             this.SizeChanged += MainWindow_SizeChanged;
             UpdateVisibility(this.ActualWidth);
+            // Implement navigation command bindings
+            CommandBinding goToPageBinding = new CommandBinding(NavigationCommands.GoToPage, GoToPage_Executed, GoToPage_CanExecute);
+            this.CommandBindings.Add(goToPageBinding);
+        }
+        private void GoToPage_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            // Можно добавить логику проверки, например, что параметр не пустой
+            e.CanExecute = e.Parameter is string uri && !string.IsNullOrEmpty(uri);
+        }
+
+        private void GoToPage_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (e.Parameter is string uri)
+            {
+                mainFrame.Navigate(new Uri(uri, UriKind.Relative));
+            }
         }
         private void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
         {
