@@ -34,9 +34,9 @@ namespace HR.Controls
         {
             MainWindow.frame.Navigate(new AuthPg());
         }
-        private void ProfileItem_Click(object sender, RoutedEventArgs e)
+        private void PreferencesItem_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Go Profile");
+            MainWindow.frame.Navigate(new PreferencesPg());
         }
     }
 }

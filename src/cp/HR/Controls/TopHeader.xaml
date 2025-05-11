@@ -45,7 +45,7 @@
                 </StackPanel>
             </local:IconHighlightButton>
             <local:IconHighlightButton DockPanel.Dock="Right" Margin="0 20 20 10" Width="75" Height="75"
-                                       Click="ProfileItem_Click" ToolTip="Войти"
+                                       Click="PreferencesItem_Click" ToolTip="Настройки"
                                        Visibility="{Binding IsAuth, Source={x:Static Application.Current}, Converter={StaticResource BoolToVis}}"
                                        >
                 <StackPanel DockPanel.Dock="Right">
@@ -105,20 +105,33 @@
                         <MenuItem Header="_Кружки и секции" Style="{StaticResource SubMenuItemStyle}" />
                     </MenuItem>
                     <MenuItem Header="П_ользователь"
-                              IsChecked="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource CheckedConverter}, ConverterParameter='AuthPg'}"
+                              IsChecked="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl},
+                                Converter={StaticResource CheckedConverter}, ConverterParameter='AuthPg, RegisterPg, PreferencesPg'}"
                               >
                         <MenuItem Header="В_ход"
                                   Style="{StaticResource SubMenuItemStyle}"
                                   Command="NavigationCommands.GoToPage"
                                   CommandParameter="Pages/AuthPg.xaml"
                                   CommandTarget="{Binding ElementName=mainFrame}"
+                                  IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=AuthPg}"
+                                  Visibility="{Binding IsAuth, Source={x:Static Application.Current}, Converter={StaticResource InverseBoolToVis}}"
                                   />
                         <MenuItem Header="_Регистрация"
                                   Style="{StaticResource SubMenuItemStyle}"
                                   Command="NavigationCommands.GoToPage"
                                   CommandParameter="Pages/RegisterPg.xaml"
                                   CommandTarget="{Binding ElementName=mainFrame}"
+                                  IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=RegisterPg}"
+                                  Visibility="{Binding IsAuth, Source={x:Static Application.Current}, Converter={StaticResource InverseBoolToVis}}"
                                   />
+                        <MenuItem Header="П_редпочтения"
+                                  Style="{StaticResource SubMenuItemStyle}"
+                                  Command="NavigationCommands.GoToPage"
+                                  CommandParameter="Pages/PreferencesPg.xaml"
+                                  CommandTarget="{Binding ElementName=mainFrame}"
+                                  IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=PreferencesPg}"
+                                  Visibility="{Binding IsAuth, Source={x:Static Application.Current}, Converter={StaticResource BoolToVis}}"
+                        />
                     </MenuItem>
                 </Menu>
             </WrapPanel>

@@ -183,6 +183,7 @@ namespace HR.Pages
             IsInProgress = false;
             if (app.IsAuth == false) StatusInformer.ReportWarning("Пользователь не обнаружен");
             else StatusInformer.ReportSuccess("Успешный вход в систему");
+            MainWindow.frame.Navigate(new PreferencesPg());
         }
         private void ResetBtn_Click(object sender, RoutedEventArgs e)
         {
