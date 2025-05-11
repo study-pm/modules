@@ -14,6 +14,8 @@
             </ResourceDictionary.MergedDictionaries>
             <utils:PageToIsCheckedConverter x:Key="CheckedConverter" />
             <utils:PageToIsEnabledConverter x:Key="EnabledConverter" />
+            <BooleanToVisibilityConverter x:Key="BoolToVis" />
+            <utils:InverseBoolToVisibilityConverter x:Key="InverseBoolToVis" />
         </ResourceDictionary>
     </local:NavCtl.Resources>
     <Border CornerRadius="5">
@@ -31,7 +33,7 @@
             </local:IconHighlightButton>
             <local:IconHighlightButton DockPanel.Dock="Right" Margin="0 20 20 10" Width="75" Height="75"
                                        Click="AuthItem_Click" ToolTip="Войти"
-                                       Visibility="Visible"
+                                       Visibility="{Binding IsAuth, Source={x:Static Application.Current}, Converter={StaticResource InverseBoolToVis}}"
                                        >
                 <StackPanel DockPanel.Dock="Right">
                     <Viewbox Stretch="Fill" Width="40" Height="40">
@@ -44,7 +46,7 @@
             </local:IconHighlightButton>
             <local:IconHighlightButton DockPanel.Dock="Right" Margin="0 20 20 10" Width="75" Height="75"
                                        Click="ProfileItem_Click" ToolTip="Войти"
-                                       Visibility="Collapsed"
+                                       Visibility="{Binding IsAuth, Source={x:Static Application.Current}, Converter={StaticResource BoolToVis}}"
                                        >
                 <StackPanel DockPanel.Dock="Right">
                     <Viewbox Stretch="Fill" Width="40" Height="40">
