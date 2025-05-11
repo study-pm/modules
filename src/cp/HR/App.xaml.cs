@@ -6,6 +6,7 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -22,28 +23,19 @@ namespace HR
     public partial class App : Application, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged(string propertyName) =>
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        private int? uid;
-        public int? UserId
-        {
-            get => uid;
-            set
-            {
-                uid = value;
-                OnPropertyChanged(nameof(IsAuth));
-            }
-        }
+        protected void OnPropertyChanged([CallerMemberName] string prop = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         private User user;
         public User CurrentUser {
             get => user;
             set {
                 if (value == user) return;
                 user = value;
+                OnPropertyChanged();
                 OnPropertyChanged(nameof(IsAuth));
             }
         }
-        public bool IsAuth => uid != null;
+        public bool IsAuth => CurrentUser != null;
 
         protected override void OnStartup(StartupEventArgs e)
         {

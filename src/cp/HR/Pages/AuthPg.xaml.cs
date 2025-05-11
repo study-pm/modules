@@ -1,4 +1,5 @@
-﻿using HR.Utilities;
+﻿using HR.Models;
+using HR.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -62,11 +63,12 @@ namespace HR.Pages
             InitializeComponent();
             DataContext = this;
         }
-        private async Task<int?> GetUser()
+        private async Task<User> GetUser(string login, string password)
         {
             // Mock checking user existences from DB
-            await Utils.MockAsync(3000);
-            return 1;
+            await Utils.MockAsync(1000);
+            User user = new User { Id = 2, Login = login };
+            return user;
         }
         private void ValidatePassword()
         {
@@ -177,7 +179,7 @@ namespace HR.Pages
             IsInProgress = true;
             StatusInformer.ReportProgress("Загрузка данных...");
             App app = Application.Current as App;
-            app.UserId = await GetUser();
+            app.CurrentUser = await GetUser(Login, Password);
             IsInProgress = false;
             if (app.IsAuth == false) StatusInformer.ReportWarning("Пользователь не обнаружен");
             else StatusInformer.ReportSuccess("Успешный вход в систему");
