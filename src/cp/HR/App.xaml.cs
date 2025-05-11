@@ -48,6 +48,7 @@ namespace HR
             CurrentUser = null;
             var mainWindow = Application.Current.MainWindow as MainWindow;
             mainWindow.mainFrame.Navigate(new AuthPg());
+            StatusInformer.ReportInfo("Гостевой режим");
         }
 
         protected override void OnStartup(StartupEventArgs e)
