@@ -62,7 +62,7 @@ namespace HR.Pages
             InitializeComponent();
             DataContext = this;
         }
-        private async Task<int?> SignIn()
+        private async Task<int?> GetUser()
         {
             // Mock checking user existences from DB
             await Utils.MockAsync(3000);
@@ -176,9 +176,10 @@ namespace HR.Pages
             // 4. Если ошибок нет - выполняем вход
             IsInProgress = true;
             StatusInformer.ReportProgress("Загрузка данных...");
-            int? uid = await SignIn();
+            App app = Application.Current as App;
+            app.UserId = await GetUser();
             IsInProgress = false;
-            if (uid == null) StatusInformer.ReportWarning("Пользователь не обнаружен");
+            if (app.IsAuth == false) StatusInformer.ReportWarning("Пользователь не обнаружен");
             else StatusInformer.ReportSuccess("Успешный вход в систему");
         }
         private void ResetBtn_Click(object sender, RoutedEventArgs e)
