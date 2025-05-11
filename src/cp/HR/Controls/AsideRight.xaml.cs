@@ -25,5 +25,9 @@ namespace HR.Controls
         {
             InitializeComponent();
         }
+        private void LogoutItem_Click(object sender, RoutedEventArgs e)
+        {
+            App.Current.LogOutCommand.Execute(null);
+        }
     }
 }

@@ -34,6 +34,10 @@ namespace HR.Controls
         {
             MainWindow.frame.Navigate(new AuthPg());
         }
+        private void LogoutItem_Click(object sender, RoutedEventArgs e)
+        {
+            App.Current.LogOutCommand.Execute(null);
+        }
         private void PreferencesItem_Click(object sender, RoutedEventArgs e)
         {
             MainWindow.frame.Navigate(new PreferencesPg());

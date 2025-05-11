@@ -75,6 +75,9 @@
     <Compile Include="Pages\PreferencesPg.xaml.cs">
       <DependentUpon>PreferencesPg.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\RegisterPg.xaml.cs">
+      <DependentUpon>RegisterPg.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\WorkersPg.xaml.cs">
       <DependentUpon>WorkersPg.xaml</DependentUpon>
     </Compile>
@@ -82,6 +85,7 @@
       <DependentUpon>SplashWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utilities\Converters.cs" />
+    <Compile Include="Utilities\RelayCommand.cs" />
     <Compile Include="Utilities\StatusInformer.cs" />
     <Compile Include="Utilities\Utils.cs" />
     <Compile Include="Utilities\Validation.cs" />
@@ -133,6 +137,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\PreferencesPg.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\RegisterPg.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

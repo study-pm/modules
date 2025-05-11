@@ -9,14 +9,15 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using HR.Models;
+using HR.Pages;
 using HR.Utilities;
 
 namespace HR
 {
-
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
@@ -25,6 +26,8 @@ namespace HR
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string prop = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+        public static new App Current => (App)Application.Current;
+        public ICommand LogOutCommand { get; }
         private User user;
         public User CurrentUser {
             get => user;
@@ -36,6 +39,16 @@ namespace HR
             }
         }
         public bool IsAuth => CurrentUser != null;
+        public App()
+        {
+            LogOutCommand = new RelayCommand(_ => LogOut());
+        }
+        public void LogOut()
+        {
+            CurrentUser = null;
+            var mainWindow = Application.Current.MainWindow as MainWindow;
+            mainWindow.mainFrame.Navigate(new AuthPg());
+        }
 
         protected override void OnStartup(StartupEventArgs e)
         {
