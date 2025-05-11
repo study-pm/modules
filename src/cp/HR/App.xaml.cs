@@ -10,10 +10,12 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using HR.Models;
 using HR.Utilities;
 
 namespace HR
 {
+
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
@@ -32,6 +34,15 @@ namespace HR
                 OnPropertyChanged(nameof(IsAuth));
             }
         }
+        private User user;
+        public User CurrentUser {
+            get => user;
+            set {
+                if (value == user) return;
+                user = value;
+                OnPropertyChanged(nameof(IsAuth));
+            }
+        }
         public bool IsAuth => uid != null;
 
         protected override void OnStartup(StartupEventArgs e)
@@ -40,7 +51,7 @@ namespace HR
             // Application.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
         }
 
-        private async Task<int?> GetCurrentUser()
+        private async Task<User> GetCurrentUser()
         {
             string basePath = AppDomain.CurrentDomain.BaseDirectory;
             string uidFilePath = Path.Combine(basePath, "local", "user.uid");
@@ -62,7 +73,7 @@ namespace HR
 
             // Mock checking user existences from DB
             await Utils.MockAsync(3000);
-            return 1;
+            return new User { Id = 1, Login = "Current user" };
         }
         private async void Application_Startup(object sender, StartupEventArgs e)
         {
@@ -73,7 +84,7 @@ namespace HR
                 var splash = new SplashScreen("Img/graduation-cap-solid.png");
                 splash.Show(false); // show splash screen without auto closing (true to auto-close)
 
-                UserId = await GetCurrentUser();
+                CurrentUser = await GetCurrentUser();
 
                 var mainWindow = new MainWindow();
                 // this.MainWindow = mainWindow; // Assign as main window

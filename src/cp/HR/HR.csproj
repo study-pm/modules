@@ -71,6 +71,7 @@
     <Compile Include="Controls\TopHeader.xaml.cs">
       <DependentUpon>TopHeader.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Models\User.cs" />
     <Compile Include="Pages\WorkersPg.xaml.cs">
       <DependentUpon>WorkersPg.xaml</DependentUpon>
     </Compile>
