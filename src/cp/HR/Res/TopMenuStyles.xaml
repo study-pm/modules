@@ -13,6 +13,27 @@
             </Setter.Value>
         </Setter>
     </Style>
+    <Style TargetType="Menu" x:Key="VerticalMenuStyle">
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Menu">
+                    <Border Background="{TemplateBinding Background}">
+                        <ItemsPresenter/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Vertical"/>
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
     <Style TargetType="MenuItem">
         <Setter Property="Foreground" Value="{StaticResource WhiteDarkBrush}" />
         <Setter Property="Background" Value="Transparent" />
@@ -79,6 +100,112 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+    <Style x:Key="MenuItemStyle" TargetType="MenuItem">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Padding" Value="20 10" />
+        <Setter Property="Cursor" Value="Arrow"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="MenuItem">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <!-- Для иконки -->
+                            <ColumnDefinition Width="Auto"/>
+                            <!-- Для текста -->
+                            <ColumnDefinition Width="*"/>
+                            <!-- Для стрелки -->
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <!-- Подсветка -->
+                        <Rectangle x:Name="HighlightRect" Grid.ColumnSpan="2" RadiusX="0" RadiusY="0" Margin="1"
+                                   Fill="Transparent" Stroke="Transparent" StrokeThickness="1" Visibility="Collapsed"/>
+                        <Border x:Name="Border"
+                                Background="{TemplateBinding Background}"
+                                Padding="{TemplateBinding Padding}"
+                                SnapsToDevicePixels="True" CornerRadius="3">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <!-- Иконка -->
+                                <ContentPresenter x:Name="IconHost"
+                                  ContentSource="Icon"
+                                  VerticalAlignment="Center"
+                                  HorizontalAlignment="Center"
+                                  Margin="0,0,15,0"/>
+                                <!-- Текст -->
+                                <ContentPresenter x:Name="HeaderHost"
+                                  Grid.Column="1"
+                                  RecognizesAccessKey="True"
+                                  ContentSource="Header"
+                                  VerticalAlignment="Center" />
+                            </Grid>
+                        </Border>
+
+                        <!-- Стрелка для вложенного меню -->
+                        <Path x:Name="Arrow" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"
+                          Fill="{TemplateBinding Foreground}" Data="M 0 0 L 4 4 L 0 8 Z" Visibility="Collapsed" />
+
+                        <Popup x:Name="PART_Popup"
+                           Placement="Right"
+                           AllowsTransparency="True"
+                           Focusable="False"
+                           PopupAnimation="Fade"
+                           VerticalOffset="0"
+                           HorizontalOffset="0"
+                           StaysOpen="False">
+                            <Border Background="{StaticResource baseBackgroundBrush}"
+                                CornerRadius="3"
+                                Padding="2" Margin="5"
+                                SnapsToDevicePixels="True">
+                                <Border.Effect>
+                                    <DropShadowEffect Color="Gray" Direction="270" ShadowDepth="4" BlurRadius="8" Opacity="0.3" />
+                                </Border.Effect>
+                                <StackPanel IsItemsHost="True"
+                                KeyboardNavigation.DirectionalNavigation="Cycle"/>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSubmenuOpen" Value="True">
+                            <Setter TargetName="PART_Popup" Property="IsOpen" Value="True"/>
+                        </Trigger>
+                        <Trigger Property="IsSubmenuOpen" Value="False">
+                            <Setter TargetName="PART_Popup" Property="IsOpen" Value="False"/>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="HighlightRect" Property="Visibility" Value="Visible"/>
+                            <Setter TargetName="HighlightRect" Property="Fill" Value="#bcdff0"/>
+                        </Trigger>
+                        <Trigger Property="IsHighlighted" Value="True">
+                            <Setter TargetName="HighlightRect" Property="Visibility" Value="Visible"/>
+                            <Setter TargetName="HighlightRect" Property="Fill" Value="#bcdff0"/>
+                            <Setter TargetName="HighlightRect" Property="Stroke" Value="#259eda"/>
+                            <Setter Property="Foreground" Value="Black" />
+                            <Setter Property="Cursor" Value="Hand" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="HighlightRect" Property="Fill" Value="#acd5ec"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="DarkGray" />
+                        </Trigger>
+                        <!-- Показываем стрелку, если есть подменю -->
+                        <Trigger Property="HasItems" Value="True">
+                            <Setter TargetName="Arrow" Property="Visibility" Value="Visible"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="SideMenuItem" TargetType="MenuItem" BasedOn="{StaticResource MenuItemStyle}">
+        <!-- Переопределяем только нужные свойства -->
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource greyDarkBrush}"/>
+        <!-- Можно добавить/переопределить другие свойства, если нужно -->
     </Style>
     <Style x:Key="SubMenuItemStyle" TargetType="MenuItem">
         <Setter Property="Cursor" Value="Hand" />

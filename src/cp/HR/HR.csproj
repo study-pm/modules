@@ -58,6 +58,9 @@
     <Compile Include="Controls\AppStatus.xaml.cs">
       <DependentUpon>AppStatus.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\LeftMenu.xaml.cs">
+      <DependentUpon>LeftMenu.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\NavCtl.cs" />
     <Compile Include="Controls\AsideLeft.xaml.cs">
       <DependentUpon>AsideLeft.xaml</DependentUpon>
@@ -106,6 +109,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\IconHighlightButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\LeftMenu.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

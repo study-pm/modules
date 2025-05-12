@@ -18,7 +18,7 @@
         <utils:InverseBooleanConverter x:Key="InverseBool" />
     </Window.Resources>
     <DockPanel>
-        <uc:TopHeader DockPanel.Dock="Top" />
+        <uc:TopHeader x:Name="TopHeader" DockPanel.Dock="Top" />
         <uc:AppStatus DockPanel.Dock="Bottom" />
         <Grid x:Name="MainLayoutContainer" Margin="0 30" MaxWidth="1920">
             <Grid.ColumnDefinitions>

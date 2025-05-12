@@ -37,6 +37,25 @@
                     </Viewbox>
                 </MenuItem.Icon>
             </MenuItem>
+            <MenuItem Header="Руководство"
+                      Width="{Binding ElementName=RightMenu,Path=ActualWidth}"
+                      IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter='WorkersPg'}"
+                      Command="NavigationCommands.GoToPage"
+                      CommandParameter="Pages/WorkersPg.xaml"
+                      CommandTarget="{Binding ElementName=mainFrame}"
+                      >
+                <MenuItem.Icon>
+                    <Viewbox Height="16" Width="16" ToolTip="Руководство">
+                        <Canvas Height="512" Width="512">
+                            <Path Data="M173.9 439.4l-166.4-166.4c-10-10-10-26.2 0-36.2l36.2-36.2c10-10 26.2-10 36.2 0L192 312.7 432.1 72.6c10-10 26.2-10 36.2 0l36.2 36.2c10 10 10 26.2 0 36.2l-294.4 294.4c-10 10-26.2 10-36.2 0z">
+                                <Path.RenderTransform>
+                                    <TranslateTransform X="0" Y="0"/>
+                                </Path.RenderTransform>
+                            </Path>
+                        </Canvas>
+                    </Viewbox>
+                </MenuItem.Icon>
+            </MenuItem>
         </Menu>
     </StackPanel>
 </local:NavCtl>

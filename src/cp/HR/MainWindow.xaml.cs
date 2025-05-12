@@ -95,18 +95,21 @@ namespace HR
                 SetLeftSide(false);
                 SetRightSide(false);
                 Main.Margin = new Thickness(NormalMargin, 0, NormalMargin, 0);
+                TopHeader.SetNarrowMode(true);
             }
             else if (width < MediumWidth)
             {
                 SetLeftSide(true);
                 SetRightSide(false);
                 Main.Margin = new Thickness(0, 0, NormalMargin, 0);
+                TopHeader.SetNarrowMode(false);
             }
             else
             {
                 SetLeftSide(true);
                 SetRightSide(true);
                 Main.Margin = new Thickness(0);
+                TopHeader.SetNarrowMode(false);
             }
         }
     }
