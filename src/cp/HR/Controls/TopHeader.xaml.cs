@@ -22,6 +22,14 @@ namespace HR.Controls
     /// </summary>
     public partial class TopHeader : NavCtl
     {
+        public static readonly DependencyProperty MenuOpenProp =
+        DependencyProperty.Register("IsMenuOpen", typeof(string), typeof(Header));
+
+        public string IsMenuOpen
+        {
+            get { return (string)GetValue(MenuOpenProp); }
+            set { SetValue(MenuOpenProp, value); }
+        }
         public TopHeader()
         {
             InitializeComponent();
@@ -41,6 +49,11 @@ namespace HR.Controls
         private void PreferencesItem_Click(object sender, RoutedEventArgs e)
         {
             MainWindow.frame.Navigate(new PreferencesPg());
+        }
+        public void SetNarrowMode(bool isNarrow)
+        {
+            LeftMenu.Visibility = isNarrow ? Visibility.Visible : Visibility.Collapsed;
+            TopMenu.Visibility = isNarrow ? Visibility.Collapsed : Visibility.Visible;
         }
     }
 }
