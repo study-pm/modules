@@ -1,0 +1,41 @@
+﻿<Page x:Class="HR.Pages.StaffPg"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:HR.Pages"
+      xmlns:uc="clr-namespace:HR.Controls"
+      xmlns:utils="clr-namespace:HR.Utilities"
+      mc:Ignorable="d"
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="StaffPg" Loaded="Page_Loaded">
+    <Page.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <utils:InverseBooleanConverter x:Key="InvBoolConv"/>
+        <utils:NotEmptyValidationRule x:Key="NotEmptyValidationRule"/>
+    </Page.Resources>
+    <ScrollViewer Style="{StaticResource MainView}">
+        <StackPanel>
+            <uc:Header HeaderText="Сотрудники"></uc:Header>
+            <TextBlock Style="{StaticResource Paragraph}">
+                Данный раздел содержит информацию о сотрудниках по категориям в соответствии с
+                видами профессиональной деятельности и степенью участия в образовательном процессе.
+            </TextBlock>
+            <TextBlock Style="{StaticResource NoData}" Visibility="{Binding IsStaffEmpty, Converter={StaticResource BoolToVis}}">
+                Информация о сотрудниках отсутствует
+            </TextBlock>
+            <ScrollViewer Name="scrProducts" VerticalScrollBarVisibility="Auto" Visibility="{Binding IsStaffNotEmpty, Converter={StaticResource BoolToVis}}"
+                          >
+                <DataGrid x:Name="EmployeesDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
+                          ItemsSource="{Binding Staff}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Фамилия" Width="*" Binding="{Binding Surname}" />
+                        <DataGridTextColumn Header="Имя" Width="*" Binding="{Binding GivenName}" />
+                        <DataGridTextColumn Header="Отчество" Width="*" Binding="{Binding Patronymic}" />
+                        <DataGridTextColumn Header="Стаж (лет)" Width="*" Binding="{Binding Experience}" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </ScrollViewer>
+        </StackPanel>
+    </ScrollViewer>
+</Page>
