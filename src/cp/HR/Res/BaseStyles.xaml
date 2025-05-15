@@ -61,6 +61,10 @@
         <Setter Property="Margin" Value="0 10" />
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
+    <Style x:Key="NoData" TargetType="TextBlock" BasedOn="{StaticResource Paragraph}">
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Foreground" Value="{StaticResource greyDarkBrush}" />
+    </Style>
     <Style TargetType="GridSplitter">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="ResizeBehavior" Value="PreviousAndNext"/>
