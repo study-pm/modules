@@ -31,7 +31,7 @@
                       ItemsSource="{Binding Staff}">
                 <DataGrid.Columns>
                     <!-- Столбец с нумерацией -->
-                    <DataGridTemplateColumn Header="#" Width="40" IsReadOnly="True">
+                    <DataGridTemplateColumn Width="40" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock HorizontalAlignment="Center"
