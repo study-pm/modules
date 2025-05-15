@@ -25,27 +25,38 @@
             <TextBlock Style="{StaticResource NoData}" Visibility="{Binding IsStaffEmpty, Converter={StaticResource BoolToVis}}">
                 Информация о сотрудниках отсутствует
             </TextBlock>
-            <DataGrid x:Name="EmployeesDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
-                      AlternationCount="1000"
-                      Visibility="{Binding IsStaffNotEmpty, Converter={StaticResource BoolToVis}}"
-                      ItemsSource="{Binding Staff}">
-                <DataGrid.Columns>
-                    <!-- Столбец с нумерацией -->
-                    <DataGridTemplateColumn Width="40" IsReadOnly="True">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock HorizontalAlignment="Center"
-                                           Text="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=AlternationIndex, Converter={StaticResource AddOneConv}}"
-                                           />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTextColumn Header="Фамилия" Width="*" Binding="{Binding Surname}" />
-                    <DataGridTextColumn Header="Имя" Width="*" Binding="{Binding GivenName}" />
-                    <DataGridTextColumn Header="Отчество" Width="*" Binding="{Binding Patronymic}" />
-                    <DataGridTextColumn Header="Стаж (лет)" Width="*" Binding="{Binding Experience}" />
-                </DataGrid.Columns>
-            </DataGrid>
+            <StackPanel Visibility="{Binding IsStaffNotEmpty, Converter={StaticResource BoolToVis}}">
+                <WrapPanel HorizontalAlignment="Right" Margin="0 5">
+                    <ToggleButton Style="{StaticResource IconToggleButtonPathStyle}" Width="25" Height="25" Margin="5 0">
+                        <Path Data="M80 368H16a16 16 0 0 0 -16 16v64a16 16 0 0 0 16 16h64a16 16 0 0 0 16-16v-64a16 16 0 0 0 -16-16zm0-320H16A16 16 0 0 0 0 64v64a16 16 0 0 0 16 16h64a16 16 0 0 0 16-16V64a16 16 0 0 0 -16-16zm0 160H16a16 16 0 0 0 -16 16v64a16 16 0 0 0 16 16h64a16 16 0 0 0 16-16v-64a16 16 0 0 0 -16-16zm416 176H176a16 16 0 0 0 -16 16v32a16 16 0 0 0 16 16h320a16 16 0 0 0 16-16v-32a16 16 0 0 0 -16-16zm0-320H176a16 16 0 0 0 -16 16v32a16 16 0 0 0 16 16h320a16 16 0 0 0 16-16V80a16 16 0 0 0 -16-16zm0 160H176a16 16 0 0 0 -16 16v32a16 16 0 0 0 16 16h320a16 16 0 0 0 16-16v-32a16 16 0 0 0 -16-16z"
+                              Fill="{StaticResource cyanDarkBrush}" Stretch="Uniform" Width="20" Height="20" />
+                    </ToggleButton>
+                    <ToggleButton Style="{StaticResource IconToggleButtonPathStyle}" Width="25" Height="25">
+                        <Path Data="M149.3 56v80c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V56c0-13.3 10.7-24 24-24h101.3c13.3 0 24 10.7 24 24zm181.3 240v-80c0-13.3-10.7-24-24-24H205.3c-13.3 0-24 10.7-24 24v80c0 13.3 10.7 24 24 24h101.3c13.3 0 24-10.7 24-24zm32-240v80c0 13.3 10.7 24 24 24H488c13.3 0 24-10.7 24-24V56c0-13.3-10.7-24-24-24H386.7c-13.3 0-24 10.7-24 24zm-32 80V56c0-13.3-10.7-24-24-24H205.3c-13.3 0-24 10.7-24 24v80c0 13.3 10.7 24 24 24h101.3c13.3 0 24-10.7 24-24zm-205.3 56H24c-13.3 0-24 10.7-24 24v80c0 13.3 10.7 24 24 24h101.3c13.3 0 24-10.7 24-24v-80c0-13.3-10.7-24-24-24zM0 376v80c0 13.3 10.7 24 24 24h101.3c13.3 0 24-10.7 24-24v-80c0-13.3-10.7-24-24-24H24c-13.3 0-24 10.7-24 24zm386.7-56H488c13.3 0 24-10.7 24-24v-80c0-13.3-10.7-24-24-24H386.7c-13.3 0-24 10.7-24 24v80c0 13.3 10.7 24 24 24zm0 160H488c13.3 0 24-10.7 24-24v-80c0-13.3-10.7-24-24-24H386.7c-13.3 0-24 10.7-24 24v80c0 13.3 10.7 24 24 24zM181.3 376v80c0 13.3 10.7 24 24 24h101.3c13.3 0 24-10.7 24-24v-80c0-13.3-10.7-24-24-24H205.3c-13.3 0-24 10.7-24 24z"
+                              Fill="{StaticResource cyanDarkBrush}" Stretch="Uniform" Width="20" Height="20" />
+                    </ToggleButton>
+                </WrapPanel>
+                <DataGrid x:Name="EmployeesDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
+                          AlternationCount="1000" ItemsSource="{Binding Staff}"
+                          >
+                    <DataGrid.Columns>
+                        <!-- Столбец с нумерацией -->
+                        <DataGridTemplateColumn Width="40" IsReadOnly="True">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock HorizontalAlignment="Center"
+                                               Text="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=AlternationIndex, Converter={StaticResource AddOneConv}}"
+                                               />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Фамилия" Width="*" Binding="{Binding Surname}" />
+                        <DataGridTextColumn Header="Имя" Width="*" Binding="{Binding GivenName}" />
+                        <DataGridTextColumn Header="Отчество" Width="*" Binding="{Binding Patronymic}" />
+                        <DataGridTextColumn Header="Стаж (лет)" Width="*" Binding="{Binding Experience}" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </StackPanel>
         </StackPanel>
     </ScrollViewer>
 </Page>
