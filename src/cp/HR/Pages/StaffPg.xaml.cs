@@ -1,4 +1,5 @@
-﻿using HR.Models;
+﻿using HR.Data.Models;
+using HR.Models;
 using HR.Services;
 using HR.Utilities;
 using System;
@@ -50,9 +51,7 @@ namespace HR.Pages
         }
         private async Task SetEmployees()
         {
-            StatusInformer.ReportProgress("Загрузка данных");
             Staff = new ObservableCollection<Employee>(await Request.GetEmployees());
-            StatusInformer.ReportSuccess("Данные успешно загружены");
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
