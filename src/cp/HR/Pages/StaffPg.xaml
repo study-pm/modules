@@ -11,6 +11,7 @@
       Title="StaffPg" Loaded="Page_Loaded">
     <Page.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <utils:AddOneConverter x:Key="AddOneConv"/>
         <utils:InverseBooleanConverter x:Key="InvBoolConv"/>
         <utils:NotEmptyValidationRule x:Key="NotEmptyValidationRule"/>
     </Page.Resources>
@@ -25,9 +26,20 @@
                 Информация о сотрудниках отсутствует
             </TextBlock>
             <DataGrid x:Name="EmployeesDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
+                      AlternationCount="1000"
                       Visibility="{Binding IsStaffNotEmpty, Converter={StaticResource BoolToVis}}"
                       ItemsSource="{Binding Staff}">
                 <DataGrid.Columns>
+                    <!-- Столбец с нумерацией -->
+                    <DataGridTemplateColumn Header="#" Width="40" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock HorizontalAlignment="Center"
+                                           Text="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=AlternationIndex, Converter={StaticResource AddOneConv}}"
+                                           />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                     <DataGridTextColumn Header="Фамилия" Width="*" Binding="{Binding Surname}" />
                     <DataGridTextColumn Header="Имя" Width="*" Binding="{Binding GivenName}" />
                     <DataGridTextColumn Header="Отчество" Width="*" Binding="{Binding Patronymic}" />
