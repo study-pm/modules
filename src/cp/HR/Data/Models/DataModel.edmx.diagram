@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="ce72888c261e4cd6b54e379377403c71" Name="Diagram1">
+        <EntityTypeShape EntityType="HRModel.Assignment" Width="1.5" PointX="8.25" PointY="5.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="HRModel.ClassGuidance" Width="1.5" PointX="3" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="HRModel.Degree" Width="1.5" PointX="3.75" PointY="15.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="HRModel.Department" Width="1.5" PointX="3.75" PointY="3.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="HRModel.Development" Width="1.5" PointX="3" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="HRModel.DevelopmentCourse" Width="1.5" PointX="0.75" PointY="5.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="HRModel.Education" Width="1.5" PointX="6" PointY="9.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="HRModel.Employee" Width="1.5" PointX="0.75" PointY="9.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="HRModel.Grade" Width="1.5" PointX="0.75" PointY="14" IsExpanded="true" />
+        <EntityTypeShape EntityType="HRModel.Organization" Width="1.5" PointX="1.5" PointY="2.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="HRModel.Position" Width="1.5" PointX="3.75" PointY="1.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="HRModel.Qualification" Width="1.5" PointX="3.75" PointY="18" IsExpanded="true" />
+        <EntityTypeShape EntityType="HRModel.Retraining" Width="1.5" PointX="3" PointY="12.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="HRModel.RetrainingCourse" Width="1.5" PointX="0.75" PointY="16.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="HRModel.Role" Width="1.5" PointX="3.75" PointY="23" IsExpanded="true" />
+        <EntityTypeShape EntityType="HRModel.Specialty" Width="1.5" PointX="3.75" PointY="20.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="HRModel.Staff" Width="1.5" PointX="6" PointY="5.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="HRModel.Subject" Width="1.5" PointX="6" PointY="3" IsExpanded="true" />
+        <EntityTypeShape EntityType="HRModel.sysdiagram" Width="1.5" PointX="8.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="HRModel.User" Width="1.5" PointX="6" PointY="13.625" IsExpanded="true" />
+        <AssociationConnector Association="HRModel.FK_Assignment_Staff" ManuallyRouted="false" />
+        <AssociationConnector Association="HRModel.FK_Assignment_Subject" ManuallyRouted="false" />
+        <AssociationConnector Association="HRModel.FK_ClassGuidance_Employee" ManuallyRouted="false" />
+        <AssociationConnector Association="HRModel.FK_ClassGuidance_Grade" ManuallyRouted="false" />
+        <AssociationConnector Association="HRModel.FK_Education_Degree" ManuallyRouted="false" />
+        <AssociationConnector Association="HRModel.FK_Staff_Department" ManuallyRouted="false" />
+        <AssociationConnector Association="HRModel.FK_Development_DevelopmentCourse" ManuallyRouted="false" />
+        <AssociationConnector Association="HRModel.FK_Development_Employee" ManuallyRouted="false" />
+        <AssociationConnector Association="HRModel.FK_DevelopmentCourse_Organization" ManuallyRouted="false" />
+        <AssociationConnector Association="HRModel.FK_Education_Employee" ManuallyRouted="false" />
+        <AssociationConnector Association="HRModel.FK_Education_Qualification" ManuallyRouted="false" />
+        <AssociationConnector Association="HRModel.FK_Education_Specialty" ManuallyRouted="false" />
+        <AssociationConnector Association="HRModel.FK_Retraining_Employee" ManuallyRouted="false" />
+        <AssociationConnector Association="HRModel.FK_Staff_Employee" ManuallyRouted="false" />
+        <AssociationConnector Association="HRModel.FK_User_Employee" ManuallyRouted="false" />
+        <AssociationConnector Association="HRModel.FK_RetrainingCourse_Organization" ManuallyRouted="false" />
+        <AssociationConnector Association="HRModel.FK_Staff_Position" ManuallyRouted="false" />
+        <AssociationConnector Association="HRModel.FK_Retraining_RetrainingCourse" ManuallyRouted="false" />
+        <AssociationConnector Association="HRModel.FK_User_Role" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
