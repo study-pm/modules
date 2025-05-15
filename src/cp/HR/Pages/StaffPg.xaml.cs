@@ -52,7 +52,6 @@ namespace HR.Pages
         {
             StatusInformer.ReportProgress("Загрузка данных");
             Staff = new ObservableCollection<Employee>(await Request.GetEmployees());
-            StatusInformer.ReportSuccess("Данные успешно загружены");
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)

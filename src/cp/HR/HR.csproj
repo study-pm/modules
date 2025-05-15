@@ -226,5 +226,10 @@
   <ItemGroup>
     <Resource Include="Img\graduation-cap-solid.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Data\Sources\employees.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
