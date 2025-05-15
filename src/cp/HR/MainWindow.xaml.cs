@@ -25,8 +25,8 @@ namespace HR
         public static Frame frame {  get; set; }
         private const double MediumWidth = 1080;
         private const double NarrowWidth = 720;
-        private const double MinimalWidth = 220;
-        private const double NormalWidth = 300;
+        private const double MinimalWidth = 70;
+        private const double NormalWidth = 250;
         private const double NormalMargin = 30;
         public MainWindow()
         {
@@ -94,21 +94,18 @@ namespace HR
             {
                 SetLeftSide(false);
                 SetRightSide(false);
-                Main.Margin = new Thickness(NormalMargin, 0, NormalMargin, 0);
                 TopHeader.SetNarrowMode(true);
             }
             else if (width < MediumWidth)
             {
-                SetLeftSide(true);
-                SetRightSide(false);
-                Main.Margin = new Thickness(0, 0, NormalMargin, 0);
+                SetLeftSide(false);
+                SetRightSide(true);
                 TopHeader.SetNarrowMode(false);
             }
             else
             {
                 SetLeftSide(true);
                 SetRightSide(true);
-                Main.Margin = new Thickness(0);
                 TopHeader.SetNarrowMode(false);
             }
         }

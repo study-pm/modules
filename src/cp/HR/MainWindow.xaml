@@ -20,22 +20,22 @@
     <DockPanel>
         <uc:TopHeader x:Name="TopHeader" DockPanel.Dock="Top" />
         <uc:AppStatus DockPanel.Dock="Bottom" />
-        <Grid x:Name="MainLayoutContainer" Margin="0 30" MaxWidth="1920">
+        <Grid x:Name="MainLayoutContainer" Margin="30" MaxWidth="1920">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition MaxWidth="400" Width="300"></ColumnDefinition>
+                <ColumnDefinition MaxWidth="250" Width="250" MinWidth="70"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="*" MinWidth="400" MaxWidth="1440"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
-                <ColumnDefinition MaxWidth="400" Width="300"></ColumnDefinition>
+                <ColumnDefinition MaxWidth="250" Width="250" MinWidth="70"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Grid x:Name="LeftAside" Grid.Column="0" Margin="30 0">
+            <Grid x:Name="LeftAside" Grid.Column="0">
                 <Border Style="{StaticResource RoundedShadowBorder}" />
                 <Border Style="{StaticResource RoundedBorder}">
                     <uc:AsideLeft />
                 </Border>
             </Grid>
             <GridSplitter x:Name="LeftSplitter" Grid.Column="1" />
-            <Grid x:Name="Main" Grid.Column="2" Margin="0">
+            <Grid x:Name="Main" Grid.Column="2" Margin="30 0">
                 <Border Style="{StaticResource RoundedShadowBorder}" />
                 <Border Style="{StaticResource RoundedBorder}">
                     <Frame x:Name="mainFrame" Source="Pages/HomePg.xaml" NavigationUIVisibility="Hidden"
@@ -43,7 +43,7 @@
                 </Border>
             </Grid>
             <GridSplitter x:Name="RightSplitter" Grid.Column="3"></GridSplitter>
-            <Grid x:Name="RightAside" Grid.Column="4" Margin="30 0">
+            <Grid x:Name="RightAside" Grid.Column="4">
                 <Border Style="{StaticResource RoundedShadowBorder}" />
                 <Border Style="{StaticResource RoundedBorder}">
                     <uc:AsideRight />
