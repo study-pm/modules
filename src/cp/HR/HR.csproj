@@ -122,6 +122,7 @@
     <Compile Include="Data\Models\Employee.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Data\Models\Employee.partial.cs" />
     <Compile Include="Data\Models\Grade.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
