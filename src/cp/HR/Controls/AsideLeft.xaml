@@ -18,13 +18,16 @@
     </local:NavCtl.Resources>
     <StackPanel>
         <Menu x:Name="RightMenu" Margin="10" Background="Transparent">
-            <MenuItem Header="Сотрудники"
+            <MenuItem ToolTip="Сотрудники"
                       Width="{Binding ElementName=RightMenu,Path=ActualWidth}"
-                      IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter='WorkersPg'}"
+                      IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter='StaffPg'}"
                       Command="NavigationCommands.GoToPage"
-                      CommandParameter="Pages/WorkersPg.xaml"
+                      CommandParameter="Pages/StaffPg.xaml"
                       CommandTarget="{Binding ElementName=mainFrame}"
                   >
+                <MenuItem.Header>
+                    <TextBlock TextTrimming="CharacterEllipsis">Сотрудники</TextBlock>
+                </MenuItem.Header>
                 <MenuItem.Icon>
                     <Viewbox Height="16" Width="16" ToolTip="Сотрудники">
                         <Canvas Height="512" Width="512">
@@ -37,13 +40,16 @@
                     </Viewbox>
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Руководство"
+            <MenuItem ToolTip="Руководство"
                       Width="{Binding ElementName=RightMenu,Path=ActualWidth}"
                       IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter='WorkersPg'}"
                       Command="NavigationCommands.GoToPage"
                       CommandParameter="Pages/WorkersPg.xaml"
                       CommandTarget="{Binding ElementName=mainFrame}"
                       >
+                <MenuItem.Header>
+                    <TextBlock TextTrimming="CharacterEllipsis">Руководство</TextBlock>
+                </MenuItem.Header>
                 <MenuItem.Icon>
                     <Viewbox Height="16" Width="16" ToolTip="Руководство">
                         <Canvas Height="512" Width="512">
