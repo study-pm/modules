@@ -28,6 +28,7 @@
                      />
         <StatusBar Background="#2f2f2f" Padding="5" Foreground="LightGray">
             <WrapPanel>
+                <StackPanel Orientation="Horizontal" Width="25">
                 <Viewbox ToolTip="Завершено успешно"
                          Visibility="{Binding Status, Converter={StaticResource StatusToVisibilityConverter}, ConverterParameter=Success}"
                          >
@@ -57,8 +58,27 @@
                          >
                     <Path Fill="#e53935" Data="M504 256c0 137-111 248-248 248S8 393 8 256C8 119.1 119 8 256 8s248 111.1 248 248zm-248 50c-25.4 0-46 20.6-46 46s20.6 46 46 46 46-20.6 46-46-20.6-46-46-46zm-43.7-165.3l7.4 136c.3 6.4 5.6 11.3 12 11.3h48.5c6.4 0 11.6-5 12-11.3l7.4-136c.4-6.9-5.1-12.7-12-12.7h-63.4c-6.9 0-12.4 5.8-12 12.7z"/>
                 </Viewbox>
+                </StackPanel>
                 <TextBlock Text="{Binding Timestamp, StringFormat=yyyy-MM-dd HH:mm:ss}" FontWeight="Light" />
-                <TextBlock Text="{Binding Message}" />
+                <TextBlock Text="{Binding Message}" Margin="5 0 0 0" />
+                <TextBlock x:Name="DotsTextBlock" Text="" Margin="0"
+                           Visibility="{Binding Status, Converter={StaticResource StatusToVisibilityConverter}, ConverterParameter=Progress}"
+                           >
+                    <TextBlock.Triggers>
+                        <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                            <BeginStoryboard>
+                                <Storyboard RepeatBehavior="Forever" Duration="0:0:2">
+                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Text" Duration="0:0:2" RepeatBehavior="Forever">
+                                        <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="" />
+                                        <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="." />
+                                        <DiscreteObjectKeyFrame KeyTime="0:0:1" Value=".." />
+                                        <DiscreteObjectKeyFrame KeyTime="0:0:1.5" Value="..." />
+                                    </ObjectAnimationUsingKeyFrames>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </TextBlock.Triggers>
+                </TextBlock>
             </WrapPanel>
         </StatusBar>
     </DockPanel>
