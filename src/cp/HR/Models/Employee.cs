@@ -7,7 +7,7 @@ using System.Xml.Linq;
 
 namespace HR.Models
 {
-    public class Employee
+    public class EmployeeX
     {
         public int Id { get; set; }
         public string Surname { get; set; }
@@ -26,11 +26,11 @@ namespace HR.Models
                 return years;
             }
         }
-        public static List<Employee> LoadFromXml(string xml)
+        public static List<EmployeeX> LoadFromXml(string xml)
         {
             XDocument doc = XDocument.Parse(xml);
             var employees = doc.Descendants("row")
-                .Select(e => new Employee
+                .Select(e => new EmployeeX
                 {
                     // Если id пустой, можно присвоить 0 или сгенерировать
                     Id = int.TryParse((string)e.Element("id"), out int id) ? id : 0,
