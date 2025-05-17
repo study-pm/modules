@@ -52,7 +52,8 @@
                     </StackPanel>
                 </DockPanel>
                 <DataGrid x:Name="EmployeesDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
-                          AlternationCount="1000" ItemsSource="{Binding Staff}"
+                          AlternationCount="1000" HeadersVisibility="Column"
+                          ItemsSource="{Binding Staff}"
                           >
                     <DataGrid.Columns>
                         <!-- Столбец с нумерацией -->
@@ -68,7 +69,8 @@
                         <DataGridTextColumn Header="Фамилия" Width="*" Binding="{Binding Surname}" />
                         <DataGridTextColumn Header="Имя" Width="*" Binding="{Binding GivenName}" />
                         <DataGridTextColumn Header="Отчество" Width="*" Binding="{Binding Patronymic}" />
-                        <DataGridTextColumn Header="Стаж (лет)" Width="*" Binding="{Binding Experience}" />
+                        <DataGridTextColumn Header="Стаж (лет)" Width="*" Binding="{Binding Experience}"
+                                            CellStyle="{StaticResource RightAlignedCellStyle}"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </StackPanel>
