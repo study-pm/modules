@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -41,6 +42,22 @@ namespace HR.Utilities
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
+        }
+    }
+    public class ImagePathConverter : IValueConverter
+    {
+        private string basePath = "Images";
+        private string extension = "jpg";
+
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (!(value is string) || String.IsNullOrWhiteSpace((string)value)) return null;
+            return $"/{basePath}/{value}.{extension}";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
         }
     }
     public class InverseBooleanConverter : IValueConverter
