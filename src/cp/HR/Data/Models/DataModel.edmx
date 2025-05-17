@@ -74,7 +74,7 @@
           <Property Name="Patronymic" Type="nvarchar" MaxLength="50" />
           <Property Name="Gender" Type="bit" Nullable="false" />
           <Property Name="CareerStart" Type="date" />
-          <Property Name="ImageName" Type="nvarchar" MaxLength="50" />
+          <Property Name="Image" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="Grade">
           <Key>
@@ -608,7 +608,7 @@
           <NavigationProperty Name="Retrainings" Relationship="Self.FK_Retraining_Employee" FromRole="Employee" ToRole="Retraining" />
           <NavigationProperty Name="Staffs" Relationship="Self.FK_Staff_Employee" FromRole="Employee" ToRole="Staff" />
           <NavigationProperty Name="Users" Relationship="Self.FK_User_Employee" FromRole="Employee" ToRole="User" />
-          <Property Name="ImageName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Image" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Grade">
           <Key>
@@ -1142,7 +1142,7 @@
           <EntitySetMapping Name="Employees">
             <EntityTypeMapping TypeName="HRModel.Employee">
               <MappingFragment StoreEntitySet="Employee">
-                <ScalarProperty Name="ImageName" ColumnName="ImageName" />
+                <ScalarProperty Name="Image" ColumnName="Image" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Surname" ColumnName="Surname" />
                 <ScalarProperty Name="GivenName" ColumnName="GivenName" />
