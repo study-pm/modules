@@ -31,6 +31,7 @@ namespace HR.Data.Models
         public string Patronymic { get; set; }
         public bool Gender { get; set; }
         public Nullable<System.DateTime> CareerStart { get; set; }
+        public string ImageName { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ClassGuidance> ClassGuidances { get; set; }
