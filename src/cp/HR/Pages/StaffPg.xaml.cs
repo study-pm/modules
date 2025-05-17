@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -44,10 +45,21 @@ namespace HR.Pages
         }
         public bool? IsStaffEmpty => Staff?.Count == 0;
         public bool? IsStaffNotEmpty => Staff?.Count > 0;
+        private bool isGridView;
+        public bool IsGridView {
+            get => isGridView;
+            set
+            {
+                isGridView = value;
+                OnPropertyChanged();
+            }
+        }
         public StaffPg()
         {
             InitializeComponent();
             DataContext = this;
+            // @TODO: Read user preferences and set here
+            IsGridView = true;
         }
         private async Task SetEmployees()
         {

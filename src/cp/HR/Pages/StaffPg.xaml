@@ -11,6 +11,7 @@
       Title="StaffPg" Loaded="Page_Loaded">
     <Page.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <utils:AddOneConverter x:Key="AddOneConv"/>
         <utils:InverseBooleanConverter x:Key="InvBoolConv"/>
         <utils:NotEmptyValidationRule x:Key="NotEmptyValidationRule"/>
     </Page.Resources>
@@ -24,16 +25,55 @@
             <TextBlock Style="{StaticResource NoData}" Visibility="{Binding IsStaffEmpty, Converter={StaticResource BoolToVis}}">
                 Информация о сотрудниках отсутствует
             </TextBlock>
-            <DataGrid x:Name="EmployeesDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
-                      Visibility="{Binding IsStaffNotEmpty, Converter={StaticResource BoolToVis}}"
-                      ItemsSource="{Binding Staff}">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Фамилия" Width="*" Binding="{Binding Surname}" />
-                    <DataGridTextColumn Header="Имя" Width="*" Binding="{Binding GivenName}" />
-                    <DataGridTextColumn Header="Отчество" Width="*" Binding="{Binding Patronymic}" />
-                    <DataGridTextColumn Header="Стаж (лет)" Width="*" Binding="{Binding Experience}" />
-                </DataGrid.Columns>
-            </DataGrid>
+            <StackPanel Visibility="{Binding IsStaffNotEmpty, Converter={StaticResource BoolToVis}}">
+                <DockPanel>
+                    <TextBox Style="{StaticResource TextBoxMini}" Width="200" />
+
+                    <Button Style="{StaticResource BlueBtnMini}" Margin="5 0">Найти</Button>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 5">
+                        <ToggleButton Width="25" Height="25" Margin="5 0" IsThreeState="False"
+                                      Style="{StaticResource IconToggleButtonPathStyle}"
+                                      IsChecked="{Binding IsGridView, Mode=TwoWay, Converter={StaticResource InvBoolConv}}"
+                        >
+                            <Path Data="M149.3 216v80c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24v-80c0-13.3 10.7-24 24-24h101.3c13.3 0 24 10.7 24 24zM0 376v80c0 13.3 10.7 24 24 24h101.3c13.3 0 24-10.7 24-24v-80c0-13.3-10.7-24-24-24H24c-13.3 0-24 10.7-24 24zM125.3 32H24C10.7 32 0 42.7 0 56v80c0 13.3 10.7 24 24 24h101.3c13.3 0 24-10.7 24-24V56c0-13.3-10.7-24-24-24zm80 448H488c13.3 0 24-10.7 24-24v-80c0-13.3-10.7-24-24-24H205.3c-13.3 0-24 10.7-24 24v80c0 13.3 10.7 24 24 24zm-24-424v80c0 13.3 10.7 24 24 24H488c13.3 0 24-10.7 24-24V56c0-13.3-10.7-24-24-24H205.3c-13.3 0-24 10.7-24 24zm24 264H488c13.3 0 24-10.7 24-24v-80c0-13.3-10.7-24-24-24H205.3c-13.3 0-24 10.7-24 24v80c0 13.3 10.7 24 24 24z"
+                                  Stretch="Uniform" Width="20" Height="20"
+                                  Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ToggleButton}}"
+                            />
+                        </ToggleButton>
+                        <ToggleButton Width="25" Height="25" IsThreeState="False"
+                                      Style="{StaticResource IconToggleButtonPathStyle}"
+                                      IsChecked="{Binding IsGridView, Mode=TwoWay}"
+                        >
+                            <Path Data="M149.3 56v80c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V56c0-13.3 10.7-24 24-24h101.3c13.3 0 24 10.7 24 24zm181.3 240v-80c0-13.3-10.7-24-24-24H205.3c-13.3 0-24 10.7-24 24v80c0 13.3 10.7 24 24 24h101.3c13.3 0 24-10.7 24-24zm32-240v80c0 13.3 10.7 24 24 24H488c13.3 0 24-10.7 24-24V56c0-13.3-10.7-24-24-24H386.7c-13.3 0-24 10.7-24 24zm-32 80V56c0-13.3-10.7-24-24-24H205.3c-13.3 0-24 10.7-24 24v80c0 13.3 10.7 24 24 24h101.3c13.3 0 24-10.7 24-24zm-205.3 56H24c-13.3 0-24 10.7-24 24v80c0 13.3 10.7 24 24 24h101.3c13.3 0 24-10.7 24-24v-80c0-13.3-10.7-24-24-24zM0 376v80c0 13.3 10.7 24 24 24h101.3c13.3 0 24-10.7 24-24v-80c0-13.3-10.7-24-24-24H24c-13.3 0-24 10.7-24 24zm386.7-56H488c13.3 0 24-10.7 24-24v-80c0-13.3-10.7-24-24-24H386.7c-13.3 0-24 10.7-24 24v80c0 13.3 10.7 24 24 24zm0 160H488c13.3 0 24-10.7 24-24v-80c0-13.3-10.7-24-24-24H386.7c-13.3 0-24 10.7-24 24v80c0 13.3 10.7 24 24 24zM181.3 376v80c0 13.3 10.7 24 24 24h101.3c13.3 0 24-10.7 24-24v-80c0-13.3-10.7-24-24-24H205.3c-13.3 0-24 10.7-24 24z"
+                                  Stretch="Uniform" Width="20" Height="20"
+                                  Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ToggleButton}}"
+                            />
+                        </ToggleButton>
+                    </StackPanel>
+                </DockPanel>
+                <DataGrid x:Name="EmployeesDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
+                          AlternationCount="1000" HeadersVisibility="Column"
+                          ItemsSource="{Binding Staff}"
+                          >
+                    <DataGrid.Columns>
+                        <!-- Столбец с нумерацией -->
+                        <DataGridTemplateColumn Width="40" IsReadOnly="True">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock HorizontalAlignment="Center"
+                                               Text="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=AlternationIndex, Converter={StaticResource AddOneConv}}"
+                                               />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Фамилия" Width="*" Binding="{Binding Surname}" />
+                        <DataGridTextColumn Header="Имя" Width="*" Binding="{Binding GivenName}" />
+                        <DataGridTextColumn Header="Отчество" Width="*" Binding="{Binding Patronymic}" />
+                        <DataGridTextColumn Header="Стаж (лет)" Width="*" Binding="{Binding Experience}"
+                                            CellStyle="{StaticResource RightAlignedCellStyle}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </StackPanel>
         </StackPanel>
     </ScrollViewer>
 </Page>
