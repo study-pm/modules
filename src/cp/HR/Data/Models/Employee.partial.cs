@@ -31,5 +31,13 @@ namespace HR.Data.Models
                 return years >= 0 ? years : 0;
             }
         }
+        /// <summary>
+        /// Gets full name consisting of Surname, GivenName and Patronymic separated by spaces
+        /// Omitting empty and null values to avoid extra spaces
+        /// </summary>
+        public string FullName
+        {
+            get => string.Join(" ", new[] { Surname, GivenName, Patronymic }.Where(s => !string.IsNullOrWhiteSpace(s)));
+        }
     }
 }
