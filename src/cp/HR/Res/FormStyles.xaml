@@ -93,8 +93,10 @@
         </Setter>
     </Style>
     <Style x:Key="TextBoxMini" TargetType="TextBox">
+        <Setter Property="FontFamily" Value="{StaticResource Roboto}"/>
         <Setter Property="FontSize" Value="13"/>
         <Setter Property="Height" Value="30"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="Padding" Value="0 5"/>
     </Style>
 
@@ -186,7 +188,7 @@
         <Setter Property="Padding" Value="5"/>
         <Setter Property="MinHeight" Value="40"/>
         <Setter Property="MinWidth" Value="120"/>
-        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="BorderBrush" Value="{StaticResource BlueBrush}"/>
         <Setter Property="FocusVisualStyle" Value="{StaticResource ButtonFocusVisual}"/>
         <Setter Property="Template">
@@ -234,7 +236,7 @@
     <Style x:Key="BlueBtn" TargetType="Button" BasedOn="{StaticResource FormBtn}">
         <Setter Property="Background" Value="{StaticResource BlueBrush}"/>
     </Style>
-    <Style x:Key="BlueBtnMini" TargetType="Button" BasedOn="{StaticResource BlueBtn}">
+    <Style x:Key="ButtonMini" TargetType="Button" BasedOn="{StaticResource FormBtn}">
         <Setter Property="FontSize" Value="13"/>
         <Setter Property="Height" Value="30"/>
         <Setter Property="MinHeight" Value="30"/>
@@ -244,12 +246,28 @@
     <Style x:Key="MenuBtn" TargetType="Button" BasedOn="{StaticResource BlueBtn}">
         <Setter Property="Margin" Value="0 5"/>
     </Style>
+    <Style x:Key="ClearBtn" TargetType="Button">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Content" Value="✕"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Foreground" Value="Gray"/>
+        <Setter Property="Height" Value="20"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="Margin" Value="0 0 5 0"/>
+        <Setter Property="ToolTip" Value="Очистить"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Width" Value="20"/>
+    </Style>
     <Style x:Key="IconToggleButtonPathStyle" TargetType="ToggleButton">
         <Setter Property="Width" Value="50" />
         <Setter Property="Height" Value="50" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Gray" />
         <Setter Property="BorderThickness" Value="1" />
+        <!-- Убираем стандартную рамку при фокусировке -->
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <!-- Цвет иконки по умолчанию -->
         <Setter Property="Foreground" Value="{StaticResource cyanDarkBrush}" />
         <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
