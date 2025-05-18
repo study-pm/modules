@@ -56,7 +56,12 @@ namespace HR.Services
             {
                 StatusInformer.ReportProgress("Загрузка данных");
                 HREntities ctx = new HREntities();
-                List<Employee> employees = await ctx.Employees.ToListAsync();
+                List<Employee> employees = await ctx.Employees
+                    .Include(e => e.Developments)
+                    .Include(e => e.Educations)
+                    .Include(e => e.Retrainings)
+                    .Include(e => e.Staffs)
+                    .ToListAsync();
                 StatusInformer.ReportSuccess("Данные успешно извлечены");
                 return employees;
             }
