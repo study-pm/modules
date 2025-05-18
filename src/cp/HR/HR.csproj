@@ -345,6 +345,7 @@
     <Content Include="Data\Sources\employees.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Images\ГавриловаОВ.jpg" />
     <Resource Include="Images\РебяковДВ.jpg" />
     <Resource Include="Images\КарягинСН.jpg" />
   </ItemGroup>
