@@ -22,7 +22,7 @@ namespace HR
     /// </summary>
     public partial class MainWindow : Window
     {
-        public static Frame frame {  get; set; }
+        public static Frame frame { get; set; }
         private const double MediumWidth = 1080;
         private const double NarrowWidth = 720;
         private const double MinimalWidth = 70;
