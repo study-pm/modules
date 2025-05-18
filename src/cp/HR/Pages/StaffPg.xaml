@@ -10,7 +10,7 @@
       xmlns:utils="clr-namespace:HR.Utilities"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="StaffPg" Loaded="Page_Loaded">
+      Title="StaffPg" Loaded="Page_Loaded" Unloaded="Page_Unloaded">
     <Page.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <utils:AddOneConverter x:Key="AddOneConv"/>

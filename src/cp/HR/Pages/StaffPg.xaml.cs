@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -32,6 +33,15 @@ namespace HR.Pages
         protected void OnPropertyChanged([CallerMemberName] string prop = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         public ICommand PrintCommand { get; }
+        // HashSet consists of Position ids
+        private Dictionary<string, HashSet<int>> filterOptions = new Dictionary<string, HashSet<int>>
+            {
+                { "Management", new HashSet<int> { 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 20 } },
+                { "Teachers", new HashSet<int> { 1 } },
+                { "Pedagogues", new HashSet<int> { 2, 3, 4, 6, 18, 19 } },
+                { "Tutors", new HashSet<int> { 5 } },
+            };
+        private NavigationService _navigationService;
         private ObservableCollection<Employee> staff;
         public ObservableCollection<Employee> Staff
         {
@@ -46,6 +56,7 @@ namespace HR.Pages
             }
         }
         private ICollectionView staffView;
+        public IEnumerable<string> FilterOptions => filterOptions.Keys;
         private int filteredCount;
         public int FilteredCount
         {
@@ -86,6 +97,18 @@ namespace HR.Pages
         {
             get => string.IsNullOrEmpty(SearchText);
         }
+        private string selectedDepartmentFilter;
+        public string SelectedDepartmentFilter
+        {
+            get => selectedDepartmentFilter;
+            set
+            {
+                if (selectedDepartmentFilter == value) return;
+                selectedDepartmentFilter = value;
+                OnPropertyChanged();
+                ApplyFilter(); // Auto applied on setting value
+            }
+        }
         public StaffPg()
         {
             InitializeComponent();
@@ -98,13 +121,19 @@ namespace HR.Pages
                 canExecute: _ => Staff != null && Staff.Any()
             );
 
-
             // Привязка команды Copy к обработчику
             CommandBindings.Add(new CommandBinding(ApplicationCommands.Copy, CopyCommand_Executed, CopyCommand_CanExecute));
 
             // Назначение горячих клавиш Ctrl+C и Ctrl+P
             InputBindings.Add(new KeyBinding(ApplicationCommands.Copy, Key.C, ModifierKeys.Control));
             InputBindings.Add(new KeyBinding(new RoutedUICommand("Print", "Print", typeof(StaffPg)), Key.P, ModifierKeys.Control));
+
+            // Subscribe to navigation events for the main frame
+            _navigationService = MainWindow.frame.NavigationService;
+            if (_navigationService != null)
+            {
+                _navigationService.Navigated += NavigationService_Navigated;
+            }
         }
         private void ExecutePrint()
         {
@@ -183,14 +212,35 @@ namespace HR.Pages
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            // Set employees collection
             await SetEmployees();
-
+            // Get default view for the staff
             staffView = CollectionViewSource.GetDefaultView(Staff);
-            if (staffView != null)
+            if (staffView == null) return;
+            // Set filter conditions (predicate)
+            staffView.Filter = FilterStaff;
+            // Update filtered items count
+            UpdateFilteredCount();
+        }
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            if (_navigationService != null)
             {
-                staffView.Filter = FilterStaff;
-                UpdateFilteredCount(); // Обновляем количество после загрузки данных
+                _navigationService.Navigated -= NavigationService_Navigated;
+                _navigationService = null;
             }
+        }
+        private void NavigationService_Navigated(object sender, NavigationEventArgs e)
+        {
+            // Check if the current page
+            if (e.Content != this) return;
+            var navigationParameter = e.ExtraData;
+
+            // Set and apply sorting criteria depending on the route param
+            if (navigationParameter is string filterParam && filterOptions.ContainsKey(filterParam))
+                SelectedDepartmentFilter = filterParam;
+            else
+                SelectedDepartmentFilter = null;
         }
         private void ApplyFilter()
         {
@@ -204,19 +254,25 @@ namespace HR.Pages
         }
         private bool FilterStaff(object obj)
         {
-            if (obj is Employee emp)
+            if (!(obj is Employee emp)) return false;
+            // Фильтрация по подразделению
+            if (!string.IsNullOrEmpty(SelectedDepartmentFilter) && filterOptions.ContainsKey(SelectedDepartmentFilter))
             {
-                if (string.IsNullOrWhiteSpace(SearchText))
-                    return true;
-
-                var lowerSearch = SearchText.ToLower();
-
-                // Предполагается, что у Employee есть свойства LastName, FirstName, MiddleName
-                return (emp.Surname?.ToLower().Contains(lowerSearch) == true) ||
-                       (emp.GivenName?.ToLower().Contains(lowerSearch) == true) ||
-                       (emp.Patronymic?.ToLower().Contains(lowerSearch) == true);
+                var allowedDepartments = filterOptions[SelectedDepartmentFilter];
+                // Проверяем, есть ли среди Staffs хотя бы один с нужным DepartmentId
+                bool inDepartment = emp.Staffs != null && emp.Staffs.Any(staff => allowedDepartments.Contains(staff.PositionId));
+                if (!inDepartment) return false;
             }
-            return false;
+
+            // Фильтрация по поисковому тексту
+            if (string.IsNullOrWhiteSpace(SearchText)) return true;
+
+            var lowerSearch = SearchText.ToLower();
+
+            // Предполагается, что у Employee есть свойства LastName, FirstName, MiddleName
+            return (emp.Surname?.ToLower().Contains(lowerSearch) == true) ||
+                   (emp.GivenName?.ToLower().Contains(lowerSearch) == true) ||
+                   (emp.Patronymic?.ToLower().Contains(lowerSearch) == true);
         }
         private void ResetSorting()
         {
