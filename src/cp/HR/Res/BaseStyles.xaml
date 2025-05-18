@@ -2,37 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <DropShadowEffect x:Key="DropShadowEffect" Color="Black" Direction="270" ShadowDepth="4" BlurRadius="8" Opacity="0.3" />
     <FontFamily x:Key="Roboto">pack://application:,,,/Fonts/#Roboto</FontFamily>
-    <SolidColorBrush x:Key="AwaitingBrush" Color="#80e6ec" />
-    <SolidColorBrush x:Key="cyanDarkBrush" Color="#009ca2" />
-    <SolidColorBrush x:Key="cyanLightBrush" Color="#8bd3d5" />
-    <SolidColorBrush x:Key="baseBackgroundBrush" Color="#edf1f7" />
-    <SolidColorBrush x:Key="BaseDarkBrush" Color="#33404d" />
-    <SolidColorBrush x:Key="BaseLightBrush" Color="#dde0e2" />
-    <SolidColorBrush x:Key="BlueBrush" Color="#21a0df" />
-    <SolidColorBrush x:Key="CsvBrush" Color="#088409" />
-    <SolidColorBrush x:Key="DisabledBackgroundBrush" Color="Gray" />
-    <SolidColorBrush x:Key="DisabledForegroundBrush" Color="LightGray" />
-    <SolidColorBrush x:Key="DisabledBorderBrush" Color="DarkGray" />
-    <SolidColorBrush x:Key="ErrorBrush" Color="#e53935" />
-    <SolidColorBrush x:Key="GreenBrush" Color="#50b319" />
-    <SolidColorBrush x:Key="GreenDarkBrush" Color="#669d1e" />
-    <SolidColorBrush x:Key="GreenLightBrush" Color="#c3dda2" />
-    <SolidColorBrush x:Key="GreenMediumBrush" Color="#82b43c" />
-    <SolidColorBrush x:Key="magentaDarkBrush" Color="#e53582" />
-    <SolidColorBrush x:Key="magentaNormalBrush" Color="#ef91bc" />
-    <SolidColorBrush x:Key="magentaLightBrush" Color="#f3c2d9" />
-    <SolidColorBrush x:Key="greyDarkBrush" Color="#535353" />
-    <SolidColorBrush x:Key="greyLightBrush" Color="#f5f5f5" />
-    <SolidColorBrush x:Key="orangeDarkBrush" Color="#f38c2b" />
-    <SolidColorBrush x:Key="orangeLightBrush" Color="#f3b26c" />
-    <SolidColorBrush x:Key="OrangeRegularBrush" Color="#df7020" />
-    <SolidColorBrush x:Key="PdfBrush" Color="#da4953" />
-    <SolidColorBrush x:Key="SuccessBrush" Color="#50b319" />
-    <SolidColorBrush x:Key="transparentBrush" Opacity="0.5" />
-    <SolidColorBrush x:Key="WarningBrush" Color="#f4b02a" />
-    <SolidColorBrush x:Key="WhiteDarkBrush" Color="#f5f5f5" />
     <Style x:Key="WindowStyle" TargetType="Window">
-        <Setter Property="Background" Value="{StaticResource baseBackgroundBrush}" />
+        <Setter Property="Background" Value="{DynamicResource baseBackgroundBrush}" />
         <Setter Property="FontFamily" Value="{StaticResource Roboto}" />
         <Setter Property="Foreground" Value="{StaticResource greyDarkBrush}" />
     </Style>
