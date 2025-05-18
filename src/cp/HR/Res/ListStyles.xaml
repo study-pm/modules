@@ -66,4 +66,36 @@
             </Setter.Value>
         </Setter>
     </Style>
+    <Style TargetType="HeaderedContentControl">
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="Foreground" Value="#16709c" />
+        <Setter Property="Margin" Value="0 0 5 10" />
+        <Setter Property="HeaderTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}"
+                           TextTrimming="CharacterEllipsis"
+                           TextWrapping="NoWrap"
+                           ToolTip="{Binding}" />
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="ListItem" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{StaticResource BaseDarkBrush}" />
+        <Setter Property="Margin" Value="0 5" />
+    </Style>
+
+    <Style x:Key="DataGridCellTextBlockStyle" TargetType="TextBlock">
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+        <Setter Property="TextWrapping" Value="NoWrap" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="DataGridCellTextBlockWrapStyle" TargetType="TextBlock" BasedOn="{StaticResource DataGridCellTextBlockStyle}">
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="TextTrimming" Value="None" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+    </Style>
 </ResourceDictionary>
