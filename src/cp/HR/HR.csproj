@@ -173,6 +173,7 @@
     <Compile Include="Pages\WorkersPg.xaml.cs">
       <DependentUpon>WorkersPg.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Services\CommandHelper.cs" />
     <Compile Include="Services\Request.cs" />
     <Compile Include="SplashWindow.xaml.cs">
       <DependentUpon>SplashWindow.xaml</DependentUpon>
@@ -317,7 +318,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Images\" />
     <Folder Include="Static\" />
   </ItemGroup>
   <ItemGroup>
@@ -337,6 +337,8 @@
     <Content Include="Data\Sources\employees.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Images\РебяковДВ.jpg" />
+    <Resource Include="Images\КарягинСН.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
