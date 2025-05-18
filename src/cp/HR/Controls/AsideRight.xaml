@@ -89,6 +89,75 @@
                     </Viewbox>
                 </MenuItem.Icon>
             </MenuItem>
+            <MenuItem ToolTip="Журнал событий"
+                      Width="{Binding ElementName=RightMenu,Path=ActualWidth}"
+                      Visibility="{Binding IsAuth, Source={x:Static Application.Current}, Converter={StaticResource BoolToVis}}"
+                      IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=LogPg}"
+                      Command="NavigationCommands.GoToPage"
+                      CommandParameter="Pages/LogPg.xaml"
+                      CommandTarget="{Binding ElementName=mainFrame}"
+            >
+                <MenuItem.Header>
+                    <TextBlock TextTrimming="CharacterEllipsis">Журнал</TextBlock>
+                </MenuItem.Header>
+                <MenuItem.Icon>
+                    <Viewbox Height="16" Width="16" ToolTip="Журнал событий">
+                        <Canvas Height="512" Width="512">
+                            <Path Data="{StaticResource TasksSolidPath}">
+                                <Path.RenderTransform>
+                                    <TranslateTransform X="0" Y="0"/>
+                                </Path.RenderTransform>
+                            </Path>
+                        </Canvas>
+                    </Viewbox>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem ToolTip="Настройки системы"
+                      Width="{Binding ElementName=RightMenu,Path=ActualWidth}"
+                      Visibility="{Binding IsAuth, Source={x:Static Application.Current}, Converter={StaticResource BoolToVis}}"
+                      IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=SettingsPg}"
+                      Command="NavigationCommands.GoToPage"
+                      CommandParameter="Pages/SettingsPg.xaml"
+                      CommandTarget="{Binding ElementName=mainFrame}"
+            >
+                <MenuItem.Header>
+                    <TextBlock TextTrimming="CharacterEllipsis">Настройки</TextBlock>
+                </MenuItem.Header>
+                <MenuItem.Icon>
+                    <Viewbox Height="16" Width="16" ToolTip="Настройки приложения">
+                        <Canvas Height="512" Width="512">
+                            <Path Data="{StaticResource CogSolidPath}">
+                                <Path.RenderTransform>
+                                    <TranslateTransform X="0" Y="0"/>
+                                </Path.RenderTransform>
+                            </Path>
+                        </Canvas>
+                    </Viewbox>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem ToolTip="Управление пользователями"
+                      Width="{Binding ElementName=RightMenu,Path=ActualWidth}"
+                      Visibility="{Binding IsAuth, Source={x:Static Application.Current}, Converter={StaticResource BoolToVis}}"
+                      IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=UsersPg}"
+                      Command="NavigationCommands.GoToPage"
+                      CommandParameter="Pages/UsersPg.xaml"
+                      CommandTarget="{Binding ElementName=mainFrame}"
+                      >
+                <MenuItem.Header>
+                    <TextBlock TextTrimming="CharacterEllipsis">Пользователи</TextBlock>
+                </MenuItem.Header>
+                <MenuItem.Icon>
+                    <Viewbox Height="16" Width="16" ToolTip="Управление пользователями">
+                        <Canvas Height="512" Width="512">
+                            <Path Data="{StaticResource UsersCogSolidPath}">
+                                <Path.RenderTransform>
+                                    <TranslateTransform X="0" Y="0"/>
+                                </Path.RenderTransform>
+                            </Path>
+                        </Canvas>
+                    </Viewbox>
+                </MenuItem.Icon>
+            </MenuItem>
             <MenuItem ToolTip="Выход"
                       Width="{Binding ElementName=RightMenu,Path=ActualWidth}"
                       Visibility="{Binding IsAuth, Source={x:Static Application.Current}, Converter={StaticResource BoolToVis}}"
