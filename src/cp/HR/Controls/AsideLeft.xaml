@@ -52,7 +52,8 @@
                     <TextBlock TextTrimming="CharacterEllipsis">Руководство</TextBlock>
                 </MenuItem.Header>
                 <MenuItem.Icon>
-                    <RadioButton IsChecked="{Binding PageParam, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource InvPgChkConv}, ConverterParameter='Management'}"/>
+                    <RadioButton Margin="3 0 0 0" IsHitTestVisible="False"
+                                 IsChecked="{Binding PageParam, Mode=OneWay, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource InvPgChkConv}, ConverterParameter='Management'}"/>
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem ToolTip="Учителя"
@@ -66,7 +67,8 @@
                     <TextBlock TextTrimming="CharacterEllipsis">Учителя</TextBlock>
                 </MenuItem.Header>
                 <MenuItem.Icon>
-                    <RadioButton IsChecked="{Binding PageParam, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource InvPgChkConv}, ConverterParameter=Teachers}"/>
+                    <RadioButton Margin="3 0 0 0" IsHitTestVisible="False"
+                                 IsChecked="{Binding PageParam, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource InvPgChkConv}, ConverterParameter=Teachers}"/>
                 </MenuItem.Icon>
             </MenuItem>
             <MenuItem ToolTip="Педагоги и преподаватели"
@@ -80,7 +82,8 @@
                     <TextBlock TextTrimming="CharacterEllipsis">Педагоги</TextBlock>
                 </MenuItem.Header>
                 <MenuItem.Icon>
-                    <RadioButton IsChecked="{Binding PageParam, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource InvPgChkConv}, ConverterParameter=Pedagogues}"/>
+                    <RadioButton Margin="3 0 0 0" IsHitTestVisible="False"
+                                 IsChecked="{Binding PageParam, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource InvPgChkConv}, ConverterParameter=Pedagogues}"/>
                 </MenuItem.Icon>
             </MenuItem>
         </Menu>
