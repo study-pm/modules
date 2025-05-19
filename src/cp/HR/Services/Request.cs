@@ -16,6 +16,7 @@ namespace HR.Services
 {
     internal static class Request
     {
+        public static HREntities ctx = new HREntities();
         private static string basePath = "Data/Sources/";
         public static async Task<List<EmployeeX>> GetEmployeesFromXML()
         {
@@ -55,7 +56,6 @@ namespace HR.Services
             try
             {
                 StatusInformer.ReportProgress("Загрузка данных");
-                HREntities ctx = new HREntities();
                 List<Employee> employees = await ctx.Employees
                     .Include(e => e.Developments)
                     .Include(e => e.Educations)
