@@ -44,21 +44,34 @@
                             <TextBox Width="200" Padding="5,0,25,0"
                                  Style="{StaticResource TextBoxMini}"
                                  Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                        />
+                            />
                             <Button Style="{StaticResource ClearBtn}"
                                 Click="ClearSearchButton_Click"
                                 Visibility="{Binding IsSearchEmpty, Converter={StaticResource InvBoolToVis}}"
                                 />
                         </Grid>
-                        <Button Margin="5 0" Content="Найти" IsDefault="True" ToolTip="Поиск по ФИО"
+                        <ComboBox Width="105" VerticalContentAlignment="Center" Margin="2 0">
+                            <ComboBoxItem IsSelected="True">ФИО</ComboBoxItem>
+                            <ComboBoxItem>Должность</ComboBoxItem>
+                            <ComboBoxItem>Образование</ComboBoxItem>
+                        </ComboBox>
+                        <Button Margin="0" Content="Найти" IsDefault="True" ToolTip="Поиск по ФИО"
                             Style="{StaticResource ButtonMini}" Background="{StaticResource BlueBrush}"
                             Click="SearchButton_Click" />
-                        <TextBlock VerticalAlignment="Center" Margin="5 0" FontFamily="{StaticResource Roboto}">
+                        <TextBlock VerticalAlignment="Center" Margin="10 0" FontFamily="{StaticResource Roboto}">
                         <Run>Всего записей:</Run>
                         <Bold><Run Text="{Binding FilteredCount, Mode=OneWay}"></Run></Bold>
                         </TextBlock>
                     </WrapPanel>
                     <WrapPanel HorizontalAlignment="Right">
+                        <ctl:IconHighlightButton Width="20" Height="20" Margin="5" ToolTip="Сортировка">
+                            <StackPanel>
+                                <Viewbox Stretch="Fill" Width="16" Height="16">
+                                    <Path Fill="{StaticResource magentaDarkBrush}" Data="{StaticResource SortAlphaDownSolidPath}"/>
+                                </Viewbox>
+                            </StackPanel>
+                        </ctl:IconHighlightButton>
+                        <!--
                         <ctl:IconHighlightButton Width="20" Height="20" Margin="5" ToolTip="Экспорт в PDF">
                             <StackPanel>
                                 <Viewbox Stretch="Fill" Width="20" Height="20">
@@ -73,6 +86,7 @@
                                 </Viewbox>
                             </StackPanel>
                         </ctl:IconHighlightButton>
+                        -->
                         <Button Margin="2 5" ToolTip="Печать" Background="{StaticResource OrangeRegularBrush}"
                                 Style="{StaticResource ButtonMini}"
                                 Command="{Binding PrintCommand}"
@@ -86,6 +100,13 @@
                                 >
                             <Viewbox Stretch="Fill" Width="12" Height="12">
                                 <Path Fill="White" Data="{StaticResource UndoSolidPath}"/>
+                            </Viewbox>
+                        </Button>
+                        <Button Margin="2 5" ToolTip="Экспорт" Background="DarkCyan"
+                                Style="{StaticResource ButtonMini}"
+                                >
+                            <Viewbox Stretch="Fill" Width="12" Height="12">
+                                <Path Fill="White" Data="{StaticResource FileExportSolidPath}"/>
                             </Viewbox>
                         </Button>
                         <Button Margin="2 5" ToolTip="Сохранить все изменения"
@@ -324,7 +345,7 @@
                         <DataGridTextColumn Header="Фамилия" Width="*" Binding="{Binding Surname}" ElementStyle="{StaticResource TextBlockWithEllipsisStyle}" />
                         <DataGridTextColumn Header="Имя" Width="*" Binding="{Binding GivenName}" ElementStyle="{StaticResource TextBlockWithEllipsisStyle}" />
                         <DataGridTextColumn Header="Отчество" Width="*" Binding="{Binding Patronymic}" ElementStyle="{StaticResource TextBlockWithEllipsisStyle}" />
-                        <DataGridTemplateColumn Header="Должность" Width="2*">
+                        <DataGridTemplateColumn Header="Должность" Width="2*" SortMemberPath="Staffs[0]">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <ItemsControl ItemsSource="{Binding Staffs}">
