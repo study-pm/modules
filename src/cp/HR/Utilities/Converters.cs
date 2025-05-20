@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -84,6 +85,59 @@ namespace HR.Utilities
             => throw new NotImplementedException();
             // Если не нужна двунаправленная привязка, можно вернуть Binding.DoNothing
             // return Binding.DoNothing;
+    }
+    public class ListToStringConverter : IValueConverter
+    {
+        private object GetNestedPropertyValue(object obj, string propertyPath)
+        {
+            if (obj == null || string.IsNullOrEmpty(propertyPath))
+                return null;
+
+            string[] parts = propertyPath.Split('.');
+            object currentObject = obj;
+
+            foreach (var part in parts)
+            {
+                if (currentObject == null)
+                    return null;
+
+                var prop = currentObject.GetType().GetProperty(part);
+                if (prop == null)
+                    return null;
+
+                currentObject = prop.GetValue(currentObject);
+            }
+
+            return currentObject;
+        }
+
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var collection = value as IEnumerable;
+            if (collection == null)
+                return string.Empty;
+
+            string propertyName = parameter as string ?? "Name";
+
+            var list = new List<string>();
+            foreach (var item in collection)
+            {
+                var val = GetNestedPropertyValue(item, propertyName);
+                if (val != null)
+                {
+                    string strVal = val.ToString();
+                    if (!string.IsNullOrEmpty(strVal))
+                        list.Add(strVal);
+                }
+            }
+
+            return string.Join(", ", list);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
     }
     public class ErrorVisibilityConverter : IMultiValueConverter
     {
