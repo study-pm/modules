@@ -20,8 +20,15 @@
         <utils:ListToStringConverter x:Key="ListToStrConv"/>
         <utils:NotEmptyValidationRule x:Key="NotEmptyValidationRule"/>
     </Page.Resources>
-    <StackPanel Margin="30">
-        <StackPanel>
+    <Grid Margin="30">
+        <!-- Заменили StackPanel на Grid -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Заголовок и описание -->
+            <RowDefinition Height="*"/>
+            <!-- Основное содержимое (будет скроллироваться) -->
+        </Grid.RowDefinitions>
+        <StackPanel Margin="0 0 0 10">
             <uc:Header HeaderText="Сотрудники"></uc:Header>
             <TextBlock Style="{StaticResource Paragraph}">
                 Данный раздел содержит информацию о сотрудниках по категориям в соответствии с
@@ -33,23 +40,23 @@
             <StackPanel Visibility="{Binding IsStaffNotEmpty, Converter={StaticResource BoolToVis}}">
                 <DockPanel>
                     <WrapPanel VerticalAlignment="Center">
-                    <Grid>
-                        <TextBox Width="200" Padding="5,0,25,0"
+                        <Grid>
+                            <TextBox Width="200" Padding="5,0,25,0"
                                  Style="{StaticResource TextBoxMini}"
                                  Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                         />
-                        <Button Style="{StaticResource ClearBtn}"
+                            <Button Style="{StaticResource ClearBtn}"
                                 Click="ClearSearchButton_Click"
                                 Visibility="{Binding IsSearchEmpty, Converter={StaticResource InvBoolToVis}}"
                                 />
-                    </Grid>
-                    <Button Margin="5 0" Content="Найти" IsDefault="True" ToolTip="Поиск по ФИО"
+                        </Grid>
+                        <Button Margin="5 0" Content="Найти" IsDefault="True" ToolTip="Поиск по ФИО"
                             Style="{StaticResource ButtonMini}" Background="{StaticResource BlueBrush}"
                             Click="SearchButton_Click" />
-                    <TextBlock VerticalAlignment="Center" Margin="5 0" FontFamily="{StaticResource Roboto}">
+                        <TextBlock VerticalAlignment="Center" Margin="5 0" FontFamily="{StaticResource Roboto}">
                         <Run>Всего записей:</Run>
                         <Bold><Run Text="{Binding FilteredCount, Mode=OneWay}"></Run></Bold>
-                    </TextBlock>
+                        </TextBlock>
                     </WrapPanel>
                     <WrapPanel HorizontalAlignment="Right">
                         <ctl:IconHighlightButton Width="20" Height="20" Margin="5" ToolTip="Экспорт в PDF">
@@ -97,34 +104,35 @@
                         </Button>
 
                         <StackPanel Orientation="Horizontal">
-                        <ToggleButton Width="25" Height="25" Margin="5 0" IsThreeState="False" ToolTip="Список"
+                            <ToggleButton Width="25" Height="25" Margin="5 0" IsThreeState="False" ToolTip="Список"
                                       Style="{StaticResource IconToggleButtonPathStyle}"
                                       IsChecked="{Binding IsGridView, Mode=TwoWay, Converter={StaticResource InvBoolConv}}"
                         >
-                            <Path Data="{StaticResource ThListSolidPath}"
+                                <Path Data="{StaticResource ThListSolidPath}"
                                   Stretch="Uniform" Width="20" Height="20"
                                   Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ToggleButton}}"
                             />
-                        </ToggleButton>
-                        <ToggleButton Width="25" Height="25" IsThreeState="False" ToolTip="Таблица"
+                            </ToggleButton>
+                            <ToggleButton Width="25" Height="25" IsThreeState="False" ToolTip="Таблица"
                                       Style="{StaticResource IconToggleButtonPathStyle}"
                                       IsChecked="{Binding IsGridView, Mode=TwoWay}"
                                       >
-                            <Path Data="{StaticResource ThSolidPath}"
+                                <Path Data="{StaticResource ThSolidPath}"
                                   Stretch="Uniform" Width="20" Height="20"
                                   Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ToggleButton}}"
                             />
-                        </ToggleButton>
+                            </ToggleButton>
                         </StackPanel>
                     </WrapPanel>
                 </DockPanel>
-                <DataGrid x:Name="EmployeesDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
+            </StackPanel>
+        </StackPanel>
+        <DataGrid Grid.Row="1" x:Name="EmployeesDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
                           AlternationCount="1000" HeadersVisibility="Column" VerticalScrollBarVisibility="Auto"
-                          MaxHeight="300"
                           Visibility="{Binding IsGridView, Converter={StaticResource BoolToVis}}"
                           ItemsSource="{Binding Staff}"
                           >
-                    <DataGrid.ContextMenu>
+            <DataGrid.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Редактировать"
                                       InputGestureText="Ctrl+E"
@@ -333,10 +341,10 @@
                                             CellStyle="{StaticResource RightAlignedCellStyle}"/>
                     </DataGrid.Columns>
                 </DataGrid>
-                <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="300">
-                <ItemsControl ItemsSource="{Binding Staff}"
-                              Visibility="{Binding IsGridView, Converter={StaticResource InvBoolToVis}}"
-                              >
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                      Visibility="{Binding IsGridView, Converter={StaticResource InvBoolToVis}}"
+                      >
+                <ItemsControl ItemsSource="{Binding Staff}">
                     <ItemsControl.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Копировать" Click="CopyStaff_Click" InputGestureText="Ctrl+C" />
@@ -385,7 +393,5 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
                 </ScrollViewer>
-            </StackPanel>
-        </StackPanel>
-    </StackPanel>
+    </Grid>
 </Page>
