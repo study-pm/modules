@@ -17,6 +17,7 @@
         <utils:InverseBooleanConverter x:Key="InvBoolConv"/>
         <utils:ImagePathConverter x:Key="ImgPathConv"/>
         <utils:InverseBoolToVisibilityConverter x:Key="InvBoolToVis"/>
+        <utils:ListToStringConverter x:Key="ListToStrConv"/>
         <utils:NotEmptyValidationRule x:Key="NotEmptyValidationRule"/>
     </Page.Resources>
     <StackPanel Margin="30">
@@ -315,7 +316,20 @@
                         <DataGridTextColumn Header="Фамилия" Width="*" Binding="{Binding Surname}" ElementStyle="{StaticResource TextBlockWithEllipsisStyle}" />
                         <DataGridTextColumn Header="Имя" Width="*" Binding="{Binding GivenName}" ElementStyle="{StaticResource TextBlockWithEllipsisStyle}" />
                         <DataGridTextColumn Header="Отчество" Width="*" Binding="{Binding Patronymic}" ElementStyle="{StaticResource TextBlockWithEllipsisStyle}" />
-                        <DataGridTextColumn Header="Стаж (лет)" Width="*" Binding="{Binding Experience}"
+                        <DataGridTemplateColumn Header="Должность" Width="2*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ItemsControl ItemsSource="{Binding Staffs}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Position.Title}" Style="{StaticResource TextBlockWithEllipsisStyle}" />
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Стаж (лет)" Width="80" Binding="{Binding Experience}"
                                             CellStyle="{StaticResource RightAlignedCellStyle}"/>
                     </DataGrid.Columns>
                 </DataGrid>
@@ -341,7 +355,7 @@
                                         <HeaderedContentControl Header="{Binding FullName}"></HeaderedContentControl>
                                         <TextBlock Style="{StaticResource ListItem}">
                                             <Bold><Run>Должность:</Run></Bold>
-                                            <Run/>
+                                            <Run Text="{Binding Staffs, Converter={StaticResource ListToStrConv},ConverterParameter=Position.Title}" />
                                         </TextBlock>
                                         <TextBlock Style="{StaticResource ListItem}">
                                             <Bold><Run>Стаж работы:</Run></Bold>
