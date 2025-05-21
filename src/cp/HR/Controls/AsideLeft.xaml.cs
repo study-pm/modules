@@ -1,7 +1,11 @@
 ﻿using HR.Pages;
+using HR.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -21,9 +25,23 @@ namespace HR.Controls
     /// </summary>
     public partial class AsideLeft : NavCtl
     {
+        public RelayCommand NavigateCommand { get; }
         public AsideLeft()
         {
             InitializeComponent();
+
+            this.DataContext = this;
+
+            NavigateCommand = new RelayCommand(
+                execute: param =>
+                {
+                    if (param is NavigationData navData)
+                    {
+                        MainWindow.frame.Navigate(new Uri(navData.Uri, UriKind.Relative), navData.Parameter);
+                    }
+                },
+                canExecute: param => param is NavigationData
+            );
         }
     }
 }

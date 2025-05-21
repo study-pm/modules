@@ -173,6 +173,7 @@
     <Compile Include="Pages\WorkersPg.xaml.cs">
       <DependentUpon>WorkersPg.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Services\CommandHelper.cs" />
     <Compile Include="Services\Request.cs" />
     <Compile Include="SplashWindow.xaml.cs">
       <DependentUpon>SplashWindow.xaml</DependentUpon>
@@ -253,11 +254,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Res\Brushes.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Res\FormStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Res\GridStyles.xaml">
+    <Page Include="Res\Geometry.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Res\ListStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -317,7 +326,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Images\" />
     <Folder Include="Static\" />
   </ItemGroup>
   <ItemGroup>
@@ -337,6 +345,46 @@
     <Content Include="Data\Sources\employees.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Images\ФоминскаяЕЮ.jpg" />
+    <Resource Include="Images\ШураеваАС.jpg" />
+    <Resource Include="Images\ТелюкинаЮС.jpg" />
+    <Resource Include="Images\ПилипенкоВА.jpg" />
+    <Resource Include="Images\ПолетаеваНВ.jpg" />
+    <Resource Include="Images\КислинскаяТС.jpg" />
+    <Resource Include="Images\КозловаЖЮ.jpg" />
+    <Resource Include="Images\КопыловаГА.jpg" />
+    <Resource Include="Images\КоряковскаяКН.jpg" />
+    <Resource Include="Images\КостюкЛИ.jpg" />
+    <Resource Include="Images\КрасовскаяАС.jpg" />
+    <Resource Include="Images\КузнецоваТО.jpg" />
+    <Resource Include="Images\КушакВС.jpg" />
+    <Resource Include="Images\ЛуцикНВ.jpg" />
+    <Resource Include="Images\ЛыловаГН.jpg" />
+    <Resource Include="Images\МажниковаЕВ.jpg" />
+    <Resource Include="Images\МироноваМА.jpg" />
+    <Resource Include="Images\НазарянЛЮ.jpg" />
+    <Resource Include="Images\ДюжечкинаНА.jpg" />
+    <Resource Include="Images\ЕрмачковаТА.jpg" />
+    <Resource Include="Images\КалитинаАВ.jpg" />
+    <Resource Include="Images\ГлебоваМД.jpg" />
+    <Resource Include="Images\ГлинкаЛА.jpg" />
+    <Resource Include="Images\ГорюноваТЮ.jpg" />
+    <Resource Include="Images\ГорячеваЛА.jpg" />
+    <Resource Include="Images\ДанилюкИГ.jpg" />
+    <Resource Include="Images\АболмасоваЛВ.jpg" />
+    <Resource Include="Images\БасановаМВ.jpg" />
+    <Resource Include="Images\БерезинаАН.jpg" />
+    <Resource Include="Images\БогачеваЕИ.jpg" />
+    <Resource Include="Images\БратухинаЕВ.jpg" />
+    <Resource Include="Images\ВодопьяноваОИ.jpg" />
+    <Resource Include="Images\ВоронинаЕН.jpg" />
+    <Resource Include="Images\ТрофимоваНП.jpg" />
+    <Resource Include="Images\СафоноваЕА.jpg" />
+    <Resource Include="Images\ПащенкоКН.jpg" />
+    <Resource Include="Images\ДеменковаОВ.jpg" />
+    <Resource Include="Images\ГавриловаОВ.jpg" />
+    <Resource Include="Images\РебяковДВ.jpg" />
+    <Resource Include="Images\КарягинСН.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Media;
 
@@ -43,6 +46,22 @@ namespace HR.Utilities
             throw new NotImplementedException();
         }
     }
+    public class ImagePathConverter : IValueConverter
+    {
+        private string basePath = "Images";
+        private string extension = "jpg";
+
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (!(value is string) || String.IsNullOrWhiteSpace((string)value)) return null;
+            return $"/{basePath}/{value}.{extension}";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
+        }
+    }
     public class InverseBooleanConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -66,6 +85,59 @@ namespace HR.Utilities
             => throw new NotImplementedException();
             // Если не нужна двунаправленная привязка, можно вернуть Binding.DoNothing
             // return Binding.DoNothing;
+    }
+    public class ListToStringConverter : IValueConverter
+    {
+        private object GetNestedPropertyValue(object obj, string propertyPath)
+        {
+            if (obj == null || string.IsNullOrEmpty(propertyPath))
+                return null;
+
+            string[] parts = propertyPath.Split('.');
+            object currentObject = obj;
+
+            foreach (var part in parts)
+            {
+                if (currentObject == null)
+                    return null;
+
+                var prop = currentObject.GetType().GetProperty(part);
+                if (prop == null)
+                    return null;
+
+                currentObject = prop.GetValue(currentObject);
+            }
+
+            return currentObject;
+        }
+
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var collection = value as IEnumerable;
+            if (collection == null)
+                return string.Empty;
+
+            string propertyName = parameter as string ?? "Name";
+
+            var list = new List<string>();
+            foreach (var item in collection)
+            {
+                var val = GetNestedPropertyValue(item, propertyName);
+                if (val != null)
+                {
+                    string strVal = val.ToString();
+                    if (!string.IsNullOrEmpty(strVal))
+                        list.Add(strVal);
+                }
+            }
+
+            return string.Join(", ", list);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
     }
     public class ErrorVisibilityConverter : IMultiValueConverter
     {
@@ -116,6 +188,26 @@ namespace HR.Utilities
                                   .Select(p => p.Trim());
 
             return pages.Contains(currentPage, StringComparer.OrdinalIgnoreCase);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+    public class InvertedPageToIsCheckedConverter : IValueConverter
+    {
+        // value - текущая страница (string)
+        // parameter - строка с перечнем страниц, связанных с пунктом меню, разделенных запятыми
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            string currentPage = value as string;
+            string pagesParam = parameter as string;
+
+            if (string.IsNullOrEmpty(currentPage) || string.IsNullOrEmpty(pagesParam))
+                return false;
+
+            return string.Equals(currentPage, pagesParam, StringComparison.OrdinalIgnoreCase);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

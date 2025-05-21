@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="HRModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="HRModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Assignment">
           <Key>
             <PropertyRef Name="Id" />
@@ -74,6 +74,7 @@
           <Property Name="Patronymic" Type="nvarchar" MaxLength="50" />
           <Property Name="Gender" Type="bit" Nullable="false" />
           <Property Name="CareerStart" Type="date" />
+          <Property Name="Image" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="Grade">
           <Key>
@@ -94,7 +95,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Title" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Title" Type="nvarchar" MaxLength="128" Nullable="false" />
         </EntityType>
         <EntityType Name="Qualification">
           <Key>
@@ -514,8 +515,7 @@
             <End Role="User" EntitySet="User" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="HRModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -608,6 +608,7 @@
           <NavigationProperty Name="Retrainings" Relationship="Self.FK_Retraining_Employee" FromRole="Employee" ToRole="Retraining" />
           <NavigationProperty Name="Staffs" Relationship="Self.FK_Staff_Employee" FromRole="Employee" ToRole="Staff" />
           <NavigationProperty Name="Users" Relationship="Self.FK_User_Employee" FromRole="Employee" ToRole="User" />
+          <Property Name="Image" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Grade">
           <Key>
@@ -1141,6 +1142,7 @@
           <EntitySetMapping Name="Employees">
             <EntityTypeMapping TypeName="HRModel.Employee">
               <MappingFragment StoreEntitySet="Employee">
+                <ScalarProperty Name="Image" ColumnName="Image" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Surname" ColumnName="Surname" />
                 <ScalarProperty Name="GivenName" ColumnName="GivenName" />

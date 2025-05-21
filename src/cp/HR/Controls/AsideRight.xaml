@@ -34,7 +34,7 @@
                 <MenuItem.Icon>
                     <Viewbox Height="16" Width="16" ToolTip="Регистрация">
                         <Canvas Height="496" Width="512">
-                            <Path Data="M248 104c-53 0-96 43-96 96s43 96 96 96 96-43 96-96-43-96-96-96zm0 144c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48zm0-240C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 448c-49.7 0-95.1-18.3-130.1-48.4 14.9-23 40.4-38.6 69.6-39.5 20.8 6.4 40.6 9.6 60.5 9.6s39.7-3.1 60.5-9.6c29.2 1 54.7 16.5 69.6 39.5-35 30.1-80.4 48.4-130.1 48.4zm162.7-84.1c-24.4-31.4-62.1-51.9-105.1-51.9-10.2 0-26 9.6-57.6 9.6-31.5 0-47.4-9.6-57.6-9.6-42.9 0-80.6 20.5-105.1 51.9C61.9 339.2 48 299.2 48 256c0-110.3 89.7-200 200-200s200 89.7 200 200c0 43.2-13.9 83.2-37.3 115.9z">
+                            <Path Data="{StaticResource UserCircleRegularPath}">
                                 <Path.RenderTransform>
                                     <TranslateTransform X="0" Y="0"/>
                                 </Path.RenderTransform>
@@ -57,7 +57,7 @@
                 <MenuItem.Icon>
                     <Viewbox Height="16" Width="16" ToolTip="Вход">
                         <Canvas Height="512" Width="512">
-                            <Path Data="M217.9 105.9L340.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L217.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1L32 320c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM352 416l64 0c17.7 0 32-14.3 32-32l0-256c0-17.7-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64 0c53 0 96 43 96 96l0 256c0 53-43 96-96 96l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32z">
+                            <Path Data="{StaticResource RightToBracketSolidPath}">
                                 <Path.RenderTransform>
                                     <TranslateTransform X="0" Y="0"/>
                                 </Path.RenderTransform>
@@ -80,7 +80,76 @@
                 <MenuItem.Icon>
                     <Viewbox Height="16" Width="16" ToolTip="Предпочтения">
                         <Canvas Height="512" Width="512">
-                            <Path Data="M610.5 373.3c2.6-14.1 2.6-28.5 0-42.6l25.8-14.9c3-1.7 4.3-5.2 3.3-8.5-6.7-21.6-18.2-41.2-33.2-57.4-2.3-2.5-6-3.1-9-1.4l-25.8 14.9c-10.9-9.3-23.4-16.5-36.9-21.3v-29.8c0-3.4-2.4-6.4-5.7-7.1-22.3-5-45-4.8-66.2 0-3.3 .7-5.7 3.7-5.7 7.1v29.8c-13.5 4.8-26 12-36.9 21.3l-25.8-14.9c-2.9-1.7-6.7-1.1-9 1.4-15 16.2-26.5 35.8-33.2 57.4-1 3.3 .4 6.8 3.3 8.5l25.8 14.9c-2.6 14.1-2.6 28.5 0 42.6l-25.8 14.9c-3 1.7-4.3 5.2-3.3 8.5 6.7 21.6 18.2 41.1 33.2 57.4 2.3 2.5 6 3.1 9 1.4l25.8-14.9c10.9 9.3 23.4 16.5 36.9 21.3v29.8c0 3.4 2.4 6.4 5.7 7.1 22.3 5 45 4.8 66.2 0 3.3-.7 5.7-3.7 5.7-7.1v-29.8c13.5-4.8 26-12 36.9-21.3l25.8 14.9c2.9 1.7 6.7 1.1 9-1.4 15-16.2 26.5-35.8 33.2-57.4 1-3.3-.4-6.8-3.3-8.5l-25.8-14.9zM496 400.5c-26.8 0-48.5-21.8-48.5-48.5s21.8-48.5 48.5-48.5 48.5 21.8 48.5 48.5-21.7 48.5-48.5 48.5zM224 256c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm201.2 226.5c-2.3-1.2-4.6-2.6-6.8-3.9l-7.9 4.6c-6 3.4-12.8 5.3-19.6 5.3-10.9 0-21.4-4.6-28.9-12.6-18.3-19.8-32.3-43.9-40.2-69.6-5.5-17.7 1.9-36.4 17.9-45.7l7.9-4.6c-.1-2.6-.1-5.2 0-7.8l-7.9-4.6c-16-9.2-23.4-28-17.9-45.7 .9-2.9 2.2-5.8 3.2-8.7-3.8-.3-7.5-1.2-11.4-1.2h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C60.2 288 0 348.2 0 422.4V464c0 26.5 21.5 48 48 48h352c10.1 0 19.5-3.2 27.2-8.5-1.2-3.8-2-7.7-2-11.8v-9.2z">
+                            <Path Data="{StaticResource UserCogSoldPath}">
+                                <Path.RenderTransform>
+                                    <TranslateTransform X="0" Y="0"/>
+                                </Path.RenderTransform>
+                            </Path>
+                        </Canvas>
+                    </Viewbox>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem ToolTip="Журнал событий"
+                      Width="{Binding ElementName=RightMenu,Path=ActualWidth}"
+                      Visibility="{Binding IsAuth, Source={x:Static Application.Current}, Converter={StaticResource BoolToVis}}"
+                      IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=LogPg}"
+                      Command="NavigationCommands.GoToPage"
+                      CommandParameter="Pages/LogPg.xaml"
+                      CommandTarget="{Binding ElementName=mainFrame}"
+            >
+                <MenuItem.Header>
+                    <TextBlock TextTrimming="CharacterEllipsis">Журнал</TextBlock>
+                </MenuItem.Header>
+                <MenuItem.Icon>
+                    <Viewbox Height="16" Width="16" ToolTip="Журнал событий">
+                        <Canvas Height="512" Width="512">
+                            <Path Data="{StaticResource TasksSolidPath}">
+                                <Path.RenderTransform>
+                                    <TranslateTransform X="0" Y="0"/>
+                                </Path.RenderTransform>
+                            </Path>
+                        </Canvas>
+                    </Viewbox>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem ToolTip="Настройки системы"
+                      Width="{Binding ElementName=RightMenu,Path=ActualWidth}"
+                      Visibility="{Binding IsAuth, Source={x:Static Application.Current}, Converter={StaticResource BoolToVis}}"
+                      IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=SettingsPg}"
+                      Command="NavigationCommands.GoToPage"
+                      CommandParameter="Pages/SettingsPg.xaml"
+                      CommandTarget="{Binding ElementName=mainFrame}"
+            >
+                <MenuItem.Header>
+                    <TextBlock TextTrimming="CharacterEllipsis">Настройки</TextBlock>
+                </MenuItem.Header>
+                <MenuItem.Icon>
+                    <Viewbox Height="16" Width="16" ToolTip="Настройки приложения">
+                        <Canvas Height="512" Width="512">
+                            <Path Data="{StaticResource CogSolidPath}">
+                                <Path.RenderTransform>
+                                    <TranslateTransform X="0" Y="0"/>
+                                </Path.RenderTransform>
+                            </Path>
+                        </Canvas>
+                    </Viewbox>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem ToolTip="Управление пользователями"
+                      Width="{Binding ElementName=RightMenu,Path=ActualWidth}"
+                      Visibility="{Binding IsAuth, Source={x:Static Application.Current}, Converter={StaticResource BoolToVis}}"
+                      IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=UsersPg}"
+                      Command="NavigationCommands.GoToPage"
+                      CommandParameter="Pages/UsersPg.xaml"
+                      CommandTarget="{Binding ElementName=mainFrame}"
+                      >
+                <MenuItem.Header>
+                    <TextBlock TextTrimming="CharacterEllipsis">Пользователи</TextBlock>
+                </MenuItem.Header>
+                <MenuItem.Icon>
+                    <Viewbox Height="16" Width="16" ToolTip="Управление пользователями">
+                        <Canvas Height="512" Width="512">
+                            <Path Data="{StaticResource UsersCogSolidPath}">
                                 <Path.RenderTransform>
                                     <TranslateTransform X="0" Y="0"/>
                                 </Path.RenderTransform>
@@ -100,7 +169,7 @@
                 <MenuItem.Icon>
                     <Viewbox Height="16" Width="16" ToolTip="Выход">
                         <Canvas Height="512" Width="512">
-                            <Path Data="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z">
+                            <Path Data="{StaticResource RightFromBracketSolidPath}">
                                 <Path.RenderTransform>
                                     <TranslateTransform X="0" Y="0"/>
                                 </Path.RenderTransform>

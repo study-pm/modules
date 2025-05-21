@@ -15,7 +15,7 @@
         </Style>
     </UserControl.Resources>
     <StackPanel>
-        <HeaderedContentControl Header="{Binding HeaderText, ElementName=root}" />
+        <HeaderedContentControl Header="{Binding HeaderText, ElementName=root}" IsTabStop="False" />
         <Separator />
     </StackPanel>
 </UserControl>

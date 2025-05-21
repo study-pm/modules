@@ -4,19 +4,31 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:HR.Pages"
+      xmlns:ctl="clr-namespace:HR.Controls"
+      xmlns:sys="clr-namespace:System;assembly=mscorlib"
       xmlns:uc="clr-namespace:HR.Controls"
       xmlns:utils="clr-namespace:HR.Utilities"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="StaffPg" Loaded="Page_Loaded">
+      Title="StaffPg" Loaded="Page_Loaded" Unloaded="Page_Unloaded">
     <Page.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <utils:AddOneConverter x:Key="AddOneConv"/>
         <utils:InverseBooleanConverter x:Key="InvBoolConv"/>
+        <utils:ImagePathConverter x:Key="ImgPathConv"/>
+        <utils:InverseBoolToVisibilityConverter x:Key="InvBoolToVis"/>
+        <utils:ListToStringConverter x:Key="ListToStrConv"/>
         <utils:NotEmptyValidationRule x:Key="NotEmptyValidationRule"/>
     </Page.Resources>
-    <ScrollViewer Style="{StaticResource MainView}">
-        <StackPanel>
+    <Grid Margin="30">
+        <!-- Заменили StackPanel на Grid -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Заголовок и описание -->
+            <RowDefinition Height="*"/>
+            <!-- Основное содержимое (будет скроллироваться) -->
+        </Grid.RowDefinitions>
+        <StackPanel Margin="0 0 0 10">
             <uc:Header HeaderText="Сотрудники"></uc:Header>
             <TextBlock Style="{StaticResource Paragraph}">
                 Данный раздел содержит информацию о сотрудниках по категориям в соответствии с
@@ -27,34 +39,298 @@
             </TextBlock>
             <StackPanel Visibility="{Binding IsStaffNotEmpty, Converter={StaticResource BoolToVis}}">
                 <DockPanel>
-                    <TextBox Style="{StaticResource TextBoxMini}" Width="200" />
+                    <WrapPanel VerticalAlignment="Center">
+                        <Grid>
+                            <TextBox Width="200" Padding="5,0,25,0"
+                                 Style="{StaticResource TextBoxMini}"
+                                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                            />
+                            <Button Style="{StaticResource ClearBtn}"
+                                Click="ClearSearchButton_Click"
+                                Visibility="{Binding IsSearchEmpty, Converter={StaticResource InvBoolToVis}}"
+                                />
+                        </Grid>
+                        <ComboBox Width="105" VerticalContentAlignment="Center" Margin="2 0">
+                            <ComboBoxItem IsSelected="True">ФИО</ComboBoxItem>
+                            <ComboBoxItem>Должность</ComboBoxItem>
+                            <ComboBoxItem>Образование</ComboBoxItem>
+                        </ComboBox>
+                        <Button Margin="0" Content="Найти" IsDefault="True" ToolTip="Поиск по ФИО"
+                            Style="{StaticResource ButtonMini}" Background="{StaticResource BlueBrush}"
+                            Click="SearchButton_Click" />
+                        <TextBlock VerticalAlignment="Center" Margin="10 0" FontFamily="{StaticResource Roboto}">
+                        <Run>Всего записей:</Run>
+                        <Bold><Run Text="{Binding FilteredCount, Mode=OneWay}"></Run></Bold>
+                        </TextBlock>
+                    </WrapPanel>
+                    <WrapPanel HorizontalAlignment="Right">
+                        <ctl:IconHighlightButton Width="20" Height="20" Margin="5" ToolTip="Сортировка">
+                            <StackPanel>
+                                <Viewbox Stretch="Fill" Width="16" Height="16">
+                                    <Path Fill="{StaticResource magentaDarkBrush}" Data="{StaticResource SortAlphaDownSolidPath}"/>
+                                </Viewbox>
+                            </StackPanel>
+                        </ctl:IconHighlightButton>
+                        <!--
+                        <ctl:IconHighlightButton Width="20" Height="20" Margin="5" ToolTip="Экспорт в PDF">
+                            <StackPanel>
+                                <Viewbox Stretch="Fill" Width="20" Height="20">
+                                    <Path Fill="{StaticResource PdfBrush}" Data="{StaticResource FilePdfSolidPath}"/>
+                                </Viewbox>
+                            </StackPanel>
+                        </ctl:IconHighlightButton>
+                        <ctl:IconHighlightButton Width="20" Height="20" Margin="5" ToolTip="Экспорт в CSV">
+                            <StackPanel>
+                                <Viewbox Stretch="Fill" Width="20" Height="20">
+                                    <Path Fill="{StaticResource CsvBrush}" Data="{StaticResource FileCsvSolidPath}"/>
+                                </Viewbox>
+                            </StackPanel>
+                        </ctl:IconHighlightButton>
+                        -->
+                        <Button Margin="2 5" ToolTip="Печать" Background="{StaticResource OrangeRegularBrush}"
+                                Style="{StaticResource ButtonMini}"
+                                Command="{Binding PrintCommand}"
+                                >
+                            <Viewbox Stretch="Fill" Width="12" Height="12">
+                                <Path Fill="White" Data="{StaticResource PrintSolidPath}"/>
+                            </Viewbox>
+                        </Button>
+                        <Button Margin="2 5" ToolTip="Отменить все изменения"
+                                Style="{StaticResource ButtonMini}" Background="{StaticResource magentaDarkBrush}"
+                                >
+                            <Viewbox Stretch="Fill" Width="12" Height="12">
+                                <Path Fill="White" Data="{StaticResource UndoSolidPath}"/>
+                            </Viewbox>
+                        </Button>
+                        <Button Margin="2 5" ToolTip="Экспорт" Background="DarkCyan"
+                                Style="{StaticResource ButtonMini}"
+                                >
+                            <Viewbox Stretch="Fill" Width="12" Height="12">
+                                <Path Fill="White" Data="{StaticResource FileExportSolidPath}"/>
+                            </Viewbox>
+                        </Button>
+                        <Button Margin="2 5" ToolTip="Сохранить все изменения"
+                        Style="{StaticResource ButtonMini}" Background="{StaticResource GreenDarkBrush}"
+>
+                            <Viewbox Stretch="Fill" Width="12" Height="12">
+                                <Path Fill="White" Data="{StaticResource SaveSolidPath}"/>
+                            </Viewbox>
+                        </Button>
+                        <Button Margin="2 5" ToolTip="Добавить"
+                                Style="{StaticResource ButtonMini}" Background="{StaticResource BlueBrush}"
+                                >
+                            <Viewbox Stretch="Fill" Width="12" Height="12">
+                                <Path Fill="White" Data="{StaticResource PlusSolidPath}"/>
+                            </Viewbox>
+                        </Button>
 
-                    <Button Style="{StaticResource BlueBtnMini}" Margin="5 0">Найти</Button>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 5">
-                        <ToggleButton Width="25" Height="25" Margin="5 0" IsThreeState="False"
+                        <StackPanel Orientation="Horizontal">
+                            <ToggleButton Width="25" Height="25" Margin="5 0" IsThreeState="False" ToolTip="Список"
                                       Style="{StaticResource IconToggleButtonPathStyle}"
                                       IsChecked="{Binding IsGridView, Mode=TwoWay, Converter={StaticResource InvBoolConv}}"
                         >
-                            <Path Data="M149.3 216v80c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24v-80c0-13.3 10.7-24 24-24h101.3c13.3 0 24 10.7 24 24zM0 376v80c0 13.3 10.7 24 24 24h101.3c13.3 0 24-10.7 24-24v-80c0-13.3-10.7-24-24-24H24c-13.3 0-24 10.7-24 24zM125.3 32H24C10.7 32 0 42.7 0 56v80c0 13.3 10.7 24 24 24h101.3c13.3 0 24-10.7 24-24V56c0-13.3-10.7-24-24-24zm80 448H488c13.3 0 24-10.7 24-24v-80c0-13.3-10.7-24-24-24H205.3c-13.3 0-24 10.7-24 24v80c0 13.3 10.7 24 24 24zm-24-424v80c0 13.3 10.7 24 24 24H488c13.3 0 24-10.7 24-24V56c0-13.3-10.7-24-24-24H205.3c-13.3 0-24 10.7-24 24zm24 264H488c13.3 0 24-10.7 24-24v-80c0-13.3-10.7-24-24-24H205.3c-13.3 0-24 10.7-24 24v80c0 13.3 10.7 24 24 24z"
+                                <Path Data="{StaticResource ThListSolidPath}"
                                   Stretch="Uniform" Width="20" Height="20"
                                   Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ToggleButton}}"
                             />
-                        </ToggleButton>
-                        <ToggleButton Width="25" Height="25" IsThreeState="False"
+                            </ToggleButton>
+                            <ToggleButton Width="25" Height="25" IsThreeState="False" ToolTip="Таблица"
                                       Style="{StaticResource IconToggleButtonPathStyle}"
                                       IsChecked="{Binding IsGridView, Mode=TwoWay}"
-                        >
-                            <Path Data="M149.3 56v80c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V56c0-13.3 10.7-24 24-24h101.3c13.3 0 24 10.7 24 24zm181.3 240v-80c0-13.3-10.7-24-24-24H205.3c-13.3 0-24 10.7-24 24v80c0 13.3 10.7 24 24 24h101.3c13.3 0 24-10.7 24-24zm32-240v80c0 13.3 10.7 24 24 24H488c13.3 0 24-10.7 24-24V56c0-13.3-10.7-24-24-24H386.7c-13.3 0-24 10.7-24 24zm-32 80V56c0-13.3-10.7-24-24-24H205.3c-13.3 0-24 10.7-24 24v80c0 13.3 10.7 24 24 24h101.3c13.3 0 24-10.7 24-24zm-205.3 56H24c-13.3 0-24 10.7-24 24v80c0 13.3 10.7 24 24 24h101.3c13.3 0 24-10.7 24-24v-80c0-13.3-10.7-24-24-24zM0 376v80c0 13.3 10.7 24 24 24h101.3c13.3 0 24-10.7 24-24v-80c0-13.3-10.7-24-24-24H24c-13.3 0-24 10.7-24 24zm386.7-56H488c13.3 0 24-10.7 24-24v-80c0-13.3-10.7-24-24-24H386.7c-13.3 0-24 10.7-24 24v80c0 13.3 10.7 24 24 24zm0 160H488c13.3 0 24-10.7 24-24v-80c0-13.3-10.7-24-24-24H386.7c-13.3 0-24 10.7-24 24v80c0 13.3 10.7 24 24 24zM181.3 376v80c0 13.3 10.7 24 24 24h101.3c13.3 0 24-10.7 24-24v-80c0-13.3-10.7-24-24-24H205.3c-13.3 0-24 10.7-24 24z"
+                                      >
+                                <Path Data="{StaticResource ThSolidPath}"
                                   Stretch="Uniform" Width="20" Height="20"
                                   Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ToggleButton}}"
                             />
-                        </ToggleButton>
-                    </StackPanel>
+                            </ToggleButton>
+                        </StackPanel>
+                    </WrapPanel>
                 </DockPanel>
-                <DataGrid x:Name="EmployeesDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
-                          AlternationCount="1000" HeadersVisibility="Column"
+            </StackPanel>
+        </StackPanel>
+        <DataGrid Grid.Row="1" x:Name="EmployeesDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
+                          AlternationCount="1000" HeadersVisibility="Column" VerticalScrollBarVisibility="Auto"
+                          Visibility="{Binding IsGridView, Converter={StaticResource BoolToVis}}"
                           ItemsSource="{Binding Staff}"
                           >
+            <DataGrid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Редактировать"
+                                      InputGestureText="Ctrl+E"
+                                      IsEnabled="False"
+                            >
+                                <MenuItem.Icon>
+                                    <Viewbox Height="16" Width="16">
+                                        <Canvas Height="496" Width="512">
+                                            <Path Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource EditSolidPath}">
+                                                <Path.RenderTransform>
+                                                    <TranslateTransform X="0" Y="0"/>
+                                                </Path.RenderTransform>
+                                            </Path>
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Копировать"
+                                      Command="ApplicationCommands.Copy"
+                                      InputGestureText="Ctrl+C"
+                                      >
+                                <MenuItem.Icon>
+                                    <Viewbox Height="16" Width="16">
+                                        <Canvas Height="496" Width="512">
+                                            <Path Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource CopySolidPath}">
+                                                <Path.RenderTransform>
+                                                    <TranslateTransform X="0" Y="0"/>
+                                                </Path.RenderTransform>
+                                            </Path>
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Удалить"
+                                      Command="EditingCommands.Delete"
+                                      InputGestureText="Del"
+                                      >
+                                <MenuItem.Icon>
+                                    <Viewbox Height="16" Width="16">
+                                        <Canvas Height="496" Width="512">
+                                            <Path Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource TrashAltSolidPath}">
+                                                <Path.RenderTransform>
+                                                    <TranslateTransform X="0" Y="0"/>
+                                                </Path.RenderTransform>
+                                            </Path>
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Добавить"
+                                      Command="ApplicationCommands.New"
+                                      >
+                                <MenuItem.Icon>
+                                    <Viewbox Height="16" Width="16">
+                                        <Canvas Height="512" Width="512">
+                                            <Path Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource PlusSquareSolidPath}">
+                                                <Path.RenderTransform>
+                                                    <TranslateTransform X="0" Y="0"/>
+                                                </Path.RenderTransform>
+                                            </Path>
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <Separator/>
+                            <MenuItem Header="Сохранить"
+                                      Command="ApplicationCommands.Save"
+                                      InputGestureText="Ctrl+S"
+                                      >
+                                <MenuItem.Icon>
+                                    <Viewbox Height="16" Width="16">
+                                        <Canvas Height="496" Width="512">
+                                            <Path Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource SaveSolidPath}">
+                                                <Path.RenderTransform>
+                                                    <TranslateTransform X="0" Y="0"/>
+                                                </Path.RenderTransform>
+                                            </Path>
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Отменить"
+                                      Command="ApplicationCommands.Undo"
+                                      InputGestureText="Ctrl+Z"
+                                      >
+                                <MenuItem.Icon>
+                                    <Viewbox Height="16" Width="16">
+                                        <Canvas Height="496" Width="512">
+                                            <Path Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource UndoAltSolidPath}">
+                                                <Path.RenderTransform>
+                                                    <TranslateTransform X="0" Y="0"/>
+                                                </Path.RenderTransform>
+                                            </Path>
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <Separator/>
+                            <MenuItem Header="Печать"
+                                      Click="PrintMenuItem_Click"
+                                      InputGestureText="Ctrl+P"
+                            >
+                                <MenuItem.Icon>
+                                    <Viewbox Height="16" Width="16" Margin="-2 0 0 0">
+                                        <Canvas Height="496" Width="512">
+                                            <Path Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource PrintSolidPath}">
+                                                <Path.RenderTransform>
+                                                    <TranslateTransform X="0" Y="0"/>
+                                                </Path.RenderTransform>
+                                            </Path>
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Экспорт"
+                                      InputGestureText="Ctrl+E"
+                                      >
+                                <MenuItem.Icon>
+                                    <Viewbox Height="16" Width="16" HorizontalAlignment="Center">
+                                        <Canvas Height="496" Width="512">
+                                            <Path Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource FileExportSolidPath}">
+                                                <Path.RenderTransform>
+                                                    <TranslateTransform X="0" Y="0"/>
+                                                </Path.RenderTransform>
+                                            </Path>
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                                <MenuItem Header="CSV"
+                                          Command="ApplicationCommands.SaveAs"
+                                >
+                                <MenuItem.Icon>
+                                    <Viewbox Height="16" Width="16" HorizontalAlignment="Center">
+                                        <Canvas Height="496" Width="512">
+                                            <Path Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource FileCsvSolidPath}">
+                                                <Path.RenderTransform>
+                                                    <TranslateTransform X="0" Y="0"/>
+                                                </Path.RenderTransform>
+                                            </Path>
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="PDF"
+                                      Command="ApplicationCommands.SaveAs"
+                                      >
+                                <MenuItem.Icon>
+                                    <Viewbox Height="16" Width="16">
+                                        <Canvas Height="496" Width="512">
+                                            <Path Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource FilePdfSolidPath}">
+                                                <Path.RenderTransform>
+                                                    <TranslateTransform X="0" Y="0"/>
+                                                </Path.RenderTransform>
+                                            </Path>
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            </MenuItem>
+                            <Separator/>
+                            <MenuItem Header="Поиск по ФИО"
+                                      InputGestureText="Ctrl+F"
+                            >
+                                <MenuItem.Icon>
+                                    <Viewbox Height="16" Width="16">
+                                        <Canvas Height="496" Width="512">
+                                            <Path Fill="{StaticResource BaseDarkBrush}" Stretch="Uniform" Data="{StaticResource SearchSolidPath}">
+                                                <Path.RenderTransform>
+                                                    <TranslateTransform X="0" Y="0"/>
+                                                </Path.RenderTransform>
+                                            </Path>
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </ContextMenu>
+                    </DataGrid.ContextMenu>
                     <DataGrid.Columns>
                         <!-- Столбец с нумерацией -->
                         <DataGridTemplateColumn Width="40" IsReadOnly="True">
@@ -66,14 +342,77 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTextColumn Header="Фамилия" Width="*" Binding="{Binding Surname}" />
-                        <DataGridTextColumn Header="Имя" Width="*" Binding="{Binding GivenName}" />
-                        <DataGridTextColumn Header="Отчество" Width="*" Binding="{Binding Patronymic}" />
-                        <DataGridTextColumn Header="Стаж (лет)" Width="*" Binding="{Binding Experience}"
+                        <DataGridTextColumn Header="Фамилия" Width="*" Binding="{Binding Surname}" ElementStyle="{StaticResource TextBlockWithEllipsisStyle}" />
+                        <DataGridTextColumn Header="Имя" Width="*" Binding="{Binding GivenName}" ElementStyle="{StaticResource TextBlockWithEllipsisStyle}" />
+                        <DataGridTextColumn Header="Отчество" Width="*" Binding="{Binding Patronymic}" ElementStyle="{StaticResource TextBlockWithEllipsisStyle}" />
+                        <DataGridTemplateColumn Header="Должность" Width="2*" SortMemberPath="Staffs[0]">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ItemsControl ItemsSource="{Binding Staffs}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Position.Title}" Style="{StaticResource TextBlockWithEllipsisStyle}" />
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Стаж (лет)" Width="80" Binding="{Binding Experience}"
                                             CellStyle="{StaticResource RightAlignedCellStyle}"/>
                     </DataGrid.Columns>
                 </DataGrid>
-            </StackPanel>
-        </StackPanel>
-    </ScrollViewer>
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                      Visibility="{Binding IsGridView, Converter={StaticResource InvBoolToVis}}"
+                      >
+                <ItemsControl ItemsSource="{Binding Staff}">
+                    <ItemsControl.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Копировать" Click="CopyStaff_Click" InputGestureText="Ctrl+C" />
+                            <MenuItem Header="Печать" Click="PrintStaff_Click" InputGestureText="Ctrl+P" />
+                        </ContextMenu>
+                    </ItemsControl.ContextMenu>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="0 10">
+                                <Grid VerticalAlignment="Top">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="100" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Margin="0 0 10 0">
+                                        <HeaderedContentControl Header="{Binding FullName}"></HeaderedContentControl>
+                                        <TextBlock Style="{StaticResource ListItem}">
+                                            <Bold><Run>Должность:</Run></Bold>
+                                            <Run Text="{Binding Staffs, Converter={StaticResource ListToStrConv},ConverterParameter=Position.Title}" />
+                                        </TextBlock>
+                                        <TextBlock Style="{StaticResource ListItem}">
+                                            <Bold><Run>Стаж работы:</Run></Bold>
+                                            <Run Text="{Binding Experience, Mode=OneWay}"/>
+                                            <Run>лет</Run>
+                                        </TextBlock>
+                                        <TextBlock Style="{StaticResource ListItem}">
+                                            <Bold><Run>Подразделение:</Run></Bold>
+                                            <Run Text="{Binding Staffs, Converter={StaticResource ListToStrConv},ConverterParameter=Department.Title}" />
+                                        </TextBlock>
+                                    </StackPanel>
+                                    <Image Grid.Column="1" Source="{Binding Image, Converter={StaticResource ImgPathConv}}"
+                                           Cursor="Hand" ToolTip="Увеличить"
+                                           MouseLeftButtonUp="Image_MouseLeftButtonUp" />
+                                    <Popup StaysOpen="False" AllowsTransparency="True" Placement="MousePoint">
+                                        <Border BorderBrush="LightGray" BorderThickness="1" Background="White"
+                                                CornerRadius="5" Padding="10"
+                                                >
+                                            <ScrollViewer MaxWidth="500" VerticalScrollBarVisibility="Hidden">
+                                                <Image />
+                                            </ScrollViewer>
+                                        </Border>
+                                    </Popup>
+                                </Grid>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                </ScrollViewer>
+    </Grid>
 </Page>

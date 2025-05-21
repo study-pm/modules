@@ -9,6 +9,8 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
+using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -45,6 +47,10 @@ namespace HR.Controls
         {
             InitializeComponent();
 
+            this.Focusable = true;
+            this.IsTabStop = true;
+            this.FocusVisualStyle = null;  // Убираем пунктирный контур
+
             this.Loaded += IconHighlightButton_Loaded;
 
             this.MouseEnter += IconHighlightButton_MouseEnter;
@@ -53,8 +59,41 @@ namespace HR.Controls
             this.MouseLeftButtonUp += IconHighlightButton_MouseLeftButtonUp;
 
             this.LostMouseCapture += IconHighlightButton_LostMouseCapture;
+
+            // Добавляем обработчики фокуса
+            this.GotFocus += IconHighlightButton_GotFocus;
+            this.LostFocus += IconHighlightButton_LostFocus;
+        }
+        private void AnimateScale(double toScale)
+        {
+            if (ContentPresenter.RenderTransform is ScaleTransform scaleTransform)
+            {
+                var animX = new DoubleAnimation(toScale, TimeSpan.FromMilliseconds(150)) { EasingFunction = new QuadraticEase() };
+                var animY = new DoubleAnimation(toScale, TimeSpan.FromMilliseconds(150)) { EasingFunction = new QuadraticEase() };
+
+                scaleTransform.BeginAnimation(ScaleTransform.ScaleXProperty, animX);
+                scaleTransform.BeginAnimation(ScaleTransform.ScaleYProperty, animY);
+            }
+        }
+        private DropShadowEffect _focusShadowEffect = new DropShadowEffect
+        {
+            Color = Colors.DarkCyan,
+            BlurRadius = 3,
+            ShadowDepth = 0,
+            Opacity = 0.7
+        };
+
+        private void IconHighlightButton_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (_iconPath != null)
+                _iconPath.Effect = _focusShadowEffect;
         }
 
+        private void IconHighlightButton_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (_iconPath != null)
+                _iconPath.Effect = null;
+        }
         private void IconHighlightButton_Loaded(object sender, RoutedEventArgs e)
         {
             if (ContentPresenter.Content is DependencyObject content)
@@ -80,18 +119,24 @@ namespace HR.Controls
         {
             if (_baseColor.HasValue)
                 UpdateIconColor(ChangeColorBrightness(_baseColor.Value, 0.2)); // +20%
+
+            AnimateScale(1.05);
         }
 
         private void IconHighlightButton_MouseLeave(object sender, MouseEventArgs e)
         {
             if (_baseColor.HasValue)
                 UpdateIconColor(_baseColor.Value);
+
+            AnimateScale(1.0);
         }
 
         private void IconHighlightButton_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (_baseColor.HasValue)
                 UpdateIconColor(ChangeColorBrightness(_baseColor.Value, 0.4)); // +40%
+            if (_iconPath != null)
+                _iconPath.Effect = _focusShadowEffect;  // Добавляем тень при нажатии
             this.CaptureMouse();
         }
 
@@ -104,10 +149,15 @@ namespace HR.Controls
                 {
                     RaiseEvent(new RoutedEventArgs(ClickEvent));
                     UpdateIconColor(ChangeColorBrightness(_baseColor.Value, 0.2)); // Наведение
+                    if (_iconPath != null && this.IsFocused)
+                        _iconPath.Effect = _focusShadowEffect;  // Тень при фокусе
+                    else
+                        _iconPath.Effect = null;
                 }
                 else
                 {
                     UpdateIconColor(_baseColor.Value);
+                    _iconPath.Effect = null;
                 }
             }
         }

@@ -7,8 +7,10 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Res/BaseStyles.xaml" />
-                <ResourceDictionary Source="Res/GridStyles.xaml" />
+                <ResourceDictionary Source="Res/Brushes.xaml" />
                 <ResourceDictionary Source="Res/FormStyles.xaml" />
+                <ResourceDictionary Source="Res/Geometry.xaml" />
+                <ResourceDictionary Source="Res/ListStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

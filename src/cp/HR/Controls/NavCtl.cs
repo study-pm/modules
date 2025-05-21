@@ -9,6 +9,12 @@ using System.Windows;
 
 namespace HR.Controls
 {
+    public class NavigationData
+    {
+        public string Name { get; set; }
+        public string Uri { get; set; }
+        public object Parameter { get; set; }
+    }
     public abstract class NavCtl : UserControl
     {
         public static readonly DependencyProperty CurrentPageProperty =
@@ -18,6 +24,14 @@ namespace HR.Controls
         {
             get => (string)GetValue(CurrentPageProperty);
             set => SetValue(CurrentPageProperty, value);
+        }
+        public static readonly DependencyProperty PageParamProperty =
+            DependencyProperty.Register(nameof(PageParam), typeof(string), typeof(NavCtl), new PropertyMetadata(null));
+
+        public string PageParam
+        {
+            get => (string)GetValue(PageParamProperty);
+            set => SetValue(PageParamProperty, value);
         }
 
         protected NavCtl()
@@ -33,7 +47,9 @@ namespace HR.Controls
 
         private void Nav_Navigated(object sender, NavigationEventArgs e)
         {
+            // Имя типа страницы
             CurrentPage = e.Content.GetType().Name;
+            PageParam = e.ExtraData as string;
         }
     }
 }

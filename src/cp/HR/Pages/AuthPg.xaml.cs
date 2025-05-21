@@ -170,7 +170,7 @@ namespace HR.Pages
 
             if (hasLoginError || hasPasswordError)
             {
-                ValidationMessage.Text = "Устраните ошибки в форме";
+                ValidationMessage.Text = "Проверьте правильность введенных значений";
                 ValidationPopup.IsOpen = true;
                 return;
             }
