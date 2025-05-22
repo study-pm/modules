@@ -30,12 +30,13 @@
                 <StackPanel Style="{StaticResource FormElement}">
                     <Label>Сотрудник</Label>
                     <ComboBox x:Name="EmployeeCmb" Style="{StaticResource FormComboBox}"
+                              IsTextSearchEnabled="True" TextSearch.TextPath="FullName"
                               IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
                               utils:ValidationHelper.AutoErrorVisibility="True"
                               utils:ValidationHelper.EnableTouchedTracking="True"
                               ItemsSource="{Binding Employees}"
                               SelectedValuePath="Id"
-                              DisplayMemberPath="FullName">
+                              >
                         <ComboBox.SelectedValue>
                             <Binding Path="EmployeeId" UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True" NotifyOnValidationError="True">
                                 <Binding.ValidationRules>
@@ -43,6 +44,14 @@
                                 </Binding.ValidationRules>
                             </Binding>
                         </ComboBox.SelectedValue>
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding FullName}"
+                                           TextTrimming="CharacterEllipsis"
+                                           TextWrapping="NoWrap"
+                                           VerticalAlignment="Center"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
                     </ComboBox>
                 </StackPanel>
 
