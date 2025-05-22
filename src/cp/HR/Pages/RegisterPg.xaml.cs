@@ -224,7 +224,7 @@ namespace HR.Pages
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             IsInProgress = true;
-            Employees = new ObservableCollection<Employee>(await Services.Request.GetEmployees());
+            Employees = new ObservableCollection<Employee>((await Services.Request.GetEmployeesUnregistered()).OrderBy(emp => emp.Surname));
             IsInProgress = false;
         }
     }
