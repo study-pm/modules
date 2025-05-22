@@ -19,7 +19,7 @@ namespace HR.Data.Models
         public string Password { get; set; }
         public Nullable<int> EmployeeId { get; set; }
         public int RoleId { get; set; }
-        public bool Status { get; set; }
+        public byte Status { get; set; }
         public bool Is2faOn { get; set; }
         public string Secret { get; set; }
     
