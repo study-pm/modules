@@ -56,7 +56,7 @@
                 <Viewbox ToolTip="Ошибка"
                          Visibility="{Binding Status, Converter={StaticResource StatusToVisibilityConverter}, ConverterParameter=Error}"
                          >
-                    <Path Fill="{StaticResource ErrorBrush}" Data="{StaticResource CheckCircleSolidPath}"/>
+                    <Path Fill="{StaticResource ErrorBrush}" Data="{StaticResource ExclamationCircleSolidPath}"/>
                 </Viewbox>
                 </StackPanel>
                 <TextBlock Text="{Binding Timestamp, StringFormat=yyyy-MM-dd HH:mm:ss}" FontWeight="Light" />
