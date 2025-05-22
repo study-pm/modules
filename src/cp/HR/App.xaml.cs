@@ -87,7 +87,7 @@ namespace HR
             {
                 //var splash = new SplashWindow(); // Custom splash window
                 // splash.Show(); // Shows splash window
-                var splash = new SplashScreen("Img/graduation-cap-solid.png");
+                var splash = new SplashScreen("Static/Img/graduation-cap-solid.png");
                 splash.Show(false); // show splash screen without auto closing (true to auto-close)
 
                 CurrentUser = await GetCurrentUser();

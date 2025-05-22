@@ -319,17 +319,15 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <Resource Include="Fonts\Roboto-VariableFont_wdth,wght.ttf" />
-    <Resource Include="Fonts\Roboto-Italic-VariableFont_wdth,wght.ttf" />
+    <Resource Include="Static\Fonts\Roboto-VariableFont_wdth,wght.ttf" />
+    <Resource Include="Static\Fonts\Roboto-Italic-VariableFont_wdth,wght.ttf" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Static\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Img\graduation-cap-solid.png" />
+    <Resource Include="Static\Img\graduation-cap-solid.png" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Data\Models\DataModel.Context.tt">
