@@ -17,8 +17,11 @@ namespace HR.Data.Models
         public int Id { get; set; }
         public string Login { get; set; }
         public string Password { get; set; }
-        public int EmployeeId { get; set; }
+        public Nullable<int> EmployeeId { get; set; }
         public int RoleId { get; set; }
+        public bool Status { get; set; }
+        public bool Is2faOn { get; set; }
+        public string Secret { get; set; }
     
         public virtual Employee Employee { get; set; }
         public virtual Role Role { get; set; }

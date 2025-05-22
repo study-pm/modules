@@ -126,7 +126,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Title" Type="nvarchar" MaxLength="50" />
+          <Property Name="Title" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="Specialty">
           <Key>
@@ -168,8 +168,11 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Login" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Password" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="EmployeeId" Type="int" Nullable="false" />
+          <Property Name="EmployeeId" Type="int" />
           <Property Name="RoleId" Type="int" Nullable="false" />
+          <Property Name="Status" Type="bit" Nullable="false" />
+          <Property Name="Is2faOn" Type="bit" Nullable="false" />
+          <Property Name="Secret" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <Association Name="FK_Assignment_Staff">
           <End Role="Staff" Type="Self.Staff" Multiplicity="1">
@@ -392,7 +395,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_User_Employee">
-          <End Role="Employee" Type="Self.Employee" Multiplicity="1">
+          <End Role="Employee" Type="Self.Employee" Multiplicity="0..1">
             <OnDelete Action="Cascade" />
           </End>
           <End Role="User" Type="Self.User" Multiplicity="*" />
@@ -536,7 +539,7 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Title" Type="String" MaxLength="5" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="GradeId" Type="Int32" Nullable="false" />
-          <Property Name="EmployeeId" Type="Int32" />
+          <Property Name="EmployeeId" Type="Int32" Nullable="true"/>
           <NavigationProperty Name="Employee" Relationship="Self.FK_ClassGuidance_Employee" FromRole="ClassGuidance" ToRole="Employee" />
           <NavigationProperty Name="Grade" Relationship="Self.FK_ClassGuidance_Grade" FromRole="ClassGuidance" ToRole="Grade" />
         </EntityType>
@@ -632,7 +635,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Title" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Title" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="Staffs" Relationship="Self.FK_Staff_Position" FromRole="Position" ToRole="Staff" />
         </EntityType>
         <EntityType Name="Qualification">
@@ -669,7 +672,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Title" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Title" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="Users" Relationship="Self.FK_User_Role" FromRole="Role" ToRole="User" />
         </EntityType>
         <EntityType Name="Specialty">
@@ -718,10 +721,13 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Login" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Password" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="EmployeeId" Type="Int32" Nullable="false" />
+          <Property Name="EmployeeId" Type="Int32" Nullable="true"/>
           <Property Name="RoleId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Employee" Relationship="Self.FK_User_Employee" FromRole="User" ToRole="Employee" />
           <NavigationProperty Name="Role" Relationship="Self.FK_User_Role" FromRole="User" ToRole="Role" />
+          <Property Name="Status" Type="Boolean" Nullable="false" />
+          <Property Name="Is2faOn" Type="Boolean" Nullable="false" />
+          <Property Name="Secret" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_Assignment_Staff">
           <End Role="Staff" Type="Self.Staff" Multiplicity="1">
@@ -906,9 +912,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_User_Employee">
-          <End Role="Employee" Type="Self.Employee" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
+          <End Role="Employee" Type="Self.Employee" Multiplicity="0..1" />
           <End Role="User" Type="Self.User" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Employee">
@@ -1251,6 +1255,9 @@
           <EntitySetMapping Name="Users">
             <EntityTypeMapping TypeName="HRModel.User">
               <MappingFragment StoreEntitySet="User">
+                <ScalarProperty Name="Secret" ColumnName="Secret" />
+                <ScalarProperty Name="Is2faOn" ColumnName="Is2faOn" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Login" ColumnName="Login" />
                 <ScalarProperty Name="Password" ColumnName="Password" />
