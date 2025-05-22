@@ -55,20 +55,37 @@ namespace HR.Services
         {
             try
             {
-                StatusInformer.ReportProgress("Загрузка данных");
+                StatusInformer.ReportProgress("Загрузка данных о пользователях");
                 List<Employee> employees = await ctx.Employees
                     .Include(e => e.Developments)
                     .Include(e => e.Educations)
                     .Include(e => e.Retrainings)
                     .Include(e => e.Staffs)
                     .ToListAsync();
-                StatusInformer.ReportSuccess("Данные успешно извлечены");
+                StatusInformer.ReportSuccess("Данные пользователей успешно извлечены");
                 return employees;
             }
             catch (Exception exc)
             {
                 Debug.WriteLine(exc.Message);
-                StatusInformer.ReportFailure($"Ошибка извлечения данных: {exc.Message}");
+                StatusInformer.ReportFailure($"Ошибка извлечения данных о пользователях: {exc.Message}");
+                return new List<Employee>();  // Возврат значения при ошибке
+            }
+        }
+        public static async Task<List<Employee>> GetEmployeesUnregistered()
+        {
+            try
+            {
+                StatusInformer.ReportProgress("Загрузка данных о пользователях");
+                List<Employee> employees = await ctx.Employees.Where(e => !e.Users.Any())
+                    .ToListAsync();
+                StatusInformer.ReportSuccess("Данные пользователей успешно извлечены");
+                return employees;
+            }
+            catch (Exception exc)
+            {
+                Debug.WriteLine(exc.Message);
+                StatusInformer.ReportFailure($"Ошибка извлечения данных о пользователях: {exc.Message}");
                 return new List<Employee>();  // Возврат значения при ошибке
             }
         }
