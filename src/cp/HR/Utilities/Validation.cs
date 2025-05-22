@@ -170,12 +170,52 @@ namespace HR.Utilities
             }
             return null;
         }
+        /// <summary>
+        /// Emulates Touched and ShowErrors to force display errors
+        /// </summary>
+        /// <param name="controls">Controls list</param>
+        public static void ForceErrorsDisplay(List<Control> controls, bool IsSetTouched = true)
+        {
+            controls.ForEach(ctl => SetShowErrors(ctl, true));
+            controls.ForEach(ctl => SetTouched(ctl, IsSetTouched));
+        }
+        /// <summary>
+        /// Triggers user interface force update
+        /// </summary>
+        /// <param name="ctl">Input control</param>
+        public static void ForceUpdateUI(Control ctl)
+        {
+            ctl.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.Render);
+            HR.Utilities.ValidationHelper.SetErrorTextBlockVisibility(ctl, Visibility.Visible);
+        }
         public static void ForceValidate(FrameworkElement element, DependencyProperty property)
         {
             var binding = element.GetBindingExpression(property);
             binding?.UpdateSource();
         }
-
+        /// <summary>
+        /// Checks all controls for errors and returns validation state for each
+        /// </summary>
+        /// <param name="controls">Input controls</param>
+        /// <returns>Dictionary of controls and their validation state: true for valid, false for error</returns>
+        public static Dictionary<Control, bool> GetValidityState(List<Control> controls)
+        {
+            Dictionary<Control, bool> result = new Dictionary<Control, bool>();
+            controls.ForEach(ctl => result.Add(ctl, !Validation.GetHasError(ctl)));
+            return result;
+        }
+        /// <summary>
+        /// Clears validation state and reset all invalid values
+        /// </summary>
+        /// <param name="ctl">Input control</param>
+        /// <param name="prop">DepedencyProperty to reset</param>
+        public static void ResetInvalid(Control ctl, DependencyProperty prop)
+        {
+            var binding = ctl.GetBindingExpression(prop);
+            if (binding == null) return;
+            Validation.ClearInvalid(binding);
+            binding.UpdateSource();
+        }
         public static void ResetTouched(params UIElement[] elements)
         {
             foreach (var el in elements)
