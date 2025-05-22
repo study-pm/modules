@@ -88,8 +88,12 @@
                 Нет учетной записи? Вы можете
                 <Hyperlink NavigateUri="RegisterPg.xaml"><Bold>зарегистрироваться</Bold></Hyperlink>.
             </TextBlock>
+            <TextBlock Style="{StaticResource Paragraph}" Margin="0 20 0 0">
+                Забыли пароль? Отправьте администратору<LineBreak/>
+                <Hyperlink NavigateUri="RegisterPg.xaml"><Bold>заявку на сброс пароля</Bold></Hyperlink>.
+            </TextBlock>
 
-        </StackPanel>
+            </StackPanel>
     </StackPanel>
     </ScrollViewer>
 </Page>
