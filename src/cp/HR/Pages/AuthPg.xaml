@@ -93,7 +93,7 @@
                 <Hyperlink NavigateUri="RegisterPg.xaml"><Bold>заявку на сброс пароля</Bold></Hyperlink>.
             </TextBlock>
 
-            </StackPanel>
+        </StackPanel>
     </StackPanel>
     </ScrollViewer>
 </Page>
