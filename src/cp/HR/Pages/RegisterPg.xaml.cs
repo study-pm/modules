@@ -1,6 +1,8 @@
-﻿using HR.Utilities;
+﻿using HR.Data.Models;
+using HR.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
@@ -30,6 +32,31 @@ namespace HR.Pages
 
         public static readonly DependencyProperty InProgressProp =
             DependencyProperty.Register(nameof(IsInProgress), typeof(bool), typeof(RegisterPg), new PropertyMetadata(false));
+        private ObservableCollection<Employee> employees;
+        public ObservableCollection<Employee> Employees
+        {
+            get => employees;
+            set
+            {
+                if (employees == value) return;
+                employees = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private int? _employeeId;
+        public int? EmployeeId
+        {
+            get => _employeeId;
+            set
+            {
+                if (_employeeId != value)
+                {
+                    _employeeId = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
         public bool IsInProgress
         {
             get { return (bool)GetValue(InProgressProp); }
@@ -39,9 +66,6 @@ namespace HR.Pages
             DependencyProperty.Register(nameof(LoginProp), typeof(bool), typeof(RegisterPg), new PropertyMetadata(false));
         public string Login { get; set; }
 
-        public static readonly DependencyProperty UserIdProp =
-            DependencyProperty.Register(nameof(UserIdProp), typeof(bool), typeof(RegisterPg), new PropertyMetadata(false));
-        public int? UserId { get; set; }
         private string _password1;
         public string Password1
         {
@@ -65,6 +89,7 @@ namespace HR.Pages
         public RegisterPg()
         {
             InitializeComponent();
+            Employees = new ObservableCollection<Employee>(); // Инициализация пустой коллекции
             this.DataContext = this;
         }
         private async Task<bool> Register()
@@ -75,20 +100,24 @@ namespace HR.Pages
         private void Reset()
         {
             // Clear data
-            UserId = null;
+            EmployeeId = null;
             Login = string.Empty;
             Password1 = string.Empty;
             Password2 = string.Empty;
-            OnPropertyChanged(nameof(UserId));
+            OnPropertyChanged(nameof(EmployeeId));
             OnPropertyChanged(nameof(Login));
             OnPropertyChanged(nameof(Password1));
             OnPropertyChanged(nameof(Password2));
 
+            // Clear PasswordBoxes
+            Pw1Pwb.Password = string.Empty;
+            Pw2Pwb.Password = string.Empty;
+
             // Get controls list
-            List<Control> controls = new List<Control> { UserIdTxb, LoginTxb, Pw1Pwb, Pw2Pwb };
+            List<Control> controls = new List<Control> { EmployeeCmb, LoginTxb, Pw1Pwb, Pw2Pwb };
 
             // Clear control elements
-            ValidationHelper.ResetInvalid(UserIdTxb, TextBox.TextProperty);
+            ValidationHelper.ResetInvalid(EmployeeCmb, TextBox.TextProperty);
             ValidationHelper.ResetInvalid(LoginTxb, TextBox.TextProperty);
             ValidationHelper.ResetInvalid(Pw1Pwb, PasswordBox.TagProperty);
             ValidationHelper.ResetInvalid(Pw2Pwb, PasswordBox.TagProperty);
@@ -103,13 +132,13 @@ namespace HR.Pages
             Password2 = Pw1Pwb.Password;
 
             // Get controls list
-            List<Control> controls = new List<Control> { UserIdTxb, LoginTxb, Pw1Pwb, Pw2Pwb };
+            List<Control> controls = new List<Control> { EmployeeCmb, LoginTxb, Pw1Pwb, Pw2Pwb };
 
             // Force errors display
             ValidationHelper.ForceErrorsDisplay(controls);
 
             // Force validate
-            ValidationHelper.ForceValidate(UserIdTxb, TextBox.TextProperty);
+            ValidationHelper.ForceValidate(EmployeeCmb, ComboBox.SelectedValueProperty);
             ValidationHelper.ForceValidate(LoginTxb, TextBox.TextProperty);
             // Force validate for password boxes
             ValidatePassword(Password1, Pw1Pwb);
@@ -190,6 +219,13 @@ namespace HR.Pages
             {
                 IsInProgress = false;
             }
+        }
+
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            IsInProgress = true;
+            Employees = new ObservableCollection<Employee>((await Services.Request.GetEmployeesUnregistered()).OrderBy(emp => emp.Surname));
+            IsInProgress = false;
         }
     }
 }

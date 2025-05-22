@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -17,22 +18,17 @@ namespace HR.Utilities
     {
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
-            /*
-             var str = value as string;
-            if (string.IsNullOrWhiteSpace(str))
+            if (value == null)
                 return new ValidationResult(false, "Поле обязательно для заполнения");
-            return ValidationResult.ValidResult;
-            */
-            //return new ValidationResult(true, null);
-            string input = value as string;
-            if (string.IsNullOrWhiteSpace(input))
+            if (value is int intVal && intVal == 0)
+            {
                 return new ValidationResult(false, "Поле обязательно для заполнения");
-            /*
-            if (input.Length < 5)
-                return new ValidationResult(false, "Поле должно быть содержать более {5} символов");
-            */
+            }
+            if (value is string strVal && string.IsNullOrWhiteSpace(strVal))
+            {
+                return new ValidationResult(false, "Поле обязательно для заполнения");
+            }
             return new ValidationResult(true, null);
-            // return new ValidationResult(false, "Пользователь {логин} не найден");
         }
     }
     public class MinLengthValidationRule : ValidationRule

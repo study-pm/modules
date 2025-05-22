@@ -8,7 +8,7 @@
       xmlns:utils="clr-namespace:HR.Utilities"
       mc:Ignorable="d"
       d:DesignHeight="700" d:DesignWidth="800"
-      Title="RegisterPg">
+      Title="RegisterPg" Loaded="Page_Loaded">
     <Page.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <utils:InverseBooleanConverter x:Key="InvBoolConv"/>
@@ -28,22 +28,31 @@
             <StackPanel MaxWidth="300" Margin="0 20 0 0">
 
                 <StackPanel Style="{StaticResource FormElement}">
-                    <Label>Идентификатор пользователя</Label>
-                    <TextBox x:Name="UserIdTxb"
-                             IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
-                             utils:ValidationHelper.AutoErrorVisibility="True"
-                             utils:ValidationHelper.EnableTouchedTracking="True"
-                    >
-                        <TextBox.Text>
-                            <Binding Path="UserId" UpdateSourceTrigger="PropertyChanged"
-                                     ValidatesOnDataErrors="True" NotifyOnValidationError="True"
-                            >
+                    <Label>Сотрудник</Label>
+                    <ComboBox x:Name="EmployeeCmb" Style="{StaticResource FormComboBox}"
+                              IsTextSearchEnabled="True" TextSearch.TextPath="FullName"
+                              IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
+                              utils:ValidationHelper.AutoErrorVisibility="True"
+                              utils:ValidationHelper.EnableTouchedTracking="True"
+                              ItemsSource="{Binding Employees}"
+                              SelectedValuePath="Id"
+                              >
+                        <ComboBox.SelectedValue>
+                            <Binding Path="EmployeeId" UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True" NotifyOnValidationError="True">
                                 <Binding.ValidationRules>
                                     <utils:NotEmptyValidationRule/>
                                 </Binding.ValidationRules>
                             </Binding>
-                        </TextBox.Text>
-                    </TextBox>
+                        </ComboBox.SelectedValue>
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding FullName}"
+                                           TextTrimming="CharacterEllipsis"
+                                           TextWrapping="NoWrap"
+                                           VerticalAlignment="Center"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
                 </StackPanel>
 
                 <StackPanel Style="{StaticResource FormElement}">
