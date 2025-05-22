@@ -165,6 +165,149 @@
             </Setter.Value>
         </Setter>
     </Style>
+    <Style x:Key="FormComboBox" TargetType="ComboBox">
+        <Setter Property="FontFamily" Value="{StaticResource Roboto}"/>
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="MinHeight" Value="35"/>
+        <Setter Property="Padding" Value="5,0,5,0"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Validation.ErrorTemplate" Value="{DynamicResource ValidationErrorTemplate}"/>
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="BorderBrush" Value="DarkGray"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBox">
+                    <Grid>
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="3"
+                                SnapsToDevicePixels="True">
+                            <ToggleButton x:Name="ToggleButton"
+                                          IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                          Background="Transparent"
+                                          BorderBrush="{x:Null}" BorderThickness="0"
+                                          Focusable="False"
+                                          ClickMode="Press"
+                                          Padding="{TemplateBinding Padding}"
+                                          MinHeight="{TemplateBinding MinHeight}"
+                                          FontFamily="{TemplateBinding FontFamily}"
+                                          FontSize="{TemplateBinding FontSize}"
+                                          HorizontalContentAlignment="Stretch"
+                                          VerticalContentAlignment="Center">
+                                <Grid>
+                                    <ContentPresenter x:Name="ContentSite"
+                                                      ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                                      ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                                      Content="{TemplateBinding SelectionBoxItem}"
+                                                      Margin="5,0,30,0"
+                                                      VerticalAlignment="Center"
+                                                      HorizontalAlignment="Left"
+                                                      RecognizesAccessKey="True"/>
+                                    <Path x:Name="Arrow"
+                                          VerticalAlignment="Center"
+                                          HorizontalAlignment="Right"
+                                          Margin="0,0,5,0"
+                                          Data="M 0 0 L 4 4 L 8 0 Z"
+                                          Fill="Gray"/>
+                                </Grid>
+                            </ToggleButton>
+                        </Border>
+
+                        <!-- Popup с элементами -->
+                        <Popup x:Name="PART_Popup"
+                           Placement="Bottom"
+                           IsOpen="{TemplateBinding IsDropDownOpen}"
+                           AllowsTransparency="True"
+                           Focusable="False"
+                           PopupAnimation="Slide">
+                            <Border x:Name="DropDownBorder"
+                                    SnapsToDevicePixels="True"
+                                    Background="White"
+                                    BorderBrush="DarkGray" BorderThickness="1"
+                                    CornerRadius="3"
+                                    Padding="0" Margin="5"
+                                    MinWidth="{TemplateBinding ActualWidth}">
+                                <Border.Effect>
+                                    <DropShadowEffect Color="Gray" Direction="270" ShadowDepth="4" BlurRadius="8" Opacity="0.3" />
+                                </Border.Effect>
+                                <ScrollViewer Margin="4,6,4,6"
+                                               HorizontalScrollBarVisibility="Disabled"
+                                          SnapsToDevicePixels="True">
+                                    <StackPanel IsItemsHost="True"
+                                            KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                </ScrollViewer>
+                            </Border>
+                        </Popup>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <!-- Disabled -->
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="border" Property="Background" Value="#FFE5E5E5"/>
+                            <Setter TargetName="border" Property="BorderBrush" Value="#FFADB2B5"/>
+                            <Setter TargetName="border" Property="Opacity" Value="0.75"/>
+                            <Setter Property="Foreground" Value="Gray"/>
+                        </Trigger>
+                        <!-- Mouse over -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border" Property="BorderBrush" Value="DarkGray"/>
+                            <Setter TargetName="Arrow" Property="Fill" Value="DarkGray"/>
+                        </Trigger>
+                        <!-- Keyboard focus -->
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="border" Property="BorderBrush" Value="DodgerBlue"/>
+                            <Setter TargetName="Arrow" Property="Fill" Value="DodgerBlue"/>
+                        </Trigger>
+                        <!-- Pressed -->
+                        <Trigger Property="IsPressed" SourceName="ToggleButton" Value="True">
+                            <Setter TargetName="border" Property="BorderBrush" Value="DodgerBlue"/>
+                        </Trigger>
+                        <!-- Validation error + focused -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="Validation.HasError" Value="True"/>
+                                <Condition Property="IsFocused" Value="True"/>
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="border" Property="Background" Value="#f9d3d2"/>
+                        </MultiTrigger>
+                        <!-- Validation error + not focused + Touched -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="Validation.HasError" Value="True"/>
+                                <Condition Property="IsFocused" Value="False"/>
+                                <Condition Property="util:ValidationHelper.Touched" Value="True"/>
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="border" Property="BorderBrush" Value="Red"/>
+                            <Setter TargetName="border" Property="BorderThickness" Value="1"/>
+                        </MultiTrigger>
+                        <!-- No error + focused -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="Validation.HasError" Value="False"/>
+                                <Condition Property="IsFocused" Value="True"/>
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="border" Property="Background" Value="#e0f9d2"/>
+                        </MultiTrigger>
+                        <!-- Focused + not touched -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsFocused" Value="True"/>
+                                <Condition Property="util:ValidationHelper.Touched" Value="False"/>
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="border" Property="Background" Value="{StaticResource baseBackgroundBrush}"/>
+                        </MultiTrigger>
+                    </ControlTemplate.Triggers>
+
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style TargetType="ComboBoxItem">
+        <Setter Property="Padding" Value="10"/>
+    </Style>
+
 
     <Style x:Key="ButtonFocusVisual" TargetType="Control">
         <Setter Property="Template">
