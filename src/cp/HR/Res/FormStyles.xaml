@@ -17,7 +17,7 @@
     <Style x:Key="FormElement" TargetType="FrameworkElement">
         <Setter Property="Margin" Value="0 10"/>
     </Style>
-            <Style x:Key="MessageBox" TargetType="TextBlock">
+     <Style x:Key="MessageBox" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{StaticResource Roboto}"/>
         <Setter Property="FontSize" Value="10"/>
         <Setter Property="FontStretch" Value="Condensed"/>
