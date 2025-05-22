@@ -327,7 +327,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Resource Include="Img\graduation-cap-solid.png" />
+    <Resource Include="Static\Img\graduation-cap-solid.png" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Data\Models\DataModel.Context.tt">
