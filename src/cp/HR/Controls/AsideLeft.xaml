@@ -87,5 +87,18 @@
                 </MenuItem.Icon>
             </MenuItem>
         </Menu>
+        <ToggleButton Content="Подразделения" ToolTip="Структурные подразделения" Style="{StaticResource AsideToggleButton}">
+            <ToggleButton.Tag>
+                <Viewbox Height="16" Width="16" ToolTip="Сотрудники">
+                    <Canvas Height="512" Width="512">
+                        <Path Data="{StaticResource SitemapSolidPath}">
+                            <Path.RenderTransform>
+                                <TranslateTransform X="0" Y="0"/>
+                            </Path.RenderTransform>
+                        </Path>
+                    </Canvas>
+                </Viewbox>
+            </ToggleButton.Tag>
+        </ToggleButton>
     </StackPanel>
 </local:NavCtl>
