@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace HR.Utilities
 {
@@ -61,6 +62,37 @@ namespace HR.Utilities
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return DependencyProperty.UnsetValue;
+        }
+    }
+    public class ImagePathMultiConverter : IMultiValueConverter
+    {
+        private string basePath = "Images";
+        private string extension = "jpg";
+        private string fallbackImgPathPrefix = "pack://application:,,,/Static/Img/no-photo-";
+
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (values == null || values.Length < 2)
+                return null;
+
+            string imageName = values[0] as string;
+            bool gender = false;
+            if (values[1] is bool)
+                gender = (bool)values[1];
+
+            string imagePath;
+
+            if (string.IsNullOrWhiteSpace(imageName))
+                imagePath = fallbackImgPathPrefix + (gender ? "female" : "male") + ".jpg";
+            else
+                // Use pack URI for resources inside the assembly
+                imagePath = $"pack://application:,,,/{basePath}/{imageName}.{extension}";
+
+            return Utils.CreateBitmapImage(imagePath);
+        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
     public class InverseBooleanConverter : IValueConverter
