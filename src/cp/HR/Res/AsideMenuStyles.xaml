@@ -9,7 +9,7 @@
         <Setter Property="FontFamily" Value="{StaticResource Roboto}"/>
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="Foreground" Value="DodgerBlue" />
-        <Setter Property="Padding" Value="20" />
+        <Setter Property="Margin" Value="20 7" />
         <Setter Property="HorizontalContentAlignment" Value="Left"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -37,15 +37,18 @@
                               VerticalAlignment="Center" HorizontalAlignment="Center"
                               />
 
-                        <!-- Content -->
-                        <ContentPresenter Grid.Column="1"
-                                          VerticalAlignment="Center"
-                                          Margin="7,0,0,0"
-                                          RecognizesAccessKey="True"
-                                          Content="{TemplateBinding Content}"
-                                          ContentTemplate="{TemplateBinding ContentTemplate}"
-                                          ContentStringFormat="{TemplateBinding ContentStringFormat}"
-                                          />
+                        <!-- Content with TextBlock for trimming -->
+                        <TextBlock Grid.Column="1"
+                               VerticalAlignment="Center"
+                               Margin="7,0,0,0"
+                               Text="{TemplateBinding Content}"
+                               TextTrimming="CharacterEllipsis"
+                               TextWrapping="NoWrap"
+                               FontFamily="{TemplateBinding FontFamily}"
+                               FontSize="{TemplateBinding FontSize}"
+                               Foreground="{TemplateBinding Foreground}"
+                               FontWeight="{TemplateBinding FontWeight}"
+                               />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
@@ -116,11 +119,17 @@
                                 </ContentPresenter.Resources>
                             </ContentPresenter>
 
-                            <!-- Content -->
-                            <ContentPresenter x:Name="ContentHost"
-                                          ContentSource="Content"
-                                          VerticalAlignment="Center"
-                                          Grid.Column="1"/>
+                            <!-- Content with ellipsis -->
+                            <TextBlock x:Name="ContentHost"
+                                       Grid.Column="1"
+                                       VerticalAlignment="Center"
+                                       Text="{TemplateBinding Content}"
+                                       TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                                       Foreground="{TemplateBinding Foreground}"
+                                       FontFamily="{TemplateBinding FontFamily}"
+                                       FontSize="{TemplateBinding FontSize}"
+                                       FontWeight="{TemplateBinding FontWeight}"
+                                       />
 
                             <!-- Additional right element (e.g. arrow) -->
                             <Path x:Name="Arrow"
