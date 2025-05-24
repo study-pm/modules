@@ -136,7 +136,18 @@ namespace HR.Pages
             var user = await Services.Request.ctx.Users.FirstOrDefaultAsync(x => x.Login == login);
             return user == null;
         }
-
+        public void ClearAllErrors()
+        {
+            ClearErrors(nameof(Login));
+            ClearErrors(nameof(Password1));
+            ClearErrors(nameof(Password2));
+            ClearErrors(nameof(EmployeeId));
+            // Raise ErrorsChanged for all properties cleared
+            OnErrorsChanged(nameof(Login));
+            OnErrorsChanged(nameof(Password1));
+            OnErrorsChanged(nameof(Password2));
+            OnErrorsChanged(nameof(EmployeeId));
+        }
         private async Task<bool> Register()
         {
             await Utils.MockAsync(2000);
@@ -144,6 +155,9 @@ namespace HR.Pages
         }
         private void Reset()
         {
+            // Clear validation errors in ViewModel
+            ClearAllErrors();
+
             // Clear data
             EmployeeId = null;
             Login = string.Empty;
