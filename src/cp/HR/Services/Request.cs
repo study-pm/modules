@@ -55,20 +55,20 @@ namespace HR.Services
         {
             try
             {
-                StatusInformer.ReportProgress("Загрузка данных о пользователях");
+                StatusInformer.ReportProgress("Загрузка данных о сотрудниках");
                 List<Employee> employees = await ctx.Employees
                     .Include(e => e.Developments)
                     .Include(e => e.Educations)
                     .Include(e => e.Retrainings)
                     .Include(e => e.Staffs)
                     .ToListAsync();
-                StatusInformer.ReportSuccess("Данные пользователей успешно извлечены");
+                StatusInformer.ReportSuccess("Данные сотрудников успешно извлечены");
                 return employees;
             }
             catch (Exception exc)
             {
                 Debug.WriteLine(exc.Message);
-                StatusInformer.ReportFailure($"Ошибка извлечения данных о пользователях: {exc.Message}");
+                StatusInformer.ReportFailure($"Ошибка извлечения данных о сотрудниках: {exc.Message}");
                 return new List<Employee>();  // Возврат значения при ошибке
             }
         }
@@ -76,17 +76,34 @@ namespace HR.Services
         {
             try
             {
-                StatusInformer.ReportProgress("Загрузка данных о пользователях");
+                StatusInformer.ReportProgress("Загрузка данных о сотрудниках");
                 List<Employee> employees = await ctx.Employees.Where(e => !e.Users.Any())
                     .ToListAsync();
-                StatusInformer.ReportSuccess("Данные пользователей успешно извлечены");
+                StatusInformer.ReportSuccess("Данные сотрудников успешно извлечены");
                 return employees;
             }
             catch (Exception exc)
             {
                 Debug.WriteLine(exc.Message);
-                StatusInformer.ReportFailure($"Ошибка извлечения данных о пользователях: {exc.Message}");
+                StatusInformer.ReportFailure($"Ошибка извлечения данных о сотрудниках: {exc.Message}");
                 return new List<Employee>();  // Возврат значения при ошибке
+            }
+        }
+        public static async Task<List<HR.Data.Models.User>> GetUsers(bool isNewCtx = false)
+        {
+            var context = isNewCtx ? new HREntities() : ctx;
+            try
+            {
+                StatusInformer.ReportProgress("Загрузка данных о пользователях");
+                List<Data.Models.User> users = await context.Users.ToListAsync();
+                StatusInformer.ReportSuccess("Данные пользователей успешно извлечены");
+                return users;
+            }
+            catch (Exception exc)
+            {
+                Debug.WriteLine(exc.Message);
+                StatusInformer.ReportFailure($"Ошибка извлечения данных о пользователях: {exc.Message}");
+                return new List<Data.Models.User>();  // Возврат значения при ошибке
             }
         }
     }

@@ -1,13 +1,16 @@
 ﻿using HR.Data.Models;
 using HR.Utilities;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data.Entity;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,7 +27,7 @@ namespace HR.Pages
     /// <summary>
     /// Interaction logic for RegisterPg.xaml
     /// </summary>
-    public partial class RegisterPg : Page, INotifyPropertyChanged
+    public partial class RegisterPg : Page, INotifyPropertyChanged, INotifyDataErrorInfo
     {
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string prop = null)
@@ -62,10 +65,46 @@ namespace HR.Pages
             get { return (bool)GetValue(InProgressProp); }
             set { SetValue(InProgressProp, value); }
         }
-        public static readonly DependencyProperty LoginProp =
-            DependencyProperty.Register(nameof(LoginProp), typeof(bool), typeof(RegisterPg), new PropertyMetadata(false));
-        public string Login { get; set; }
-
+        // --- Add for async validation ---
+        private readonly Dictionary<string, List<string>> _errors = new Dictionary<string, List<string>>();
+        public bool HasErrors => _errors.Count > 0;
+        public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
+        public IEnumerable GetErrors(string propertyName)
+        {
+            if (string.IsNullOrEmpty(propertyName)) return null;
+            return _errors.ContainsKey(propertyName) ? _errors[propertyName] : null;
+        }
+        private void AddError(string propertyName, string error)
+        {
+            if (!_errors.ContainsKey(propertyName))
+                _errors[propertyName] = new List<string>();
+            if (!_errors[propertyName].Contains(error))
+                _errors[propertyName].Add(error);
+        }
+        private void ClearErrors(string propertyName)
+        {
+            if (_errors.ContainsKey(propertyName))
+                _errors.Remove(propertyName);
+        }
+        protected virtual void OnErrorsChanged(string propertyName)
+        {
+            ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
+        }
+        // --- End async validation fields ---
+        private string _login;
+        public string Login
+        {
+            get => _login;
+            set
+            {
+                if (_login != value)
+                {
+                    _login = value;
+                    OnPropertyChanged();
+                    _ = ValidateLoginAsync(); // ← Start async validation on change
+                }
+            }
+        }
         private string _password1;
         public string Password1
         {
@@ -92,6 +131,23 @@ namespace HR.Pages
             Employees = new ObservableCollection<Employee>(); // Инициализация пустой коллекции
             this.DataContext = this;
         }
+        private async Task<bool> CheckLoginUniqueAsync(string login)
+        {
+            var user = await Services.Request.ctx.Users.FirstOrDefaultAsync(x => x.Login == login);
+            return user == null;
+        }
+        public void ClearAllErrors()
+        {
+            ClearErrors(nameof(Login));
+            ClearErrors(nameof(Password1));
+            ClearErrors(nameof(Password2));
+            ClearErrors(nameof(EmployeeId));
+            // Raise ErrorsChanged for all properties cleared
+            OnErrorsChanged(nameof(Login));
+            OnErrorsChanged(nameof(Password1));
+            OnErrorsChanged(nameof(Password2));
+            OnErrorsChanged(nameof(EmployeeId));
+        }
         private async Task<bool> Register()
         {
             await Utils.MockAsync(2000);
@@ -99,6 +155,9 @@ namespace HR.Pages
         }
         private void Reset()
         {
+            // Clear validation errors in ViewModel
+            ClearAllErrors();
+
             // Clear data
             EmployeeId = null;
             Login = string.Empty;
@@ -159,6 +218,35 @@ namespace HR.Pages
                 return false;
             }
             return true;
+        }
+        private CancellationTokenSource _loginValidationCts;
+        private async Task ValidateLoginAsync()
+        {
+            // Cancel any previous pending validation
+            _loginValidationCts?.Cancel();
+            _loginValidationCts = new CancellationTokenSource();
+            var token = _loginValidationCts.Token;
+
+            try
+            {
+                // Wait debounce delay
+                await Task.Delay(250, token);
+
+                ClearErrors(nameof(Login));
+
+                bool isUnique = await CheckLoginUniqueAsync(Login);
+
+                if (!isUnique)
+                {
+                    AddError(nameof(Login), "Этот логин уже занят");
+                }
+
+                OnErrorsChanged(nameof(Login));
+            }
+            catch (TaskCanceledException)
+            {
+                // Validation was cancelled due to new input, ignore
+            }
         }
         private void ValidatePassword(string password, PasswordBox pwdBx)
         {
