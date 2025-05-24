@@ -5,10 +5,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data.Entity;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -131,8 +133,8 @@ namespace HR.Pages
         }
         private async Task<bool> CheckLoginUniqueAsync(string login)
         {
-            var users = await Services.Request.GetUsers();
-            return !users.Any(u => string.Equals(u.Login, login, StringComparison.OrdinalIgnoreCase));
+            var user = await Services.Request.ctx.Users.FirstOrDefaultAsync(x => x.Login == login);
+            return user == null;
         }
 
         private async Task<bool> Register()
@@ -203,14 +205,34 @@ namespace HR.Pages
             }
             return true;
         }
+        private CancellationTokenSource _loginValidationCts;
         private async Task ValidateLoginAsync()
         {
-            ClearErrors(nameof(Login));
+            // Cancel any previous pending validation
+            _loginValidationCts?.Cancel();
+            _loginValidationCts = new CancellationTokenSource();
+            var token = _loginValidationCts.Token;
 
-            bool isUnique = await CheckLoginUniqueAsync(Login);
-            if (!isUnique)
-                AddError(nameof(Login), "Этот логин уже занят");
-            OnErrorsChanged(nameof(Login));
+            try
+            {
+                // Wait debounce delay
+                await Task.Delay(250, token);
+
+                ClearErrors(nameof(Login));
+
+                bool isUnique = await CheckLoginUniqueAsync(Login);
+
+                if (!isUnique)
+                {
+                    AddError(nameof(Login), "Этот логин уже занят.");
+                }
+
+                OnErrorsChanged(nameof(Login));
+            }
+            catch (TaskCanceledException)
+            {
+                // Validation was cancelled due to new input, ignore
+            }
         }
         private void ValidatePassword(string password, PasswordBox pwdBx)
         {
