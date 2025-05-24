@@ -65,6 +65,7 @@
                         <TextBox.Text>
                             <Binding Path="Login" UpdateSourceTrigger="PropertyChanged"
                                      ValidatesOnDataErrors="True" NotifyOnValidationError="True"
+                                     ValidatesOnNotifyDataErrors="True"
                                      >
                                 <Binding.ValidationRules>
                                     <utils:NotEmptyValidationRule/>
