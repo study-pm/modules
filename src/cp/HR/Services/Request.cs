@@ -55,20 +55,20 @@ namespace HR.Services
         {
             try
             {
-                StatusInformer.ReportProgress("Загрузка данных о пользователях");
+                StatusInformer.ReportProgress("Загрузка данных о сотрудниках");
                 List<Employee> employees = await ctx.Employees
                     .Include(e => e.Developments)
                     .Include(e => e.Educations)
                     .Include(e => e.Retrainings)
                     .Include(e => e.Staffs)
                     .ToListAsync();
-                StatusInformer.ReportSuccess("Данные пользователей успешно извлечены");
+                StatusInformer.ReportSuccess("Данные сотрудников успешно извлечены");
                 return employees;
             }
             catch (Exception exc)
             {
                 Debug.WriteLine(exc.Message);
-                StatusInformer.ReportFailure($"Ошибка извлечения данных о пользователях: {exc.Message}");
+                StatusInformer.ReportFailure($"Ошибка извлечения данных о сотрудниках: {exc.Message}");
                 return new List<Employee>();  // Возврат значения при ошибке
             }
         }
@@ -76,16 +76,16 @@ namespace HR.Services
         {
             try
             {
-                StatusInformer.ReportProgress("Загрузка данных о пользователях");
+                StatusInformer.ReportProgress("Загрузка данных о сотрудниках");
                 List<Employee> employees = await ctx.Employees.Where(e => !e.Users.Any())
                     .ToListAsync();
-                StatusInformer.ReportSuccess("Данные пользователей успешно извлечены");
+                StatusInformer.ReportSuccess("Данные сотрудников успешно извлечены");
                 return employees;
             }
             catch (Exception exc)
             {
                 Debug.WriteLine(exc.Message);
-                StatusInformer.ReportFailure($"Ошибка извлечения данных о пользователях: {exc.Message}");
+                StatusInformer.ReportFailure($"Ошибка извлечения данных о сотрудниках: {exc.Message}");
                 return new List<Employee>();  // Возврат значения при ошибке
             }
         }
