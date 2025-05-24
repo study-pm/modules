@@ -165,22 +165,26 @@ namespace HR.Pages
         {
             ItemsControlHelper.PrintStaff(Staff);
         }
-        private void Image_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void EnlargeImageButton_Click(object sender, RoutedEventArgs e)
         {
-            var image = sender as Image;
+            if (!(sender is Button btn)) return;
+
+            // Search for the thumb Image inside the Button
+            var image = btn.Content as Image;
             if (image == null) return;
 
-            // Получаем родительский Grid, в котором находится Image и Popup
-            var grid = VisualTreeHelper.GetParent(image);
+            // Search for the parent Grid
+            DependencyObject grid = VisualTreeHelper.GetParent(btn);
             while (grid != null && !(grid is Grid))
             {
                 grid = VisualTreeHelper.GetParent(grid);
             }
             if (grid == null) return;
 
-            // Находим Popup внутри этого Grid
+            // Find a Popup inside the Grid
             Popup popup = null;
-            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(grid); i++)
+            int childrenCount = VisualTreeHelper.GetChildrenCount(grid);
+            for (int i = 0; i < childrenCount; i++)
             {
                 var child = VisualTreeHelper.GetChild(grid, i);
                 if (child is Popup p)
@@ -191,17 +195,12 @@ namespace HR.Pages
             }
             if (popup == null) return;
 
-            // Находим Image внутри Popup (тот, что показывает увеличенное изображение)
-            var border = popup.Child as Border;
-            if (border == null) return;
+            // Search for a full-scale Image inside the Popup
+            if (!(popup.Child is Border border)) return;
+            if (!(border.Child is ScrollViewer scrollViewer)) return;
+            if (!(scrollViewer.Content is Image popupImage)) return;
 
-            var scrollViewer = border.Child as ScrollViewer;
-            if (scrollViewer == null) return;
-
-            var popupImage = scrollViewer.Content as Image;
-            if (popupImage == null) return;
-
-            // Устанавливаем источник изображения и открываем Popup
+            // Set image source and open Popup
             popupImage.Source = image.Source;
             popup.IsOpen = true;
         }

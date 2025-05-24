@@ -3,13 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace HR.Utilities
 {
@@ -50,16 +53,77 @@ namespace HR.Utilities
     {
         private string basePath = "Images";
         private string extension = "jpg";
+        private string fallbackImgPath = "/Static/Img/no-photo-male.jpg";
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (!(value is string) || String.IsNullOrWhiteSpace((string)value)) return null;
+            if (!(value is string) || String.IsNullOrWhiteSpace((string)value)) return fallbackImgPath;
             return $"/{basePath}/{value}.{extension}";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return DependencyProperty.UnsetValue;
+        }
+    }
+    public class ImagePathMultiConverter : IMultiValueConverter
+    {
+        private string basePath = "Images";
+        private string extension = "jpg";
+        private string fallbackImgPathPrefix = "pack://application:,,,/Static/Img/no-photo-";
+
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (values == null || values.Length < 2)
+                return null;
+
+            string imageName = values[0] as string;
+            bool gender = false;
+            if (values[1] is bool)
+                gender = (bool)values[1];
+
+            string fallbackPath = fallbackImgPathPrefix + (gender ? "female" : "male") + ".jpg";
+
+            // If no image specified, use fallback
+            if (string.IsNullOrWhiteSpace(imageName))
+                return Utils.CreateBitmapImage(fallbackPath);
+
+            // 1. If imageName is an absolute path and exists, load from file
+            if (File.Exists(imageName))
+                return Utils.CreateBitmapImageFromFile(imageName);
+
+            // 2. Search beside the executive file (i.e. Images/imageName)
+            string appDir = AppDomain.CurrentDomain.BaseDirectory;
+            string filePath = Path.Combine(appDir, basePath, imageName);
+            if (!File.Exists(filePath) && !Path.HasExtension(filePath))
+                filePath += "." + extension;
+
+            if (File.Exists(filePath))
+                return Utils.CreateBitmapImageFromFile(filePath);
+
+            // 3. Search Images в корне проекта (ищем выше по папкам)
+            string projectRootImages = Utils.FindInParentDirectories(appDir, basePath, imageName, extension);
+            if (projectRootImages != null)
+                return Utils.CreateBitmapImageFromFile(projectRootImages);
+
+            // Try to load as pack resource (legacy images)
+            string resourcePath = $"pack://application:,,,/{basePath}/{imageName}";
+            if (!resourcePath.EndsWith($".{extension}"))
+                resourcePath += $".{extension}";
+
+            try
+            {
+                return Utils.CreateBitmapImage(resourcePath);
+            }
+            catch
+            {
+                // Fallback if nothing found
+                return Utils.CreateBitmapImage(fallbackPath);
+            }
+        }
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
     public class InverseBooleanConverter : IValueConverter
@@ -208,6 +272,18 @@ namespace HR.Utilities
                 return false;
 
             return string.Equals(currentPage, pagesParam, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+    public class StringToBoolConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return !string.IsNullOrWhiteSpace(value as string);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
