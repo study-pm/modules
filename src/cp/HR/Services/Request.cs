@@ -89,5 +89,21 @@ namespace HR.Services
                 return new List<Employee>();  // Возврат значения при ошибке
             }
         }
+        public static async Task<List<HR.Data.Models.User>> GetUsers()
+        {
+            try
+            {
+                StatusInformer.ReportProgress("Загрузка данных о пользователях");
+                List<Data.Models.User> users = await ctx.Users.ToListAsync();
+                StatusInformer.ReportSuccess("Данные пользователей успешно извлечены");
+                return users;
+            }
+            catch (Exception exc)
+            {
+                Debug.WriteLine(exc.Message);
+                StatusInformer.ReportFailure($"Ошибка извлечения данных о пользователях: {exc.Message}");
+                return new List<Data.Models.User>();  // Возврат значения при ошибке
+            }
+        }
     }
 }
