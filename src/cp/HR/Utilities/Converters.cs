@@ -50,10 +50,11 @@ namespace HR.Utilities
     {
         private string basePath = "Images";
         private string extension = "jpg";
+        private string fallbackImgPath = "/Static/Img/no-photo-male.jpg";
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (!(value is string) || String.IsNullOrWhiteSpace((string)value)) return null;
+            if (!(value is string) || String.IsNullOrWhiteSpace((string)value)) return fallbackImgPath;
             return $"/{basePath}/{value}.{extension}";
         }
 
