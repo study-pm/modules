@@ -20,6 +20,7 @@
         <utils:InverseBoolToVisibilityConverter x:Key="InvBoolToVis"/>
         <utils:ListToStringConverter x:Key="ListToStrConv"/>
         <utils:NotEmptyValidationRule x:Key="NotEmptyValidationRule"/>
+        <utils:StringToBoolConverter x:Key="StrToBoolConv"/>
     </Page.Resources>
     <Grid Margin="30">
         <!-- Заменили StackPanel на Grid -->
@@ -397,24 +398,29 @@
                                             <Run Text="{Binding Staffs, Converter={StaticResource ListToStrConv},ConverterParameter=Department.Title}" />
                                         </TextBlock>
                                     </StackPanel>
-                                <Image Grid.Column="1" Cursor="Hand" ToolTip="Увеличить изображение"
-                                       MouseLeftButtonUp="Image_MouseLeftButtonUp">
-                                    <Image.Source>
-                                        <MultiBinding Converter="{StaticResource ImgPathMultiConv}">
-                                            <Binding Path="Image" />
-                                            <Binding Path="Gender" />
-                                        </MultiBinding>
-                                    </Image.Source>
-                                </Image>
+                                <Button Grid.Column="1" ToolTip="Увеличить изображение"
+                                        Style="{StaticResource ImgButtonStyle}"
+                                        Click="EnlargeImageButton_Click"
+                                        IsEnabled="{Binding Image, Converter={StaticResource StrToBoolConv}}"
+                                        >
+                                    <Image>
+                                        <Image.Source>
+                                            <MultiBinding Converter="{StaticResource ImgPathMultiConv}">
+                                                <Binding Path="Image" />
+                                                <Binding Path="Gender" />
+                                            </MultiBinding>
+                                        </Image.Source>
+                                    </Image>
+                                </Button>
                                 <Popup StaysOpen="False" AllowsTransparency="True" Placement="MousePoint" PopupAnimation="Fade">
-                                        <Border BorderBrush="LightGray" BorderThickness="1" Background="White"
-                                                CornerRadius="5" Padding="10"
-                                                >
-                                            <ScrollViewer MaxWidth="500" VerticalScrollBarVisibility="Hidden">
-                                                <Image />
-                                            </ScrollViewer>
-                                        </Border>
-                                    </Popup>
+                                    <Border BorderBrush="LightGray" BorderThickness="1" Background="White"
+                                            CornerRadius="5" Padding="10"
+                                            >
+                                        <ScrollViewer MaxWidth="500" VerticalScrollBarVisibility="Hidden">
+                                            <Image />
+                                        </ScrollViewer>
+                                    </Border>
+                                </Popup>
                                 </Grid>
                             </StackPanel>
                         </DataTemplate>
