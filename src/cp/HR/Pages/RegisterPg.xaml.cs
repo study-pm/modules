@@ -224,7 +224,7 @@ namespace HR.Pages
 
                 if (!isUnique)
                 {
-                    AddError(nameof(Login), "Этот логин уже занят.");
+                    AddError(nameof(Login), "Этот логин уже занят");
                 }
 
                 OnErrorsChanged(nameof(Login));
