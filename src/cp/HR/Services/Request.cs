@@ -89,12 +89,13 @@ namespace HR.Services
                 return new List<Employee>();  // Возврат значения при ошибке
             }
         }
-        public static async Task<List<HR.Data.Models.User>> GetUsers()
+        public static async Task<List<HR.Data.Models.User>> GetUsers(bool isNewCtx = false)
         {
+            var context = isNewCtx ? new HREntities() : ctx;
             try
             {
                 StatusInformer.ReportProgress("Загрузка данных о пользователях");
-                List<Data.Models.User> users = await ctx.Users.ToListAsync();
+                List<Data.Models.User> users = await context.Users.ToListAsync();
                 StatusInformer.ReportSuccess("Данные пользователей успешно извлечены");
                 return users;
             }
