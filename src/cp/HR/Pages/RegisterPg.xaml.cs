@@ -35,6 +35,13 @@ namespace HR.Pages
 
         public static readonly DependencyProperty InProgressProp =
             DependencyProperty.Register(nameof(IsInProgress), typeof(bool), typeof(RegisterPg), new PropertyMetadata(false));
+
+        public bool IsInProgress
+        {
+            get { return (bool)GetValue(InProgressProp); }
+            set { SetValue(InProgressProp, value); }
+        }
+
         private ObservableCollection<Employee> employees;
         public ObservableCollection<Employee> Employees
         {
@@ -59,11 +66,6 @@ namespace HR.Pages
                     OnPropertyChanged();
                 }
             }
-        }
-        public bool IsInProgress
-        {
-            get { return (bool)GetValue(InProgressProp); }
-            set { SetValue(InProgressProp, value); }
         }
         // --- Add for async validation ---
         private readonly Dictionary<string, List<string>> _errors = new Dictionary<string, List<string>>();
