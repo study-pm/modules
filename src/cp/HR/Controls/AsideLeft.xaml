@@ -6,12 +6,14 @@
              xmlns:local="clr-namespace:HR.Controls"
              xmlns:utils="clr-namespace:HR.Utilities"
              mc:Ignorable="d"
+             Loaded="Control_Loaded"
              d:DesignHeight="450" d:DesignWidth="800">
     <local:NavCtl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Res/AsideMenuStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <utils:InverseBooleanConverter x:Key="InvBoolConv"/>
             <utils:InvertedPageToIsCheckedConverter x:Key="InvPgChkConv" />
             <utils:PageToIsCheckedConverter x:Key="CheckedConverter" />
             <utils:PageToIsEnabledConverter x:Key="EnabledConverter" />
@@ -87,18 +89,81 @@
                 </MenuItem.Icon>
             </MenuItem>
         </Menu>
-        <ToggleButton Content="Подразделения" ToolTip="Структурные подразделения" Style="{StaticResource AsideToggleButton}">
-            <ToggleButton.Tag>
-                <Viewbox Height="16" Width="16" ToolTip="Сотрудники">
-                    <Canvas Height="512" Width="512">
-                        <Path Data="{StaticResource SitemapSolidPath}">
-                            <Path.RenderTransform>
-                                <TranslateTransform X="0" Y="0"/>
-                            </Path.RenderTransform>
-                        </Path>
-                    </Canvas>
-                </Viewbox>
-            </ToggleButton.Tag>
-        </ToggleButton>
+        <ItemsControl ItemsSource="{Binding Filters}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <RadioButton Margin="10 1" GroupName="AsideFilterGroup"
+                                     Content="{Binding Title}" ToolTip="{Binding Name}"
+                                     Style="{StaticResource AsideToggleButton}"
+                                     IsChecked="{Binding IsChecked}"
+                                     IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
+                                     PreviewMouseLeftButtonDown="RadioButton_PreviewMouseLeftButtonDown"
+                                     >
+                            <RadioButton.Tag>
+                                <Viewbox Height="16" Width="16" ToolTip="{Binding Name}">
+                                    <Canvas Height="512" Width="512">
+                                        <Path Data="{Binding Icon}">
+                                            <Path.RenderTransform>
+                                                <TranslateTransform X="0" Y="0"/>
+                                            </Path.RenderTransform>
+                                        </Path>
+                                    </Canvas>
+                                </Viewbox>
+                            </RadioButton.Tag>
+                        </RadioButton>
+                        <StackPanel x:Name="ExpanderPanel" Opacity="0" MaxHeight="0" Margin="0,5,0,0">
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsChecked}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
+                            <CheckBox Content="Все" ToolTip="Все" IsChecked="{Binding AllChecked}"></CheckBox>
+                        <ItemsControl ItemsSource="{Binding Values}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                        <CheckBox Content="{Binding Title}" ToolTip="{Binding Title}" IsChecked="{Binding IsChecked}" />
+                                    </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        </StackPanel>
+                    </StackPanel>
+                    <DataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding IsChecked}" Value="True">
+                            <DataTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <!-- Animate MaxHeight to a large value enough to fit content -->
+                                        <DoubleAnimation Storyboard.TargetName="ExpanderPanel"
+                                     Storyboard.TargetProperty="MaxHeight"
+                                     To="1000" Duration="0:0:0.3" />
+                                        <DoubleAnimation Storyboard.TargetName="ExpanderPanel"
+                                     Storyboard.TargetProperty="Opacity"
+                                     To="1" Duration="0:0:0.3" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
+                            <DataTrigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ExpanderPanel"
+                                     Storyboard.TargetProperty="MaxHeight"
+                                     To="0" Duration="0:0:0.3" />
+                                        <DoubleAnimation Storyboard.TargetName="ExpanderPanel"
+                                     Storyboard.TargetProperty="Opacity"
+                                     To="0" Duration="0:0:0.3" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.ExitActions>
+                        </DataTrigger>
+                    </DataTemplate.Triggers>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </StackPanel>
 </local:NavCtl>
