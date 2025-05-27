@@ -31,7 +31,9 @@
             <Grid x:Name="LeftAside" Grid.Column="0">
                 <Border Style="{StaticResource RoundedShadowBorder}" />
                 <Border Style="{StaticResource RoundedBorder}">
-                    <uc:AsideLeft />
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <uc:AsideLeft />
+                    </ScrollViewer>
                 </Border>
             </Grid>
             <GridSplitter x:Name="LeftSplitter" Grid.Column="1" />
@@ -46,7 +48,9 @@
             <Grid x:Name="RightAside" Grid.Column="4">
                 <Border Style="{StaticResource RoundedShadowBorder}" />
                 <Border Style="{StaticResource RoundedBorder}">
-                    <uc:AsideRight />
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <uc:AsideRight />
+                    </ScrollViewer>
                 </Border>
             </Grid>
         </Grid>
