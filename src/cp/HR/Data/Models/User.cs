@@ -22,6 +22,8 @@ namespace HR.Data.Models
         public byte Status { get; set; }
         public bool Is2faOn { get; set; }
         public string Secret { get; set; }
+        public byte[] PasswordHash { get; set; }
+        public byte[] Salt { get; set; }
     
         public virtual Employee Employee { get; set; }
         public virtual Role Role { get; set; }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data.Entity;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -35,6 +36,13 @@ namespace HR.Pages
 
         public static readonly DependencyProperty InProgressProp =
             DependencyProperty.Register(nameof(IsInProgress), typeof(bool), typeof(RegisterPg), new PropertyMetadata(false));
+
+        public bool IsInProgress
+        {
+            get { return (bool)GetValue(InProgressProp); }
+            set { SetValue(InProgressProp, value); }
+        }
+
         private ObservableCollection<Employee> employees;
         public ObservableCollection<Employee> Employees
         {
@@ -59,11 +67,6 @@ namespace HR.Pages
                     OnPropertyChanged();
                 }
             }
-        }
-        public bool IsInProgress
-        {
-            get { return (bool)GetValue(InProgressProp); }
-            set { SetValue(InProgressProp, value); }
         }
         // --- Add for async validation ---
         private readonly Dictionary<string, List<string>> _errors = new Dictionary<string, List<string>>();
@@ -150,6 +153,12 @@ namespace HR.Pages
         }
         private async Task<bool> Register()
         {
+            byte[] salt = Crypto.GenerateSalt();
+            byte[] hash = Crypto.HashPassword(Password1, salt);
+            Debug.WriteLine("0x" + BitConverter.ToString(salt).Replace("-", ""));
+            string hexString = BitConverter.ToString(hash).Replace("-", "");
+            string sqlValue = "0x" + hexString;
+            Debug.WriteLine(sqlValue);
             await Utils.MockAsync(2000);
             throw new NotImplementedException("Register logic here");
         }

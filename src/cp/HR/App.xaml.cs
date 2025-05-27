@@ -28,8 +28,8 @@ namespace HR
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         public static new App Current => (App)Application.Current;
         public ICommand LogOutCommand { get; }
-        private User user;
-        public User CurrentUser {
+        private Data.Models.User user;
+        public HR.Data.Models.User CurrentUser {
             get => user;
             set {
                 if (value == user) return;
@@ -57,7 +57,7 @@ namespace HR
             // Application.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
         }
 
-        private async Task<User> GetCurrentUser()
+        private async Task<Data.Models.User> GetCurrentUser()
         {
             string basePath = AppDomain.CurrentDomain.BaseDirectory;
             string uidFilePath = Path.Combine(basePath, "local", "user.uid");
@@ -79,7 +79,7 @@ namespace HR
 
             // Mock checking user existences from DB
             await Utils.MockAsync(3000);
-            return new User { Id = 1, Login = "Current user" };
+            return new Data.Models.User { Id = 1, Login = "Current user" };
         }
         private async void Application_Startup(object sender, StartupEventArgs e)
         {

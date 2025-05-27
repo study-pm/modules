@@ -1,8 +1,11 @@
-﻿using HR.Models;
+﻿using HR.Data.Models;
+using HR.Models;
+using HR.Services;
 using HR.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data.Entity;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -63,16 +66,42 @@ namespace HR.Pages
             InitializeComponent();
             DataContext = this;
         }
-        private async Task<User> GetUser(string login, string password)
+        private async Task<HR.Data.Models.User> GetUser(string login, string password)
         {
-            // Mock checking user existences from DB
-            await Utils.MockAsync(1000);
-            User user = new User { Id = 2, Login = login };
-            return user;
+            try
+            {
+                // Check for user with provided login existence
+                HR.Data.Models.User user = await Request.ctx.Users.FirstOrDefaultAsync(x => x.Login == login);
+                if (user == null)
+                {
+                    StatusInformer.ReportWarning("Попытка входа в систему. Несоответствие учетного имени");
+                    MessageBox.Show("Пользователь не обнаружен. Проверьте правильность введения учетного имени.", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return null;
+                }
+                // Check for user password match
+                Debug.WriteLine("0x" + BitConverter.ToString(user.PasswordHash).Replace("-", ""));
+                var hash = Crypto.HashPassword(password, user.Salt);
+                Debug.WriteLine("0x" + BitConverter.ToString(hash).Replace("-", ""));
+                // Correct comparison of byte arrays by content
+                if (!hash.SequenceEqual(user.PasswordHash))
+                {
+                    StatusInformer.ReportWarning("Попытка входа в систему. Несоответствие пароля");
+                    MessageBox.Show("Пароль не подходит. Проверьте правильность введения пароля.", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return null;
+                }
+                StatusInformer.ReportSuccess("Успешный вход в систему");
+                return user;
+            }
+            catch (Exception exc)
+            {
+                StatusInformer.ReportFailure($"Неизвестная ошибка: {exc.Message}");
+                MessageBox.Show(exc.Message, "Неизвестная ошибка. Попробуйте войти позже.", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
         }
         private void ValidatePassword()
         {
-            var rule = new PasswordLengthValidationRule { MinLength = 8 };
+            var rule = new NotEmptyValidationRule();
             var result = rule.Validate(Password, CultureInfo.CurrentCulture);
 
             var bindingExpression = PasswordPwb.GetBindingExpression(PasswordBox.TagProperty);
@@ -177,13 +206,12 @@ namespace HR.Pages
 
             // 4. Если ошибок нет - выполняем вход
             IsInProgress = true;
-            StatusInformer.ReportProgress("Загрузка данных...");
+            StatusInformer.ReportProgress("Проверка данных пользователя");
             App app = Application.Current as App;
             app.CurrentUser = await GetUser(Login, Password);
             IsInProgress = false;
-            if (app.IsAuth == false) StatusInformer.ReportWarning("Пользователь не обнаружен");
-            else StatusInformer.ReportSuccess("Успешный вход в систему");
-            MainWindow.frame.Navigate(new PreferencesPg());
+            // @TODO: Go to Startup page
+            if (app.IsAuth == true) MainWindow.frame.Navigate(new PreferencesPg());
         }
         private void ResetBtn_Click(object sender, RoutedEventArgs e)
         {

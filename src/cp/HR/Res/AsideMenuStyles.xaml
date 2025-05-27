@@ -5,13 +5,75 @@
         <Setter Property="Background" Value="White"/>
     </Style>
 
+    <Style TargetType="CheckBox">
+        <Setter Property="FontFamily" Value="{StaticResource Roboto}"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Foreground" Value="DodgerBlue" />
+        <Setter Property="Margin" Value="20 7" />
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <Grid VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="20"/>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Box -->
+                        <Border x:Name="checkBoxBorder"
+                                Width="14" Height="14"
+                                Background="White"
+                                BorderBrush="Gray" BorderThickness="1"
+                                VerticalAlignment="Center" HorizontalAlignment="Center"
+                                />
+
+                        <!-- CheckMark -->
+                        <Path x:Name="checkMark"
+                              Grid.Column="0"
+                              Data="M 0 4 L 3 7 L 8 0"
+                              Stroke="{StaticResource magentaDarkBrush}" StrokeThickness="2"
+                              Visibility="Collapsed"
+                              VerticalAlignment="Center" HorizontalAlignment="Center"
+                              />
+
+                        <!-- Content with TextBlock for trimming -->
+                        <TextBlock Grid.Column="1"
+                               VerticalAlignment="Center"
+                               Margin="7,0,0,0"
+                               Text="{TemplateBinding Content}"
+                               TextTrimming="CharacterEllipsis"
+                               TextWrapping="NoWrap"
+                               FontFamily="{TemplateBinding FontFamily}"
+                               FontSize="{TemplateBinding FontSize}"
+                               Foreground="{TemplateBinding Foreground}"
+                               FontWeight="{TemplateBinding FontWeight}"
+                               />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="checkMark" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Cursor" Value="Hand" />
+                <Setter Property="Foreground" Value="#AA1E90FF" />
+            </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="FontWeight" Value="Bold" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
     <Style x:Key="AsideToggleButton" TargetType="ToggleButton">
         <Setter Property="FontFamily" Value="{StaticResource Roboto}"/>
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="Foreground" Value="DodgerBlue" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="Height" Value="50"/>
-        <Setter Property="Margin" Value="10"/>
         <Setter Property="Padding" Value="10"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
@@ -56,11 +118,17 @@
                                 </ContentPresenter.Resources>
                             </ContentPresenter>
 
-                            <!-- Content -->
-                            <ContentPresenter x:Name="ContentHost"
-                                          ContentSource="Content"
-                                          VerticalAlignment="Center"
-                                          Grid.Column="1"/>
+                            <!-- Content with ellipsis -->
+                            <TextBlock x:Name="ContentHost"
+                                       Grid.Column="1"
+                                       VerticalAlignment="Center"
+                                       Text="{TemplateBinding Content}"
+                                       TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                                       Foreground="{TemplateBinding Foreground}"
+                                       FontFamily="{TemplateBinding FontFamily}"
+                                       FontSize="{TemplateBinding FontSize}"
+                                       FontWeight="{TemplateBinding FontWeight}"
+                                       />
 
                             <!-- Additional right element (e.g. arrow) -->
                             <Path x:Name="Arrow"
