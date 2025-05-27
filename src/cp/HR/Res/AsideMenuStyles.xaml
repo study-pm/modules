@@ -74,7 +74,6 @@
         <Setter Property="Foreground" Value="DodgerBlue" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="Height" Value="50"/>
-        <Setter Property="Margin" Value="10"/>
         <Setter Property="Padding" Value="10"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
