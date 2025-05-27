@@ -167,12 +167,13 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Login" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Password" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="PasswordHash" Type="binary" MaxLength="32" Nullable="false" />
           <Property Name="EmployeeId" Type="int" />
           <Property Name="RoleId" Type="int" Nullable="false" />
           <Property Name="Status" Type="tinyint" Nullable="false" />
           <Property Name="Is2faOn" Type="bit" Nullable="false" />
           <Property Name="Secret" Type="nvarchar" MaxLength="50" />
+          <Property Name="Salt" Type="binary" MaxLength="16" />
         </EntityType>
         <Association Name="FK_Assignment_Staff">
           <End Role="Staff" Type="Self.Staff" Multiplicity="1">
@@ -720,7 +721,6 @@
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Login" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Password" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="EmployeeId" Type="Int32" Nullable="true"/>
           <Property Name="RoleId" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Employee" Relationship="Self.FK_User_Employee" FromRole="User" ToRole="Employee" />
@@ -728,6 +728,8 @@
           <Property Name="Status" Type="Byte" Nullable="false" />
           <Property Name="Is2faOn" Type="Boolean" Nullable="false" />
           <Property Name="Secret" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="PasswordHash" Type="Binary" Nullable="false" MaxLength="32" FixedLength="true" />
+          <Property Name="Salt" Type="Binary" MaxLength="16" FixedLength="true" />
         </EntityType>
         <Association Name="FK_Assignment_Staff">
           <End Role="Staff" Type="Self.Staff" Multiplicity="1">
@@ -1255,12 +1257,13 @@
           <EntitySetMapping Name="Users">
             <EntityTypeMapping TypeName="HRModel.User">
               <MappingFragment StoreEntitySet="User">
+                <ScalarProperty Name="Salt" ColumnName="Salt" />
+                <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
                 <ScalarProperty Name="Secret" ColumnName="Secret" />
                 <ScalarProperty Name="Is2faOn" ColumnName="Is2faOn" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Login" ColumnName="Login" />
-                <ScalarProperty Name="Password" ColumnName="Password" />
                 <ScalarProperty Name="EmployeeId" ColumnName="EmployeeId" />
                 <ScalarProperty Name="RoleId" ColumnName="RoleId" />
               </MappingFragment>
