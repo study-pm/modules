@@ -38,7 +38,9 @@ namespace HR.Controls
             {
                 if (isChecked == value) return;
                 isChecked = value;
+                if (!value) AllChecked = false;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(AllChecked));
             }
         }
         private ObservableCollection<FilterValue> values = new ObservableCollection<FilterValue>();
@@ -47,27 +49,27 @@ namespace HR.Controls
             get => values;
             set
             {
-                if (values != value)
+                if (values == value) return;
+                // Unsubscribe for collection changes
+                if (values != null)
                 {
-                    if (values != null)
-                    {
-                        values.CollectionChanged -= Values_CollectionChanged;
-                        foreach (var v in values)
-                            v.PropertyChanged -= Value_PropertyChanged;
-                    }
-
-                    values = value;
-
-                    if (values != null)
-                    {
-                        values.CollectionChanged += Values_CollectionChanged;
-                        foreach (var v in values)
-                            v.PropertyChanged += Value_PropertyChanged;
-                    }
-
-                    OnPropertyChanged();
-                    OnPropertyChanged(nameof(AllChecked));
+                    values.CollectionChanged -= Values_CollectionChanged;
+                    foreach (var v in values)
+                        v.PropertyChanged -= Value_PropertyChanged;
                 }
+
+                values = value;
+
+                // Subscribe for collection changes
+                if (values != null)
+                {
+                    values.CollectionChanged += Values_CollectionChanged;
+                    foreach (var v in values)
+                        v.PropertyChanged += Value_PropertyChanged;
+                }
+
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(AllChecked));
             }
         }
         private void Values_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -89,7 +91,6 @@ namespace HR.Controls
             {
                 foreach (var v in Values)
                     v.IsChecked = value;
-                IsChecked = value;
                 OnPropertyChanged();
             }
         }

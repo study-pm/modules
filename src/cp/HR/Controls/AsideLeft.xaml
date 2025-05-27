@@ -113,16 +113,6 @@
                             </RadioButton.Tag>
                         </RadioButton>
                         <StackPanel x:Name="ExpanderPanel" Opacity="0" MaxHeight="0" Margin="0,5,0,0">
-                            <StackPanel.Style>
-                                <Style TargetType="StackPanel">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsChecked}" Value="True">
-                                            <Setter Property="Visibility" Value="Visible" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </StackPanel.Style>
                             <CheckBox Content="Все" ToolTip="Все" IsChecked="{Binding AllChecked}"></CheckBox>
                         <ItemsControl ItemsSource="{Binding Values}">
                             <ItemsControl.ItemTemplate>
