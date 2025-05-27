@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data.Entity;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -152,6 +153,12 @@ namespace HR.Pages
         }
         private async Task<bool> Register()
         {
+            byte[] salt = Crypto.GenerateSalt();
+            byte[] hash = Crypto.HashPassword(Password1, salt);
+            Debug.WriteLine("0x" + BitConverter.ToString(salt).Replace("-", ""));
+            string hexString = BitConverter.ToString(hash).Replace("-", "");
+            string sqlValue = "0x" + hexString;
+            Debug.WriteLine(sqlValue);
             await Utils.MockAsync(2000);
             throw new NotImplementedException("Register logic here");
         }
