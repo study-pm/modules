@@ -58,6 +58,13 @@
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="checkMark" Property="Visibility" Value="Visible" />
                         </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{StaticResource DisabledForegroundBrush}" />
+                            <Setter TargetName="checkBoxBorder" Property="Background" Value="{StaticResource DisabledBackgroundBrush}" />
+                            <Setter TargetName="checkBoxBorder" Property="BorderBrush" Value="{StaticResource DisabledBorderBrush}" />
+                            <Setter TargetName="checkMark" Property="Stroke" Value="{StaticResource DisabledBorderBrush}" />
+                            <Setter TargetName="checkBoxBorder" Property="Opacity" Value="0.75"/>
+                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
@@ -117,10 +124,10 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="border" Property="Background" Value="#FFE5E5E5"/>
-                            <Setter TargetName="border" Property="BorderBrush" Value="#FFADB2B5"/>
+                            <Setter TargetName="border" Property="Background" Value="{StaticResource DisabledBackgroundBrush}"/>
+                            <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource DisabledBorderBrush}"/>
                             <Setter TargetName="border" Property="Opacity" Value="0.75"/>
-                            <Setter Property="Foreground" Value="Gray"/>
+                            <Setter Property="Foreground" Value="{StaticResource DisabledForegroundBrush}"/>
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="border" Property="BorderBrush" Value="DarkGray"/>
@@ -190,10 +197,10 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="border" Property="Background" Value="#FFE5E5E5"/>
-                            <Setter TargetName="border" Property="BorderBrush" Value="#FFADB2B5"/>
+                            <Setter TargetName="border" Property="Background" Value="{StaticResource DisabledBackgroundBrush}"/>
+                            <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource DisabledBorderBrush}"/>
                             <Setter TargetName="border" Property="Opacity" Value="0.75"/>
-                            <Setter Property="Foreground" Value="Gray"/>
+                            <Setter Property="Foreground" Value="{StaticResource DisabledForegroundBrush}"/>
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="border" Property="BorderBrush" Value="DarkGray"/>
@@ -316,10 +323,10 @@
                     <ControlTemplate.Triggers>
                         <!-- Disabled -->
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="border" Property="Background" Value="#FFE5E5E5"/>
-                            <Setter TargetName="border" Property="BorderBrush" Value="#FFADB2B5"/>
+                            <Setter TargetName="border" Property="Background" Value="{StaticResource DisabledBackgroundBrush}"/>
+                            <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource DisabledBorderBrush}"/>
                             <Setter TargetName="border" Property="Opacity" Value="0.75"/>
-                            <Setter Property="Foreground" Value="Gray"/>
+                            <Setter Property="Foreground" Value="{StaticResource DisabledForegroundBrush}"/>
                         </Trigger>
                         <!-- Mouse over -->
                         <Trigger Property="IsMouseOver" Value="True">
@@ -465,9 +472,9 @@
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="Overlay" Property="Opacity" Value="0"/>
-                            <Setter TargetName="border" Property="Background" Value="{StaticResource DisabledBackgroundBrush}"/>
+                            <Setter TargetName="border" Property="Background" Value="{StaticResource DisabledForegroundBrush}"/>
                             <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource DisabledBorderBrush}"/>
-                            <Setter Property="Foreground" Value="{StaticResource DisabledForegroundBrush}"/>
+                            <Setter Property="Foreground" Value="{StaticResource DisabledBackgroundBrush}"/>
                             <Setter Property="Opacity" Value="0.75"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
