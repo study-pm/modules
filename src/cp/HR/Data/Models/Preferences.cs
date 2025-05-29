@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,7 +35,7 @@ namespace HR.Data.Models
                 }
                 catch(Exception exc)
                 {
-                    MessageBox.Show(exc.ToString());
+                    Debug.WriteLine(exc.Message);
                     return new Preferences { IsStayLoggedIn = false };
                 }
             });
@@ -59,8 +60,8 @@ namespace HR.Data.Models
                 }
                 catch (Exception exc)
                 {
-                    MessageBox.Show(exc.ToString());
-                    throw;
+                    Debug.WriteLine(exc.Message);
+                    throw exc;
                 }
             });
         }
