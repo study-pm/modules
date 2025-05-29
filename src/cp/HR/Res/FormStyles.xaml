@@ -5,6 +5,10 @@
     <util:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
     <util:ErrorVisibilityConverter x:Key="ErrorVisibilityConverter"/>
     <controls:BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
+    <Style x:Key="Form" TargetType="Panel">
+        <Setter Property="Margin" Value="0 20 0 0"/>
+        <Setter Property="MaxWidth" Value="300"/>
+    </Style>
     <Style TargetType="Label">
         <Setter Property="Foreground" Value="{StaticResource cyanDarkBrush}"/>
         <Setter Property="FontFamily" Value="Open Sans"/>

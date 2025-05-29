@@ -24,7 +24,7 @@
             Введите свои учетные данные для входа. Все поля должны быть заполнены.
         </TextBlock>
 
-        <StackPanel MaxWidth="300" Margin="0 20 0 0">
+        <StackPanel Style="{StaticResource Form}">
 
             <StackPanel Style="{StaticResource FormElement}">
                 <Label>Пользователь</Label>

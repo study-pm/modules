@@ -18,6 +18,8 @@
                 оставаться в системе (сохранение состояния аутентификации),
                 тема интерфейса (светлая или темная).
             </TextBlock>
+            <StackPanel Style="{StaticResource Form}">
+            </StackPanel>
         </StackPanel>
     </ScrollViewer>
 </Page>
