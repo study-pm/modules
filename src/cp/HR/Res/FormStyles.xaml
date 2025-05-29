@@ -9,6 +9,73 @@
         <Setter Property="Margin" Value="0 20 0 0"/>
         <Setter Property="MaxWidth" Value="300"/>
     </Style>
+    <Style TargetType="CheckBox">
+        <Setter Property="FontFamily" Value="{StaticResource Roboto}"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Foreground" Value="{StaticResource cyanDarkBrush}" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <Grid VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="20"/>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Box -->
+                        <Border x:Name="checkBoxBorder"
+                            Width="14" Height="14"
+                            Background="White"
+                            BorderBrush="Gray" BorderThickness="1"
+                            VerticalAlignment="Center" HorizontalAlignment="Center"
+                            />
+
+                        <!-- CheckMark -->
+                        <Path x:Name="checkMark"
+                          Grid.Column="0"
+                          Data="M 0 4 L 3 7 L 8 0"
+                          Stroke="{StaticResource magentaDarkBrush}" StrokeThickness="2"
+                          Visibility="Collapsed"
+                          VerticalAlignment="Center" HorizontalAlignment="Center"
+                          />
+
+                        <!-- Content with TextBlock for trimming -->
+                        <TextBlock Grid.Column="1"
+                           VerticalAlignment="Center"
+                           Margin="7,0,0,0"
+                           Text="{TemplateBinding Content}"
+                           TextTrimming="CharacterEllipsis"
+                           TextWrapping="NoWrap"
+                           FontFamily="{TemplateBinding FontFamily}"
+                           FontSize="{TemplateBinding FontSize}"
+                           Foreground="{TemplateBinding Foreground}"
+                           FontWeight="{TemplateBinding FontWeight}"
+                           />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="checkMark" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Cursor" Value="Hand" />
+                <Setter Property="Foreground" Value="#AA009ca2" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Cursor" Value="Hand" />
+                <Setter Property="Foreground" Value="{StaticResource cyanLightBrush}" />
+            </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="FontWeight" Value="Bold" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
     <Style TargetType="Label">
         <Setter Property="Foreground" Value="{StaticResource cyanDarkBrush}"/>
         <Setter Property="FontFamily" Value="Open Sans"/>
