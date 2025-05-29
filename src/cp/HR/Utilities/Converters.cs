@@ -82,11 +82,14 @@ namespace HR.Utilities
             if (values[1] is bool)
                 gender = (bool)values[1];
 
-            string fallbackPath = fallbackImgPathPrefix + (gender ? "female" : "male") + ".jpg";
+            string fallbackPath = fallbackImgPathPrefix + (gender ? "female" : "male") + "." + extension;
 
             // If no image specified, use fallback
             if (string.IsNullOrWhiteSpace(imageName))
                 return Utils.CreateBitmapImage(fallbackPath);
+
+            // Add default extension if imageName has none
+            if (!Path.HasExtension(imageName)) imageName += "." + extension;
 
             // 1. If imageName is an absolute path and exists, load from file
             if (File.Exists(imageName))
@@ -95,13 +98,14 @@ namespace HR.Utilities
             // 2. Search beside the executive file (i.e. Images/imageName)
             string appDir = AppDomain.CurrentDomain.BaseDirectory;
             string filePath = Path.Combine(appDir, basePath, imageName);
+            // Try adding the default extension if file not found
             if (!File.Exists(filePath) && !Path.HasExtension(filePath))
                 filePath += "." + extension;
 
             if (File.Exists(filePath))
                 return Utils.CreateBitmapImageFromFile(filePath);
 
-            // 3. Search Images в корне проекта (ищем выше по папкам)
+            // 3. Search Images in parent project's folders (ascending)
             string projectRootImages = Utils.FindInParentDirectories(appDir, basePath, imageName, extension);
             if (projectRootImages != null)
                 return Utils.CreateBitmapImageFromFile(projectRootImages);
