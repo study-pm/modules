@@ -148,7 +148,7 @@ namespace HR.Pages
             vm.Reset();
         }
 
-        private async void SignInBtn_Click(object sender, RoutedEventArgs e)
+        private async void SubmitBtn_Click(object sender, RoutedEventArgs e)
         {
             await SetPreferences();
             vm.Set();

@@ -49,7 +49,7 @@
                 <Button x:Name="SignInBtn" Grid.Column="2" IsDefault="True"
                         Style="{StaticResource GreenBtn}"
                         IsEnabled="{Binding IsEnabled}"
-                        Click="SignInBtn_Click"
+                        Click="SubmitBtn_Click"
                         >
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Сохранить" Visibility="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}" />
