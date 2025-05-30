@@ -150,8 +150,11 @@ namespace HR.Pages
 
         private async void SubmitBtn_Click(object sender, RoutedEventArgs e)
         {
-            await SetPreferences();
             vm.Set();
+            await SetPreferences();
+            // Handle user authentication state file
+            if (vm.IsStayLoggedIn) await Services.Request.SaveUidToFileAsync(uid, Data.Models.User.uidFilePath);
+            else await Request.DeleteUidFileAsync(Data.Models.User.uidFilePath);
         }
     }
 }
