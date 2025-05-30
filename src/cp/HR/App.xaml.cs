@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
 using System.Data;
+using System.Data.Entity;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -14,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using HR.Models;
 using HR.Pages;
+using HR.Services;
 using HR.Utilities;
 
 namespace HR
@@ -43,11 +45,12 @@ namespace HR
         {
             LogOutCommand = new RelayCommand(_ => LogOut());
         }
-        public void LogOut()
+        public async void LogOut()
         {
             CurrentUser = null;
             var mainWindow = Application.Current.MainWindow as MainWindow;
             mainWindow.mainFrame.Navigate(new AuthPg());
+            await Request.DeleteUidFileAsync(Data.Models.User.uidFilePath);
             StatusInformer.ReportInfo("Гостевой режим");
         }
 
@@ -59,27 +62,30 @@ namespace HR
 
         private async Task<Data.Models.User> GetCurrentUser()
         {
-            string basePath = AppDomain.CurrentDomain.BaseDirectory;
-            string uidFilePath = Path.Combine(basePath, "local", "user.uid");
-
-            bool fileExists = File.Exists(uidFilePath);
+            bool fileExists = File.Exists(HR.Data.Models.User.uidFilePath);
 
             if (!fileExists)
             {
                 // Return null if uid file doesn't exist
                 return null;
             }
-
-            string uidContent = File.ReadAllText(uidFilePath);
-            if (!int.TryParse(uidContent, out int userId))
+            try
             {
-                // Return null if invalid format
+                StatusInformer.ReportProgress("Проверка файла пользователя");
+                int uid = int.Parse(File.ReadAllText(Data.Models.User.uidFilePath));
+                // Check for user with provided login existence
+                return await Request.ctx.Users.FirstAsync(x => x.Id == uid);
+            }
+            catch (FormatException exc)
+            {
+                StatusInformer.ReportFailure($"Неверный формат данных файла пользователя: {exc.Message}");
                 return null;
             }
-
-            // Mock checking user existences from DB
-            await Utils.MockAsync(3000);
-            return new Data.Models.User { Id = 1, Login = "Current user" };
+            catch (Exception exc)
+            {
+                StatusInformer.ReportFailure($"Отсутствует пользователь из файла пользователя: {exc.Message}");
+                return null;
+            }
         }
         private async void Application_Startup(object sender, StartupEventArgs e)
         {
