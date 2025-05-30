@@ -8,9 +8,9 @@
     <SolidColorBrush x:Key="BaseLightBrush" Color="#dde0e2" />
     <SolidColorBrush x:Key="BlueBrush" Color="#21a0df" />
     <SolidColorBrush x:Key="CsvBrush" Color="#088409" />
-    <SolidColorBrush x:Key="DisabledBackgroundBrush" Color="Gray" />
-    <SolidColorBrush x:Key="DisabledForegroundBrush" Color="LightGray" />
-    <SolidColorBrush x:Key="DisabledBorderBrush" Color="DarkGray" />
+    <SolidColorBrush x:Key="DisabledForegroundBrush" Color="Gray" />
+    <SolidColorBrush x:Key="DisabledBackgroundBrush" Color="#FFE5E5E5" />
+    <SolidColorBrush x:Key="DisabledBorderBrush" Color="#FFADB2B5" />
     <SolidColorBrush x:Key="ErrorBrush" Color="#e53935" />
     <SolidColorBrush x:Key="GreenBrush" Color="#50b319" />
     <SolidColorBrush x:Key="GreenDarkBrush" Color="#669d1e" />

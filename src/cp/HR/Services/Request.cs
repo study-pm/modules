@@ -1,5 +1,6 @@
 ﻿using HR.Data.Models;
 using HR.Models;
+using HR.Pages;
 using HR.Utilities;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Data.Entity;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -104,6 +106,52 @@ namespace HR.Services
                 Debug.WriteLine(exc.Message);
                 StatusInformer.ReportFailure($"Ошибка извлечения данных о пользователях: {exc.Message}");
                 return new List<Data.Models.User>();  // Возврат значения при ошибке
+            }
+        }
+        internal static async Task DeleteUidFileAsync(string filePath)
+        {
+            try
+            {
+                if (File.Exists(filePath))
+                {
+                    // Удаляем файл асинхронно через Task.Run, так как File.Delete синхронный
+                    await Task.Run(() => File.Delete(filePath));
+                    StatusInformer.ReportSuccess("Файл пользователя успешно удалён");
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusInformer.ReportFailure($"Ошибка удаления файла пользователя: {ex.Message}");
+            }
+        }
+        internal static async Task SaveUidToFileAsync(int userId, string uidFilePath)
+        {
+            try
+            {
+                string path = uidFilePath;
+                // Записать uid в файл асинхронно
+                using (var writer = new StreamWriter(path, false, Encoding.UTF8))
+                {
+                    await writer.WriteAsync(userId.ToString());
+                }
+                StatusInformer.ReportSuccess("Файл пользователя успешно сохранен");
+            }
+            catch (Exception ex)
+            {
+                StatusInformer.ReportFailure($"Ошибка сохранения файла пользователя: {ex.Message}");
+            }
+        }
+        public static async Task<Preferences> GetPreferences(int uid)
+        {
+            try
+            {
+                StatusInformer.ReportProgress("Извлечение предпочтений пользователя");
+                return await Preferences.LoadAsync(uid);
+            }
+            catch (Exception exc)
+            {
+                StatusInformer.ReportFailure($"Ошибка извлечения предпочтений пользователя: ${exc.Message}");
+                return null;
             }
         }
     }

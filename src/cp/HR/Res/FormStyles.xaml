@@ -5,6 +5,84 @@
     <util:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
     <util:ErrorVisibilityConverter x:Key="ErrorVisibilityConverter"/>
     <controls:BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
+    <Style x:Key="Form" TargetType="Panel">
+        <Setter Property="Margin" Value="0 20 0 0"/>
+        <Setter Property="MaxWidth" Value="300"/>
+    </Style>
+    <Style TargetType="CheckBox">
+        <Setter Property="FontFamily" Value="{StaticResource Roboto}"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Foreground" Value="{StaticResource cyanDarkBrush}" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <Grid VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="20"/>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Box -->
+                        <Border x:Name="checkBoxBorder"
+                            Width="14" Height="14"
+                            Background="White"
+                            BorderBrush="Gray" BorderThickness="1"
+                            VerticalAlignment="Center" HorizontalAlignment="Center"
+                            />
+
+                        <!-- CheckMark -->
+                        <Path x:Name="checkMark"
+                          Grid.Column="0"
+                          Data="M 0 4 L 3 7 L 8 0"
+                          Stroke="{StaticResource magentaDarkBrush}" StrokeThickness="2"
+                          Visibility="Collapsed"
+                          VerticalAlignment="Center" HorizontalAlignment="Center"
+                          />
+
+                        <!-- Content with TextBlock for trimming -->
+                        <TextBlock Grid.Column="1"
+                           VerticalAlignment="Center"
+                           Margin="7,0,0,0"
+                           Text="{TemplateBinding Content}"
+                           TextTrimming="CharacterEllipsis"
+                           TextWrapping="NoWrap"
+                           FontFamily="{TemplateBinding FontFamily}"
+                           FontSize="{TemplateBinding FontSize}"
+                           Foreground="{TemplateBinding Foreground}"
+                           FontWeight="{TemplateBinding FontWeight}"
+                           />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="checkMark" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{StaticResource DisabledForegroundBrush}" />
+                            <Setter TargetName="checkBoxBorder" Property="Background" Value="{StaticResource DisabledBackgroundBrush}" />
+                            <Setter TargetName="checkBoxBorder" Property="BorderBrush" Value="{StaticResource DisabledBorderBrush}" />
+                            <Setter TargetName="checkMark" Property="Stroke" Value="{StaticResource DisabledBorderBrush}" />
+                            <Setter TargetName="checkBoxBorder" Property="Opacity" Value="0.75"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Cursor" Value="Hand" />
+                <Setter Property="Foreground" Value="#AA009ca2" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Cursor" Value="Hand" />
+                <Setter Property="Foreground" Value="{StaticResource cyanLightBrush}" />
+            </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="FontWeight" Value="Bold" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
     <Style TargetType="Label">
         <Setter Property="Foreground" Value="{StaticResource cyanDarkBrush}"/>
         <Setter Property="FontFamily" Value="Open Sans"/>
@@ -46,10 +124,10 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="border" Property="Background" Value="#FFE5E5E5"/>
-                            <Setter TargetName="border" Property="BorderBrush" Value="#FFADB2B5"/>
+                            <Setter TargetName="border" Property="Background" Value="{StaticResource DisabledBackgroundBrush}"/>
+                            <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource DisabledBorderBrush}"/>
                             <Setter TargetName="border" Property="Opacity" Value="0.75"/>
-                            <Setter Property="Foreground" Value="Gray"/>
+                            <Setter Property="Foreground" Value="{StaticResource DisabledForegroundBrush}"/>
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="border" Property="BorderBrush" Value="DarkGray"/>
@@ -119,10 +197,10 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="border" Property="Background" Value="#FFE5E5E5"/>
-                            <Setter TargetName="border" Property="BorderBrush" Value="#FFADB2B5"/>
+                            <Setter TargetName="border" Property="Background" Value="{StaticResource DisabledBackgroundBrush}"/>
+                            <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource DisabledBorderBrush}"/>
                             <Setter TargetName="border" Property="Opacity" Value="0.75"/>
-                            <Setter Property="Foreground" Value="Gray"/>
+                            <Setter Property="Foreground" Value="{StaticResource DisabledForegroundBrush}"/>
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="border" Property="BorderBrush" Value="DarkGray"/>
@@ -245,10 +323,10 @@
                     <ControlTemplate.Triggers>
                         <!-- Disabled -->
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="border" Property="Background" Value="#FFE5E5E5"/>
-                            <Setter TargetName="border" Property="BorderBrush" Value="#FFADB2B5"/>
+                            <Setter TargetName="border" Property="Background" Value="{StaticResource DisabledBackgroundBrush}"/>
+                            <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource DisabledBorderBrush}"/>
                             <Setter TargetName="border" Property="Opacity" Value="0.75"/>
-                            <Setter Property="Foreground" Value="Gray"/>
+                            <Setter Property="Foreground" Value="{StaticResource DisabledForegroundBrush}"/>
                         </Trigger>
                         <!-- Mouse over -->
                         <Trigger Property="IsMouseOver" Value="True">
@@ -394,9 +472,9 @@
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="Overlay" Property="Opacity" Value="0"/>
-                            <Setter TargetName="border" Property="Background" Value="{StaticResource DisabledBackgroundBrush}"/>
+                            <Setter TargetName="border" Property="Background" Value="{StaticResource DisabledForegroundBrush}"/>
                             <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource DisabledBorderBrush}"/>
-                            <Setter Property="Foreground" Value="{StaticResource DisabledForegroundBrush}"/>
+                            <Setter Property="Foreground" Value="{StaticResource DisabledBackgroundBrush}"/>
                             <Setter Property="Opacity" Value="0.75"/>
                         </Trigger>
                     </ControlTemplate.Triggers>

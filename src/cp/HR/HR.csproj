@@ -67,6 +67,12 @@
     <Compile Include="Controls\AppStatus.xaml.cs">
       <DependentUpon>AppStatus.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Details.xaml.cs">
+      <DependentUpon>Details.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Dots.xaml.cs">
+      <DependentUpon>Dots.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\LeftMenu.xaml.cs">
       <DependentUpon>LeftMenu.xaml</DependentUpon>
     </Compile>
@@ -132,6 +138,7 @@
     <Compile Include="Data\Models\Position.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Data\Models\Preferences.cs" />
     <Compile Include="Data\Models\Qualification.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
@@ -194,6 +201,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\AsideRight.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Details.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Dots.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

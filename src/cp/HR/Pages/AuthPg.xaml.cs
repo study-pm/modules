@@ -9,6 +9,7 @@ using System.Data.Entity;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -209,6 +210,9 @@ namespace HR.Pages
             StatusInformer.ReportProgress("Проверка данных пользователя");
             App app = Application.Current as App;
             app.CurrentUser = await GetUser(Login, Password);
+            // Read and apply user preferences
+            Preferences preferences = await Services.Request.GetPreferences(app.CurrentUser.Id);
+            if (preferences.IsStayLoggedIn) await Services.Request.SaveUidToFileAsync(app.CurrentUser.Id, Data.Models.User.uidFilePath);
             IsInProgress = false;
             // @TODO: Go to Startup page
             if (app.IsAuth == true) MainWindow.frame.Navigate(new PreferencesPg());

@@ -5,10 +5,16 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:HR.Pages"
       xmlns:uc="clr-namespace:HR.Controls"
+      xmlns:utils="clr-namespace:HR.Utilities"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="PreferencesPg">
-
+      Title="PreferencesPg"
+      Loaded="Page_Loaded"
+      >
+    <Page.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <utils:InverseBoolToVisibilityConverter x:Key="InvBoolConv"/>
+    </Page.Resources>
     <ScrollViewer Style="{StaticResource MainView}">
         <StackPanel>
             <uc:Header HeaderText="Предпочтения"></uc:Header>
@@ -18,6 +24,39 @@
                 оставаться в системе (сохранение состояния аутентификации),
                 тема интерфейса (светлая или темная).
             </TextBlock>
+            <StackPanel Margin="0 30 0 0">
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox Content="Оставаться в системе"
+                              IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
+                              IsChecked="{Binding IsStayLoggedIn}"
+                              />
+                    <uc:Details Type="Question"
+                                ToolTip="Сохраняет состояние аутентификации между запусками приложения (автоматический вход)"
+                                />
+                </StackPanel>
+            </StackPanel>
+            <Grid Margin="0 10 0 0" HorizontalAlignment="Right">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="ResetBtn" Grid.Column="0" Content="Отменить" IsCancel="True"
+                        Style="{StaticResource BlueBtn}"
+                        IsEnabled="{Binding IsEnabled}"
+                        Click="ResetBtn_Click"
+                        />
+                <Button x:Name="SignInBtn" Grid.Column="2" IsDefault="True"
+                        Style="{StaticResource GreenBtn}"
+                        IsEnabled="{Binding IsEnabled}"
+                        Click="SubmitBtn_Click"
+                        >
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Сохранить" Visibility="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}" />
+                        <uc:Dots Visibility="{Binding IsInProgress, Converter={StaticResource BoolToVis}}" />
+                    </StackPanel>
+                </Button>
+            </Grid>
         </StackPanel>
     </ScrollViewer>
 </Page>
