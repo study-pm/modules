@@ -105,8 +105,7 @@ namespace HR.Pages
             try
             {
                 vm.IsInProgress = true;
-                StatusInformer.ReportProgress("Извлечение предпочтений пользователя");
-                return new PreferencesViewModel(await Preferences.LoadAsync(uid));
+                return new PreferencesViewModel(await Services.Request.GetPreferences(uid));
             }
             catch (Exception exc)
             {
@@ -126,6 +125,7 @@ namespace HR.Pages
                 vm.IsInProgress = true;
                 StatusInformer.ReportProgress("Сохранение предпочтений пользователя");
                 await vm.model.SaveAsync();
+                StatusInformer.ReportSuccess("Предпочтения пользователя успешно сохранены");
             }
             catch (Exception exc)
             {
@@ -133,8 +133,9 @@ namespace HR.Pages
             }
             finally
             {
+                // Restore persisted data model
+                vm.model = (await GetPreferences()).model;
                 vm.IsInProgress = false;
-                StatusInformer.ReportSuccess("Предпочтения пользователя успешно сохранены");
             }
         }
         private async void Page_Loaded(object sender, RoutedEventArgs e)
