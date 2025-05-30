@@ -14,6 +14,8 @@ namespace HR.Data.Models
     }
     public partial class User
     {
+        public static string basePath = AppDomain.CurrentDomain.BaseDirectory;
+        public static string uidFilePath = System.IO.Path.Combine(basePath, "user.uid");
         UserStatus State {
             get => (UserStatus)Status;
             set => Status = (byte)value;
