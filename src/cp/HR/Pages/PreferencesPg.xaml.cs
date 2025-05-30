@@ -27,8 +27,8 @@ namespace HR.Pages
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string prop = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
-        internal Preferences model;
-        public bool IsChanged => model.IsStayLoggedIn != IsStayLoggedIn;
+        internal Preferences dm;
+        public bool IsChanged => dm.IsStayLoggedIn != IsStayLoggedIn;
         public bool IsEnabled => IsChanged && !IsInProgress;
         private bool _isInProgress;
         public bool IsInProgress
@@ -61,16 +61,16 @@ namespace HR.Pages
         }
         public PreferencesViewModel(Preferences dataModel)
         {
-            model = dataModel;
-            IsStayLoggedIn = model.IsStayLoggedIn;
+            dm = dataModel;
+            IsStayLoggedIn = dm.IsStayLoggedIn;
         }
         public void Reset()
         {
-            IsStayLoggedIn = model.IsStayLoggedIn;
+            IsStayLoggedIn = dm.IsStayLoggedIn;
         }
         public void Set()
         {
-            model.IsStayLoggedIn = IsStayLoggedIn;
+            dm.IsStayLoggedIn = IsStayLoggedIn;
             OnPropertyChanged(nameof(IsChanged));
             OnPropertyChanged(nameof(IsEnabled));
         }
@@ -124,7 +124,7 @@ namespace HR.Pages
             {
                 vm.IsInProgress = true;
                 StatusInformer.ReportProgress("Сохранение предпочтений пользователя");
-                await vm.model.SaveAsync();
+                await vm.dm.SaveAsync();
                 StatusInformer.ReportSuccess("Предпочтения пользователя успешно сохранены");
             }
             catch (Exception exc)
@@ -134,7 +134,7 @@ namespace HR.Pages
             finally
             {
                 // Restore persisted data model
-                vm.model = (await GetPreferences()).model;
+                vm.dm = (await GetPreferences()).dm;
                 vm.IsInProgress = false;
             }
         }
