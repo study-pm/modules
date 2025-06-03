@@ -179,6 +179,9 @@
     <Compile Include="Pages\RegisterPg.xaml.cs">
       <DependentUpon>RegisterPg.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\SettingsPg.xaml.cs">
+      <DependentUpon>SettingsPg.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\StaffPg.xaml.cs">
       <DependentUpon>StaffPg.xaml</DependentUpon>
     </Compile>
@@ -264,6 +267,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\RegisterPg.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\SettingsPg.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
