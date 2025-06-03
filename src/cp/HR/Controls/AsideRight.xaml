@@ -66,6 +66,29 @@
                     </Viewbox>
                 </MenuItem.Icon>
             </MenuItem>
+            <MenuItem ToolTip="Настройки безопасности"
+                      Width="{Binding ElementName=RightMenu,Path=ActualWidth}"
+                      Visibility="{Binding IsAuth, Source={x:Static Application.Current}, Converter={StaticResource BoolToVis}}"
+                      IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=SettingsPg}"
+                      Command="NavigationCommands.GoToPage"
+                      CommandParameter="Pages/SettingsPg.xaml"
+                      CommandTarget="{Binding ElementName=mainFrame}"
+                      >
+                <MenuItem.Header>
+                    <TextBlock TextTrimming="CharacterEllipsis">Безопасность</TextBlock>
+                </MenuItem.Header>
+                <MenuItem.Icon>
+                    <Viewbox Height="16" Width="16" ToolTip="Настройки безопасности">
+                        <Canvas Height="512" Width="512">
+                            <Path Data="{StaticResource UserShieldSolidPath}">
+                                <Path.RenderTransform>
+                                    <TranslateTransform X="0" Y="0"/>
+                                </Path.RenderTransform>
+                            </Path>
+                        </Canvas>
+                    </Viewbox>
+                </MenuItem.Icon>
+            </MenuItem>
             <MenuItem ToolTip="Предпочтения"
                       Width="{Binding ElementName=RightMenu,Path=ActualWidth}"
                       Visibility="{Binding IsAuth, Source={x:Static Application.Current}, Converter={StaticResource BoolToVis}}"
