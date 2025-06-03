@@ -110,7 +110,7 @@
                     </MenuItem>
                     <MenuItem Header="П_ользователь"
                               IsChecked="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl},
-                                Converter={StaticResource CheckedConverter}, ConverterParameter='AuthPg, RegisterPg, PreferencesPg'}"
+                                Converter={StaticResource CheckedConverter}, ConverterParameter='AuthPg, RegisterPg, PreferencesPg, ProfilePg'}"
                               >
                         <MenuItem Header="В_ход"
                                   Style="{StaticResource SubMenuItemStyle}"
@@ -136,6 +136,15 @@
                                   IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=PreferencesPg}"
                                   Visibility="{Binding IsAuth, Source={x:Static Application.Current}, Converter={StaticResource BoolToVis}}"
                                   />
+                        <MenuItem Header="Про_филь"
+                                  Style="{StaticResource SubMenuItemStyle}"
+                                  Command="NavigationCommands.GoToPage"
+                                  CommandParameter="Pages/ProfilePg.xaml"
+                                  CommandTarget="{Binding ElementName=mainFrame}"
+                                  IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=ProfilePg}"
+                                  Visibility="{Binding IsAuth, Source={x:Static Application.Current}, Converter={StaticResource BoolToVis}}"
+                                  />
+
                         <MenuItem Header="Вы_ход"
                                   Style="{StaticResource SubMenuItemStyle}"
                                   Click="LogoutItem_Click"

@@ -89,6 +89,29 @@
                     </Viewbox>
                 </MenuItem.Icon>
             </MenuItem>
+            <MenuItem ToolTip="Профиль"
+                      Width="{Binding ElementName=RightMenu,Path=ActualWidth}"
+                      Visibility="{Binding IsAuth, Source={x:Static Application.Current}, Converter={StaticResource BoolToVis}}"
+                      IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=ProfilePg}"
+                      Command="NavigationCommands.GoToPage"
+                      CommandParameter="Pages/ProfilePg.xaml"
+                      CommandTarget="{Binding ElementName=mainFrame}"
+                      >
+                <MenuItem.Header>
+                    <TextBlock TextTrimming="CharacterEllipsis">Профиль</TextBlock>
+                </MenuItem.Header>
+                <MenuItem.Icon>
+                    <Viewbox Height="16" Width="16" ToolTip="Профиль">
+                        <Canvas Height="512" Width="512">
+                            <Path Data="{StaticResource UserSolidPath}">
+                                <Path.RenderTransform>
+                                    <TranslateTransform X="0" Y="0"/>
+                                </Path.RenderTransform>
+                            </Path>
+                        </Canvas>
+                    </Viewbox>
+                </MenuItem.Icon>
+            </MenuItem>
             <MenuItem ToolTip="Журнал событий"
                       Width="{Binding ElementName=RightMenu,Path=ActualWidth}"
                       Visibility="{Binding IsAuth, Source={x:Static Application.Current}, Converter={StaticResource BoolToVis}}"

@@ -108,6 +108,23 @@ namespace HR.Services
                 return new List<Data.Models.User>();  // Возврат значения при ошибке
             }
         }
+
+        public static async Task<List<Role>> GetRoles()
+        {
+            try
+            {
+                StatusInformer.ReportProgress("Загрузка ролей");
+                List<Role> roles = await ctx.Roles.ToListAsync();
+                StatusInformer.ReportSuccess("Роли успешно извлечены");
+                return roles;
+            }
+            catch (Exception exc)
+            {
+                Debug.WriteLine(exc.Message);
+                StatusInformer.ReportFailure($"Ошибка извлечения ролей: {exc.Message}");
+                return new List<Role>();
+            }
+        }
         internal static async Task DeleteUidFileAsync(string filePath)
         {
             try
