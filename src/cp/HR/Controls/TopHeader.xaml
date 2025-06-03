@@ -74,27 +74,29 @@
                               CommandParameter="Pages/WorkersPg.xaml"
                               CommandTarget="{Binding ElementName=mainFrame}"
                               >
-                        <MenuItem Header="_Руководство" Style="{StaticResource SubMenuItemStyle}" />
-                        <MenuItem Header="_Учителя" Style="{StaticResource SubMenuItemStyle}" />
-                        <MenuItem Header="П_едагоги" Style="{StaticResource SubMenuItemStyle}" />
-                        <MenuItem Header="_Воспитатели" Style="{StaticResource SubMenuItemStyle}" />
-                        <MenuItem Header="Вспо_могательный персонал" Style="{StaticResource SubMenuItemStyle}" />
+                        <MenuItem Header="Все" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" IsChecked="True" />
+                        <MenuItem Header="_Руководство" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
+                        <MenuItem Header="_Учителя" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
+                        <MenuItem Header="П_едагоги" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
+                        <MenuItem Header="_Воспитатели" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
+                        <MenuItem Header="Вспо_могательный персонал" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
                     </MenuItem>
                     <MenuItem Header="_Подразделения">
-                        <MenuItem Header="_Администрация" Style="{StaticResource SubMenuItemStyle}" />
-                        <MenuItem Header="МО _начальных классов" Style="{StaticResource SubMenuItemStyle}" />
-                        <MenuItem Header="МО _математики и информатики" Style="{StaticResource SubMenuItemStyle}" />
-                        <MenuItem Header="МО _филологического образования" Style="{StaticResource SubMenuItemStyle}" />
-                        <MenuItem Header="МО _иностранного языка" Style="{StaticResource SubMenuItemStyle}" />
-                        <MenuItem Header="МО _естественнонаучного цикла" Style="{StaticResource SubMenuItemStyle}" />
-                        <MenuItem Header="МО _общественных дисциплин" Style="{StaticResource SubMenuItemStyle}" />
-                        <MenuItem Header="МО _эстетического цикла" Style="{StaticResource SubMenuItemStyle}" />
-                        <MenuItem Header="МО физической _культуры" Style="{StaticResource SubMenuItemStyle}" />
-                        <MenuItem Header="_Педагоги-организаторы" Style="{StaticResource SubMenuItemStyle}" />
-                        <MenuItem Header="Педагоги _дополнительного образования" Style="{StaticResource SubMenuItemStyle}" />
-                        <MenuItem Header="_Служба сопровождения" Style="{StaticResource SubMenuItemStyle}" />
-                        <MenuItem Header="_Воспитатели группы продленного дня" Style="{StaticResource SubMenuItemStyle}" />
-                        <MenuItem Header="Медиа_тека" Style="{StaticResource SubMenuItemStyle}" />
+                        <MenuItem Header="Все" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" IsChecked="True" />
+                        <MenuItem Header="_Администрация" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
+                        <MenuItem Header="МО _начальных классов" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
+                        <MenuItem Header="МО _математики и информатики" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
+                        <MenuItem Header="МО _филологического образования" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
+                        <MenuItem Header="МО _иностранного языка" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
+                        <MenuItem Header="МО _естественнонаучного цикла" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
+                        <MenuItem Header="МО _общественных дисциплин" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
+                        <MenuItem Header="МО _эстетического цикла" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
+                        <MenuItem Header="МО физической _культуры" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
+                        <MenuItem Header="_Педагоги-организаторы" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
+                        <MenuItem Header="Педагоги _дополнительного образования" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
+                        <MenuItem Header="_Служба сопровождения" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
+                        <MenuItem Header="_Воспитатели группы продленного дня" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
+                        <MenuItem Header="Медиа_тека" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
                     </MenuItem>
                     <MenuItem Header="_Учебная работа">
                         <MenuItem Header="_Предметы" Style="{StaticResource SubMenuItemStyle}" />
