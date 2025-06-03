@@ -153,6 +153,12 @@
                                   Visibility="{Binding IsAuth, Source={x:Static Application.Current}, Converter={StaticResource BoolToVis}}"
                                   />
                     </MenuItem>
+                    <MenuItem Header="Сп_равка"
+                              IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=HelpPg}"
+                              Command="NavigationCommands.GoToPage"
+                              CommandParameter="Pages/HelpPg.xaml"
+                              CommandTarget="{Binding ElementName=mainFrame}"
+                              />
                 </Menu>
             </WrapPanel>
         </DockPanel>
