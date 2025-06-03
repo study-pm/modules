@@ -103,7 +103,7 @@
                 <MenuItem.Icon>
                     <Viewbox Height="16" Width="16" ToolTip="Предпочтения">
                         <Canvas Height="512" Width="512">
-                            <Path Data="{StaticResource UserCogSoldPath}">
+                            <Path Data="{StaticResource UserGearSolidPath}">
                                 <Path.RenderTransform>
                                     <TranslateTransform X="0" Y="0"/>
                                 </Path.RenderTransform>
