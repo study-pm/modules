@@ -18,6 +18,12 @@ namespace HR.Services
         /// <remarks>
         /// The method creates a new AES instance, sets the key size, and generates a cryptographically secure random key.
         /// </remarks>
+        /// <example>
+        /// <code>
+        /// string filePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "aes_key.bin");
+        /// File.WriteAllBytes(filePath, Crypto.GenerateAesKey());
+        /// </code>
+        /// </example>
         public static byte[] GenerateAesKey(int size = 256)
         {
             using (var aes = Aes.Create())
