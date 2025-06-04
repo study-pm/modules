@@ -76,6 +76,28 @@ namespace HR.Utilities
             }
             return null;
         }
+        /// <summary>
+        /// Loads a <see cref="BitmapImage"/> from a byte array containing image data.
+        /// </summary>
+        /// <param name="imageData">The byte array representing the image data to load.</param>
+        /// <returns>A <see cref="BitmapImage"/> created from the provided byte array.</returns>
+        /// <remarks>
+        /// The method creates a <see cref="MemoryStream"/> from the byte array and initializes
+        /// the <see cref="BitmapImage"/> with caching enabled for immediate loading.
+        /// The stream is disposed after the image is loaded.
+        /// </remarks>
+        public static BitmapImage LoadImage(byte[] imageData)
+        {
+            using (var ms = new MemoryStream(imageData))
+            {
+                var image = new BitmapImage();
+                image.BeginInit();
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.StreamSource = ms;
+                image.EndInit();
+                return image;
+            }
+        }
         public static Task<bool> MockAsync(int delay, bool isSuccess = true)
         {
             var tcs = new TaskCompletionSource<bool>();
