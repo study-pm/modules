@@ -98,6 +98,12 @@ namespace HR.Utilities
                 return image;
             }
         }
+        /// <summary>
+        /// Asynchronously simulates an operation that completes after a specified delay.
+        /// </summary>
+        /// <param name="delay">The delay in milliseconds before the task completes.</param>
+        /// <param name="isSuccess">Determines whether the task completes successfully or with an exception. Default is true (success).</param>
+        /// <returns>A task that completes with <c>true</c> if <paramref name="isSuccess"/> is true; otherwise, the task faults with an exception.</returns>
         public static Task<bool> MockAsync(int delay, bool isSuccess = true)
         {
             var tcs = new TaskCompletionSource<bool>();
