@@ -11,6 +11,23 @@ namespace HR.Services
     internal class Crypto
     {
         /// <summary>
+        /// Generates a random AES encryption key of the specified size.
+        /// </summary>
+        /// <param name="size">The size of the AES key in bits. Default is 256 bits (32 bytes).</param>
+        /// <returns>A byte array containing the generated AES key.</returns>
+        /// <remarks>
+        /// The method creates a new AES instance, sets the key size, and generates a cryptographically secure random key.
+        /// </remarks>
+        public static byte[] GenerateAesKey(int size = 256)
+        {
+            using (var aes = Aes.Create())
+            {
+                aes.KeySize = size;
+                aes.GenerateKey();
+                return aes.Key;
+            }
+        }
+        /// <summary>
         /// Generates random salt
         /// </summary>
         /// <param name="size">The size of the salt in bytes (default is 16 bytes)</param>
