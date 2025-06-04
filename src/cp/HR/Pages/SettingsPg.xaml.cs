@@ -1,9 +1,13 @@
 ﻿using HR.Data.Models;
 using HR.Services;
 using HR.Utilities;
+using PdfSharp.Xps.XpsModel;
+using QRCoder;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
+using System.IO.Packaging;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
@@ -18,6 +22,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Xps.Packaging;
+using PdfSharp.Xps;
+using System.Diagnostics;
 
 namespace HR.Pages
 {
@@ -145,9 +152,166 @@ namespace HR.Pages
         {
             vm.Reset();
         }
+        private BitmapImage LoadImage(byte[] imageData)
+        {
+            using (var ms = new MemoryStream(imageData))
+            {
+                var image = new BitmapImage();
+                image.BeginInit();
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.StreamSource = ms;
+                image.EndInit();
+                return image;
+            }
+        }
+        private FlowDocument CloneFlowDocument(FlowDocument original)
+        {
+            if (original == null) return null;
+
+            // Сериализуем в XAML строку
+            string xaml = System.Windows.Markup.XamlWriter.Save(original);
+
+            // Загружаем из XAML обратно — создаём копию
+            using (var stringReader = new System.IO.StringReader(xaml))
+            using (var xmlReader = System.Xml.XmlReader.Create(stringReader))
+            {
+                return (FlowDocument)System.Windows.Markup.XamlReader.Load(xmlReader);
+            }
+        }
+        private void ExportToPdf(FlowDocument doc, string fileName)
+        {
+            try
+            {
+                // Открываем диалог сохранения PDF
+                var dlg = new Microsoft.Win32.SaveFileDialog
+                {
+                    FileName = fileName,
+                    DefaultExt = ".pdf",
+                    Filter = "Документы PDF (.pdf)|*.pdf"
+                };
+
+                if (dlg.ShowDialog() == true)
+                {
+                    // Путь к файлу
+                    string pdfFilePath = dlg.FileName;
+                    // Создаем временный файл для XPS
+                    string tempXpsFile = System.IO.Path.Combine(System.IO.Path.GetTempPath(), Guid.NewGuid() + ".xps");
+
+                    // Сохраняем FlowDocument из RichTextBox в XPS
+                    // Создаем XPS-документ через WPF
+                    using (Package package = Package.Open(tempXpsFile, FileMode.Create))
+                    {
+                        System.Windows.Xps.Packaging.XpsDocument xpsDoc = new System.Windows.Xps.Packaging.XpsDocument(package);
+                        // Создаем XpsDocumentWriter через статический метод XpsDocument.CreateXpsDocumentWriter
+                        var xpsWriter = System.Windows.Xps.Packaging.XpsDocument.CreateXpsDocumentWriter(xpsDoc);
+                        // Пагинатор документа
+                        var paginator = ((IDocumentPaginatorSource)doc).DocumentPaginator;
+                        xpsWriter.Write(paginator);
+                        xpsDoc.Close();
+                    }
+
+                    // Конвертируем XPS в PDF с помощью PDFSharp.Xps
+                    PdfSharp.Xps.XpsConverter.Convert(tempXpsFile, pdfFilePath, 0);
+
+                    // Удаляем временный XPS файл
+                    File.Delete(tempXpsFile);
+
+                    MessageBox.Show("Экспорт в PDF выполнен успешно!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка при экспорте в PDF:\n" + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
         private void SubmitBtn_Click(object sender, RoutedEventArgs e)
         {
-            vm.Set();
+            // vm.Set();
+            // Генерация QR-кода
+            string pathUrl = "https://school203.spb.ru";
+            var qrGenerator = new QRCodeGenerator();
+            var qrCodeData = qrGenerator.CreateQrCode(pathUrl, QRCodeGenerator.ECCLevel.Q);
+            var qrCode = new PngByteQRCode(qrCodeData);
+            byte[] qrCodeBytes = qrCode.GetGraphic(20);
+
+            // Отображение QR-кода в Image
+            imgQrCode.Source = LoadImage(qrCodeBytes);
+            imgQrCode.Visibility = Visibility.Visible;
+            // lblQrInfo.Visibility = Visibility.Visible;
+        }
+
+        private void GetQrBtn_Click(object sender, RoutedEventArgs e)
+        {
+            // vm.Set();
+            // Генерация QR-кода
+            string pathUrl = "https://school203.spb.ru";
+            var qrGenerator = new QRCodeGenerator();
+            var qrCodeData = qrGenerator.CreateQrCode(pathUrl, QRCodeGenerator.ECCLevel.Q);
+            var qrCode = new PngByteQRCode(qrCodeData);
+            byte[] qrCodeBytes = qrCode.GetGraphic(20);
+
+            // Отображение QR-кода в Image
+            imgQrCode.Source = LoadImage(qrCodeBytes);
+            imgQrCode.Visibility = Visibility.Visible;
+        }
+        FlowDocument CreateReceiptDocument()
+        {
+            var doc = new FlowDocument();
+
+            doc.PagePadding = new Thickness(20);
+            doc.ColumnWidth = double.PositiveInfinity; // чтобы не разбивался на колонки
+
+            // Заголовок
+            var header = new Paragraph(new Bold(new Run("КАССОВЫЙ ЧЕК")));
+            header.FontSize = 24;
+            header.TextAlignment = TextAlignment.Center;
+            doc.Blocks.Add(header);
+
+            // Дата и время
+            var dateParagraph = new Paragraph(new Run($"Дата: {DateTime.Now:dd.MM.yyyy HH:mm}"));
+            dateParagraph.FontSize = 14;
+            dateParagraph.TextAlignment = TextAlignment.Right;
+            doc.Blocks.Add(dateParagraph);
+
+            // Таблица с товарами
+            var table = new Table();
+            table.CellSpacing = 0;
+            table.Columns.Add(new TableColumn() { Width = new GridLength(200) });
+            table.Columns.Add(new TableColumn() { Width = new GridLength(60) });
+            table.Columns.Add(new TableColumn() { Width = new GridLength(80) });
+
+            var rowGroup = new TableRowGroup();
+            table.RowGroups.Add(rowGroup);
+
+            // Заголовок таблицы
+            var headerRow = new TableRow();
+            headerRow.Cells.Add(new TableCell(new Paragraph(new Bold(new Run("Товар")))));
+            headerRow.Cells.Add(new TableCell(new Paragraph(new Bold(new Run("Кол-во")))));
+            headerRow.Cells.Add(new TableCell(new Paragraph(new Bold(new Run("Цена")))));
+            rowGroup.Rows.Add(headerRow);
+
+            // Пример строки товара
+            var itemRow = new TableRow();
+            itemRow.Cells.Add(new TableCell(new Paragraph(new Run("Молоко 1л"))));
+            itemRow.Cells.Add(new TableCell(new Paragraph(new Run("2"))));
+            itemRow.Cells.Add(new TableCell(new Paragraph(new Run("120 ₽"))));
+            rowGroup.Rows.Add(itemRow);
+
+            // Итого
+            var totalParagraph = new Paragraph(new Bold(new Run("Итого: 240 ₽")));
+            totalParagraph.FontSize = 16;
+            totalParagraph.TextAlignment = TextAlignment.Right;
+            doc.Blocks.Add(table);
+            doc.Blocks.Add(totalParagraph);
+
+            return doc;
+        }
+
+        private void Hyperlink_Click(object sender, RoutedEventArgs e)
+        {
+            //ExportToPdf(CloneFlowDocument(ManualRtb.Document), "2FA_manual");
+            var receiptDoc = CreateReceiptDocument();
+            ExportToPdf(receiptDoc, "чек");
         }
     }
 }

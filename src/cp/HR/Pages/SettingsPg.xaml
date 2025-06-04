@@ -7,7 +7,7 @@
       xmlns:uc="clr-namespace:HR.Controls"
       xmlns:utils="clr-namespace:HR.Utilities"
       mc:Ignorable="d"
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="500" d:DesignWidth="800"
       Title="SettingsPg">
     <Page.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
@@ -104,17 +104,117 @@
                     </Grid>
                 </StackPanel>
                 <StackPanel x:Name="SecondSection" MinWidth="300" Margin="5" HorizontalAlignment="Stretch">
-                <StackPanel Orientation="Horizontal">
-                    <Label Foreground="{StaticResource magentaDarkBrush}" FontSize="16">Безопасный вход</Label>
-                    <uc:Details Type="Question"
-                                ToolTip="Для обеспечения безопасного входа необходимо настроить и подключить двухэтапную аутентификацию"
-                                />
+                    <StackPanel Orientation="Horizontal">
+                        <Label Foreground="{StaticResource magentaDarkBrush}" FontSize="16">Безопасный вход</Label>
+                        <uc:Details Type="Question"
+                                    ToolTip="Для обеспечения безопасного входа необходимо настроить и подключить двухэтапную аутентификацию"
+                                    />
                     </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <CheckBox Content="Включить двухэтапную аутентификацию"
-                          IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
-                          IsChecked="{Binding Is2FA}"
-                          />
+                    <RichTextBox x:Name="ManualRtb" IsReadOnly="True" IsDocumentEnabled="True" VerticalScrollBarVisibility="Auto" Margin="0" Padding="0" BorderThickness="0">
+                        <FlowDocument>
+                            <Paragraph FontSize="14" Margin="0">
+                                Безопасный вход в приложение обеспечивается за счет применения двухэтапной аутентификации с двумя факторами.
+                                В качестве первого фактора используется пароль к учетной записи, второй этап подразумевает использование второго фактора — одноразовых кодов TOTP (Time-based One-Time Password), для генерации которых может быть использовано любое приложение, поддерживающее TOTP (Google Authenticator, Microsoft Authenticator, LastPass Authenticator, Яндекс.Ключ).
+                                Для подключения двухэтапной аутентификации с использованием второго фактора следуйте шагам, описанным ниже
+                                (<Bold><Hyperlink Click="Hyperlink_Click" >печать инструкции</Hyperlink></Bold>).
+                            </Paragraph>
+
+                            <List MarkerStyle="Decimal" Padding="5" Margin="0">
+                                <ListItem Margin="10">
+                                    <Paragraph FontSize="14">
+                                        <Bold>Установите любое приложение для генерации TOTP</Bold> на Ваш смартфон:
+                                        <LineBreak/>
+                                        • для Android — из Google Play;
+                                        <LineBreak/>
+                                        • для iOS — из App Store.
+                                    </Paragraph>
+                                </ListItem>
+                                <ListItem Margin="10">
+                                    <Paragraph FontSize="14">
+                                        <Bold>Войдите в свою учетную запись</Bold> в приложении и перейдите в настройки безопасности (раздел «Безопасный вход»).
+                                    </Paragraph>
+                                </ListItem>
+                                <ListItem Margin="10">
+                                    <Paragraph FontSize="14">
+                                        <Bold>Нажмите на кнопку «Сгенерировать QR-код»</Bold>, расположенную ниже:
+                                    </Paragraph>
+                                    <BlockUIContainer>
+                                        <Button x:Name="GetQrBtn" Content="Сгенерировать QR-код" Margin="0 20 0 10" Padding="10" MaxWidth="200"
+                                                Style="{StaticResource GreenBtn}"
+                                                Click="GetQrBtn_Click"
+                                                >
+                                        </Button>
+                                    </BlockUIContainer>
+                                </ListItem>
+                                <ListItem Margin="10">
+                                    <Paragraph FontSize="14">
+                                        <Bold>Отсканируйте с экрана QR-код</Bold>, который должен появиться ниже:
+
+                                        <InlineUIContainer>
+                                            <Image x:Name="imgQrCode" />
+                                        </InlineUIContainer>
+                                        <LineBreak/>
+                                        • откройте Google Authenticator;
+                                        <LineBreak/>
+                                        • нажмите «+» (Добавить аккаунт);
+                                        <LineBreak/>
+                                        • выберите «Сканировать QR-код» и наведите камеру на экран.
+                                    </Paragraph>
+                                </ListItem>
+                                <ListItem Margin="10">
+                                    <Paragraph FontSize="14">
+                                        <Bold>Введите шестизначный код</Bold> из приложения TOTP в следующее поле для подтверждения подключения 2FA:
+                                    </Paragraph>
+                                </ListItem>
+                            </List>
+                        </FlowDocument>
+                    </RichTextBox>
+
+                    <TextBox x:Name="CodeTxb" Width="70" Margin="10" />
+
+                    <RichTextBox>
+                        <FlowDocument>
+                            <List>
+                                <ListItem Margin="10">
+                                    <Paragraph FontSize="14">
+                                        <Bold>На этом настройка завершена.</Bold>
+                                        <LineBreak/>
+                                        • После этого двухфакторная аутентификация будет включена автоматически.
+                                        <LineBreak/>
+                                        • Теперь при входе в аккаунт после введения пароля дополнительно будет нужно вводить код из приложения.
+                                    </Paragraph>
+                                </ListItem>
+                                <ListItem Margin="10">
+                                    <Paragraph FontSize="14">
+                                        <Bold>Вы всегда можете изменить режим входа в приложение.</Bold>
+                                        <LineBreak/>
+                                        • По завершении настройки двухэтапной аутентификации вы сможете включать и выключать ее по своему усмотрению в этом же разделе.
+                                        <LineBreak/>
+                                        • Кроме того, можно запоминать состояние аутентификации, чтобы не приходилось входить в учетную запись при каждом запуске приложения. Это можно сделать, включив настройку «Оставаться в системе» в разделе «Предпочтения».
+                                    </Paragraph>
+                                </ListItem>
+                            </List>
+
+                            <Paragraph FontWeight="Bold" Margin="0,10,0,5">Советы:</Paragraph>
+                            <List MarkerStyle="Disc" Margin="20,0,0,0">
+                                <ListItem>
+                                    <Paragraph>Сохраните резервные коды или секретный ключ для восстановления доступа при потере телефона.</Paragraph>
+                                </ListItem>
+                                <ListItem>
+                                    <Paragraph>Убедитесь, что время на смартфоне синхронизировано автоматически для корректной генерации кодов.</Paragraph>
+                                </ListItem>
+                                <ListItem>
+                                    <Paragraph>При смене телефона перенесите аккаунты Google Authenticator согласно инструкции приложения.</Paragraph>
+                                </ListItem>
+                            </List>
+                        </FlowDocument>
+                    </RichTextBox>
+
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox Content="Включить двухэтапную аутентификацию"
+                              IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
+                              IsChecked="{Binding Is2FA}"
+                              />
                     </StackPanel>
                 </StackPanel>
             </Grid>
