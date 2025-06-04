@@ -203,12 +203,12 @@
       <DependentUpon>WorkersPg.xaml</DependentUpon>
     </Compile>
     <Compile Include="Services\CommandHelper.cs" />
+    <Compile Include="Services\Crypto.cs" />
     <Compile Include="Services\Request.cs" />
     <Compile Include="SplashWindow.xaml.cs">
       <DependentUpon>SplashWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utilities\Converters.cs" />
-    <Compile Include="Utilities\Crypto.cs" />
     <Compile Include="Utilities\RelayCommand.cs" />
     <Compile Include="Utilities\StatusInformer.cs" />
     <Compile Include="Utilities\Utils.cs" />
