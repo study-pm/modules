@@ -34,6 +34,15 @@ namespace HR.Services
             return Base32Encoding.ToString(secretKey);
         }
         /// <summary>
+        /// Forms URI for QR code
+        /// </summary>
+        /// <returns>OTP Auth URI</returns>
+        public static string GetOtpAuthUri(string base32Secret, string user)
+        {
+            string issuer = "HR";
+            return $"otpauth://totp/{issuer}:{user}?secret={base32Secret}&issuer={issuer}";
+        }
+        /// <summary>
         /// Gets hash for password and salt combination
         /// </summary>
         /// <param name="password">The password string to hash</param>
