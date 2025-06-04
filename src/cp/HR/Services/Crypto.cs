@@ -30,7 +30,7 @@ namespace HR.Services
         /// <returns>Base32 secret string</returns>
         public static string GenerateSecret()
         {
-            var secretKey = KeyGeneration.GenerateRandomKey(20);
+            byte[] secretKey = KeyGeneration.GenerateRandomKey(20);
             return Base32Encoding.ToString(secretKey);
         }
         /// <summary>
