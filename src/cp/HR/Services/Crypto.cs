@@ -28,7 +28,7 @@ namespace HR.Services
         /// Generates random secret
         /// </summary>
         /// <returns>Base32 secret string</returns>
-        public byte[] GenerateSecret()
+        public static byte[] GenerateSecret()
         {
             return KeyGeneration.GenerateRandomKey(20);
         }
