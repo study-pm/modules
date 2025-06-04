@@ -28,18 +28,18 @@ namespace HR.Services
         /// Generates random secret
         /// </summary>
         /// <returns>Base32 secret string</returns>
-        public static string GenerateSecret()
+        public byte[] GenerateSecret()
         {
-            byte[] secretKey = KeyGeneration.GenerateRandomKey(20);
-            return Base32Encoding.ToString(secretKey);
+            return KeyGeneration.GenerateRandomKey(20);
         }
         /// <summary>
         /// Forms URI for QR code
         /// </summary>
         /// <returns>OTP Auth URI</returns>
-        public static string GetOtpAuthUri(string base32Secret, string user)
+        public static string GetOtpAuthUri(byte[] secret, string user)
         {
             string issuer = "HR";
+            string base32Secret = Base32Encoding.ToString(secret);
             return $"otpauth://totp/{issuer}:{user}?secret={base32Secret}&issuer={issuer}";
         }
         /// <summary>
