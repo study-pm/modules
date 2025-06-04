@@ -145,14 +145,13 @@
                                                 >
                                         </Button>
                                     </BlockUIContainer>
+                                    <BlockUIContainer>
+                                        <Image x:Name="imgQrCode" />
+                                    </BlockUIContainer>
                                 </ListItem>
                                 <ListItem Margin="10">
                                     <Paragraph FontSize="14">
-                                        <Bold>Отсканируйте с экрана QR-код</Bold>, который должен появиться ниже:
-
-                                        <InlineUIContainer>
-                                            <Image x:Name="imgQrCode" />
-                                        </InlineUIContainer>
+                                        <Bold>Отсканируйте с экрана QR-код</Bold>:
                                         <LineBreak/>
                                         • откройте Google Authenticator;
                                         <LineBreak/>

@@ -91,6 +91,7 @@ namespace HR.Pages
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         private int uid = ((App)(Application.Current)).CurrentUser.Id;
         private const double MinColumnWidth = 350;
+        private byte[] secret;
         private SettingsViewModel _vm;
         public SettingsViewModel vm
         {
@@ -152,18 +153,6 @@ namespace HR.Pages
         {
             vm.Reset();
         }
-        private BitmapImage LoadImage(byte[] imageData)
-        {
-            using (var ms = new MemoryStream(imageData))
-            {
-                var image = new BitmapImage();
-                image.BeginInit();
-                image.CacheOption = BitmapCacheOption.OnLoad;
-                image.StreamSource = ms;
-                image.EndInit();
-                return image;
-            }
-        }
         private FlowDocument CloneFlowDocument(FlowDocument original)
         {
             if (original == null) return null;
@@ -178,6 +167,7 @@ namespace HR.Pages
                 return (FlowDocument)System.Windows.Markup.XamlReader.Load(xmlReader);
             }
         }
+        private byte[] GetSecret => Crypto.GenerateSecret();
         private void ExportToPdf(FlowDocument doc, string fileName)
         {
             try
@@ -224,35 +214,21 @@ namespace HR.Pages
                 MessageBox.Show("Ошибка при экспорте в PDF:\n" + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+        private void SetQrCode(byte[] qrCodeBytes)
+        {
+            imgQrCode.Source = Utils.LoadImage(qrCodeBytes);
+            imgQrCode.Visibility = Visibility.Visible;
+        }
         private void SubmitBtn_Click(object sender, RoutedEventArgs e)
         {
             // vm.Set();
-            // Генерация QR-кода
-            string pathUrl = "https://school203.spb.ru";
-            var qrGenerator = new QRCodeGenerator();
-            var qrCodeData = qrGenerator.CreateQrCode(pathUrl, QRCodeGenerator.ECCLevel.Q);
-            var qrCode = new PngByteQRCode(qrCodeData);
-            byte[] qrCodeBytes = qrCode.GetGraphic(20);
-
-            // Отображение QR-кода в Image
-            imgQrCode.Source = LoadImage(qrCodeBytes);
-            imgQrCode.Visibility = Visibility.Visible;
-            // lblQrInfo.Visibility = Visibility.Visible;
         }
-
         private void GetQrBtn_Click(object sender, RoutedEventArgs e)
         {
-            // vm.Set();
-            // Генерация QR-кода
-            string pathUrl = "https://school203.spb.ru";
-            var qrGenerator = new QRCodeGenerator();
-            var qrCodeData = qrGenerator.CreateQrCode(pathUrl, QRCodeGenerator.ECCLevel.Q);
-            var qrCode = new PngByteQRCode(qrCodeData);
-            byte[] qrCodeBytes = qrCode.GetGraphic(20);
-
-            // Отображение QR-кода в Image
-            imgQrCode.Source = LoadImage(qrCodeBytes);
-            imgQrCode.Visibility = Visibility.Visible;
+            // Generate secret
+            secret = Crypto.GenerateSecret();
+            // Get and display QR code in Image
+            SetQrCode(Utils.GetQrCode(secret, "root"));
         }
         FlowDocument CreateReceiptDocument()
         {
