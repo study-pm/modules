@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OtpNet;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -22,6 +23,15 @@ namespace HR.Services
                 rng.GetBytes(salt);
             }
             return salt;
+        }
+        /// <summary>
+        /// Generates random secret
+        /// </summary>
+        /// <returns>Base32 secret string</returns>
+        public static string GenerateSecret()
+        {
+            var secretKey = KeyGeneration.GenerateRandomKey(20);
+            return Base32Encoding.ToString(secretKey);
         }
         /// <summary>
         /// Gets hash for password and salt combination
