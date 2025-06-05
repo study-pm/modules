@@ -11,6 +11,10 @@ namespace HR.Services
     internal static class Crypto
     {
         /// <summary>
+        /// AES IV storage relative path
+        /// </summary>
+        public static readonly string keysPath = "Static\\Keys";
+        /// <summary>
         /// Generates a new random initialization vector (IV) for AES encryption.
         /// </summary>
         /// <param name="filePath">This parameter is not used in the current implementation.</param>
