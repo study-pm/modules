@@ -11,6 +11,14 @@ namespace HR.Services
     internal static class Fs
     {
         /// <summary>
+        /// Executable file directory path
+        /// </summary>
+        public static readonly string appDir = AppDomain.CurrentDomain.BaseDirectory;
+        /// <summary>
+        /// Project/solution root directory path
+        /// </summary>
+        public static readonly string rootDir = System.IO.Path.GetFullPath(Path.Combine(appDir, "..", ".."));
+        /// <summary>
         /// Creates bitmap image
         /// </summary>
         /// <param name="path">Fil path</param>
