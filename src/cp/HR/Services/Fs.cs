@@ -113,6 +113,35 @@ namespace HR.Services
             }
         }
         /// <summary>
+        /// Asynchronously loads encryption key and initialization vector (IV) byte arrays in parallel from specified files.
+        /// </summary>
+        /// <param name="basePath">The base directory path where the key and IV files are located.</param>
+        /// <param name="keyFileName">The file name of the encryption key.</param>
+        /// <param name="ivFileName">The file name of the initialization vector (IV).</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation. The task result is a tuple containing:
+        /// <list type="bullet">
+        /// <item><description><c>key</c> - The encryption key as a byte array.</description></item>
+        /// <item><description><c>iv</c> - The initialization vector as a byte array.</description></item>
+        /// </list>
+        /// </returns>
+        /// <remarks>
+        /// This method reads the key and IV files concurrently using asynchronous file I/O to improve performance,
+        /// which is beneficial in cryptographic scenarios requiring efficient key loading.
+        /// </remarks>
+        public static async Task<(byte[] key, byte[] iv)> LoadKeysParallelAsync(string basePath, string keyFileName, string ivFileName)
+        {
+            string keyPath = System.IO.Path.Combine(basePath, keyFileName);
+            string ivPath = System.IO.Path.Combine(basePath, ivFileName);
+
+            var keyTask = ReadAllBytesAsync(keyPath);
+            var ivTask = ReadAllBytesAsync(ivPath);
+
+            await Task.WhenAll(keyTask, ivTask);
+
+            return (await keyTask, await ivTask);
+        }
+        /// <summary>
         /// Asynchronously reads all bytes from the specified file path.
         /// </summary>
         /// <param name="path">The full file path to read from.</param>
