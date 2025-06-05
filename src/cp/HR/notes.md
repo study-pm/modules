@@ -199,3 +199,6 @@ using (var pbkdf2 = new Rfc2898DeriveBytes(password, salt, 10000))
 All major methods are documented with XML comments
 
 !!! Сервисы содержат только статические методы
+
+## Валидация
+Система валидации построена на использовании валидационных правил.
