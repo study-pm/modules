@@ -160,7 +160,7 @@ namespace HR.Pages
             string hexString = BitConverter.ToString(hash).Replace("-", "");
             string sqlValue = "0x" + hexString;
             Debug.WriteLine(sqlValue);
-            await Utils.MockAsync(2000);
+            await Request.MockAsync(2000);
             throw new NotImplementedException("Register logic here");
         }
         private void Reset()
