@@ -85,6 +85,12 @@ namespace HR.Services
             return null;
         }
         /// <summary>
+        /// Combines the root directory path with a relative URI to produce a full file system path.
+        /// </summary>
+        /// <param name="relativeUri">The relative path or URI to combine with the root directory.</param>
+        /// <returns>A full path string that combines the root directory and the relative URI.</returns>
+        public static string GetFullRootPath(string relativeUri) => Path.Combine(rootDir, relativeUri);
+        /// <summary>
         /// Loads a <see cref="BitmapImage"/> from a byte array containing image data.
         /// </summary>
         /// <param name="imageData">The byte array representing the image data to load.</param>
