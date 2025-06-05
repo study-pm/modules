@@ -11,6 +11,28 @@ namespace HR.Services
     internal class Crypto
     {
         /// <summary>
+        /// Generates a new random initialization vector (IV) for AES encryption.
+        /// </summary>
+        /// <param name="filePath">This parameter is not used in the current implementation.</param>
+        /// <returns>A byte array containing the generated 16-byte AES IV.</returns>
+        /// <remarks>
+        /// The initialization vector (IV) is always 16 bytes for AES and is generated using a cryptographically secure random number generator.
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// filePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "aes_iv.bin");
+        /// File.WriteAllBytes(filePath, Crypto.GenerateAesIV());
+        /// </code>
+        /// </example>
+        public static byte[] GenerateAesIV()
+        {
+            using (var aes = Aes.Create())
+            {
+                aes.GenerateIV(); // IV is always 16 bytes for AES
+                return aes.IV;
+            }
+        }
+        /// <summary>
         /// Generates a random AES encryption key of the specified size.
         /// </summary>
         /// <param name="size">The size of the AES key in bits. Default is 256 bits (32 bytes).</param>
