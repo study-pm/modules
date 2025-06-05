@@ -215,7 +215,7 @@ namespace HR.Pages
         }
         private void SetQrCode(byte[] qrCodeBytes)
         {
-            imgQrCode.Source = Utils.LoadImage(qrCodeBytes);
+            imgQrCode.Source = Fs.LoadImage(qrCodeBytes);
             imgQrCode.Visibility = Visibility.Visible;
         }
         private void SubmitBtn_Click(object sender, RoutedEventArgs e)
