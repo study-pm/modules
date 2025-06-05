@@ -167,7 +167,6 @@ namespace HR.Pages
                 return (FlowDocument)System.Windows.Markup.XamlReader.Load(xmlReader);
             }
         }
-        private byte[] GetSecret => Crypto.GenerateSecret();
         private void ExportToPdf(FlowDocument doc, string fileName)
         {
             try
