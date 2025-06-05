@@ -136,40 +136,71 @@
                                 </ListItem>
                                 <ListItem Margin="10">
                                     <Paragraph FontSize="14">
-                                        <Bold>Нажмите на кнопку «Сгенерировать QR-код»</Bold>, расположенную ниже:
+                                        <Bold>Нажмите на кнопку «Сгенерировать секретный ключ»</Bold>, расположенную ниже:
                                     </Paragraph>
                                     <BlockUIContainer>
-                                        <Button x:Name="GetQrBtn" Content="Сгенерировать QR-код" Margin="0 20 0 10" Padding="10" MaxWidth="200"
+                                        <Button x:Name="GetQrBtn" Margin="0 20 0 10" Padding="10"
                                                 Style="{StaticResource GreenBtn}"
                                                 Click="GetQrBtn_Click"
                                                 >
+                                            <TextBlock Style="{StaticResource TextBlockWithEllipsisStyle}">Сгенерировать секретный ключ</TextBlock>
                                         </Button>
                                     </BlockUIContainer>
                                     <BlockUIContainer>
-                                        <Image x:Name="imgQrCode" />
+                                        <StackPanel Style="{StaticResource FormElement}"
+                                                    Visibility="{Binding IsSecret, Converter={StaticResource BoolToVis}}"
+                                                    >
+                                            <Label>Секретный ключ</Label>
+                                            <TextBox Text="{Binding Secret}" Visibility="{Binding IsSecret, Converter={StaticResource BoolToVis}}" />
+                                        </StackPanel>
+                                    </BlockUIContainer>
+                                    <BlockUIContainer>
+                                        <Image x:Name="imgQrCode" MaxHeight="500" MaxWidth="500" />
                                     </BlockUIContainer>
                                 </ListItem>
                                 <ListItem Margin="10">
                                     <Paragraph FontSize="14">
-                                        <Bold>Отсканируйте с экрана QR-код</Bold>:
+                                        <Bold>Отсканируйте с экрана QR-код</Bold> или <Bold>введите секретный ключ</Bold> в приложении для генерации TOTP:
                                         <LineBreak/>
-                                        • откройте Google Authenticator;
+                                        • откройте Authenticator;
                                         <LineBreak/>
                                         • нажмите «+» (Добавить аккаунт);
                                         <LineBreak/>
-                                        • выберите «Сканировать QR-код» и наведите камеру на экран.
+                                        • выберите «Сканировать QR-код» ("Scan a QR code") и наведите камеру на экран;
+                                        <LineBreak/>
+                                        • (альтернативный вариант) выберите «Ввести ключ настройки» ("Enter a setup key") и введите ключ, представленный выше;
                                     </Paragraph>
                                 </ListItem>
                                 <ListItem Margin="10">
                                     <Paragraph FontSize="14">
-                                        <Bold>Введите шестизначный код</Bold> из приложения TOTP в следующее поле для подтверждения подключения 2FA:
+                                        <Bold>Введите шестизначный код</Bold> из приложения TOTP в поле для подтверждения подключения 2FA:
                                     </Paragraph>
                                 </ListItem>
                             </List>
                         </FlowDocument>
                     </RichTextBox>
 
-                    <TextBox x:Name="CodeTxb" Width="70" Margin="10" />
+                    <StackPanel Style="{StaticResource FormElement}" HorizontalAlignment="Center" Margin="0"
+                                Visibility="{Binding IsSecret, Converter={StaticResource BoolToVis}}"
+                                >
+                        <Label HorizontalAlignment="Center">Код</Label>
+                        <TextBox x:Name="CodeTxb" Width="70"
+                                 IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
+                                 utils:ValidationHelper.AutoErrorVisibility="True"
+                                 utils:ValidationHelper.EnableTouchedTracking="True" TextChanged="CodeTxb_TextChanged"
+                                >
+                            <TextBox.Text>
+                                <Binding Path="Code" UpdateSourceTrigger="PropertyChanged"
+                                         ValidatesOnDataErrors="True" NotifyOnValidationError="True">
+                                    <Binding.ValidationRules>
+                                        <utils:DigitsOnlyValidationRule/>
+                                        <utils:ExactLengthValidationRule/>
+                                        <utils:NotEmptyValidationRule/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                    </StackPanel>
 
                     <RichTextBox>
                         <FlowDocument>

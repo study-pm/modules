@@ -25,6 +25,7 @@ using System.Windows.Shapes;
 using System.Windows.Xps.Packaging;
 using PdfSharp.Xps;
 using System.Diagnostics;
+using OtpNet;
 
 namespace HR.Pages
 {
@@ -34,6 +35,17 @@ namespace HR.Pages
         protected void OnPropertyChanged([CallerMemberName] string prop = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         internal User dm;
+        private string _code;
+        public string Code
+        {
+            get => _code;
+            set
+            {
+                if (_code == value) return;
+                _code = value;
+                OnPropertyChanged();
+            }
+        }
         public bool IsChanged => dm.Is2faOn != Is2FA;
         public bool IsEnabled => IsChanged && !IsInProgress;
         private bool _isInProgress;
@@ -61,6 +73,20 @@ namespace HR.Pages
                 OnPropertyChanged(nameof(IsEnabled));
             }
         }
+        public bool IsSecret => Secret != null;
+        private string secret;
+        public string Secret
+        {
+            get => secret;
+            set
+            {
+                if (secret == value) return;
+                secret = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsSecret));
+            }
+        }
+
         public SettingsViewModel()
         {
             Is2FA = false;
@@ -107,6 +133,8 @@ namespace HR.Pages
             InitializeComponent();
             this.SizeChanged += SettingsPg_SizeChanged;
             Loaded += SettingsPg_Loaded;
+            vm = new SettingsViewModel();
+            DataContext = vm;
         }
         private void AdjustGridLayout(double availableWidth)
         {
@@ -140,9 +168,10 @@ namespace HR.Pages
                 Grid.SetColumn(SecondSection, 0);
             }
         }
-        private void SettingsPg_Loaded(object sender, RoutedEventArgs e)
+        private async void SettingsPg_Loaded(object sender, RoutedEventArgs e)
         {
             AdjustGridLayout(this.ActualWidth);
+            await SaveSecret();
         }
 
         private void SettingsPg_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -225,9 +254,17 @@ namespace HR.Pages
         private void GetQrBtn_Click(object sender, RoutedEventArgs e)
         {
             // Generate secret
-            secret = Crypto.GenerateSecret();
+            (secret, vm.Secret) = Crypto.GenerateSecret();
             // Get and display QR code in Image
             SetQrCode(Utils.GetQrCode(secret, "root"));
+        }
+        private async Task SaveSecret()
+        {
+            string basePath = Fs.GetFullRootPath(Crypto.keysPath);
+            var (key, iv) = await Fs.LoadKeysParallelAsync(basePath, "aes_key.bin", "aes_iv.bin");
+            string originalString = "abc123";
+            string encryptedString = Crypto.Encrypt(originalString, key, iv);
+            string decryptedString = Crypto.Decrypt(encryptedString, key, iv);
         }
         FlowDocument CreateReceiptDocument()
         {
@@ -287,6 +324,54 @@ namespace HR.Pages
             //ExportToPdf(CloneFlowDocument(ManualRtb.Document), "2FA_manual");
             var receiptDoc = CreateReceiptDocument();
             ExportToPdf(receiptDoc, "чек");
+        }
+
+        private void CodeTxb_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBox txb = (TextBox)sender;
+            if (Validation.GetHasError(txb)) return;
+            try
+            {
+                var totp = new Totp(secret);
+                bool isValid = totp.VerifyTotp(vm.Code, out long timeStepMatched, new VerificationWindow(2, 2));
+                if (isValid)
+                {
+                    StatusInformer.ReportSuccess($"Успешное подключение 2FA");
+                    MessageBox.Show("Двухэтапная аутентификация успешно подключена!\n\n" +
+                        "Теперь ваша учетная запись защищена дополнительным уровнем безопасности.\n\n" +
+                        "• При каждом входе в систему после ввода пароля вам потребуется ввести шестизначный код из приложения Authenticator на вашем смартфоне.\n" +
+                        "• Код обновляется каждые 30 секунд, так что вводите актуальный.\n\n" +
+                        "Важные советы:\n" +
+                        "• Сохраните резервные коды в надёжном месте для восстановления доступа при потере телефона.\n" +
+                        "• Не теряйте телефон и при смене перенесите аккаунт в новое приложение.\n" +
+                        "• Никому не сообщайте свои коды из Authenticator.",
+                        "Успешная регистрация 2FA",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+                }
+                else
+                {
+                    StatusInformer.ReportFailure($"Ошибка проверки кода регистрации 2FA");
+                    MessageBox.Show("Ошибка проверки кода двухэтапной аутентификации.\n\n" +
+                        "Введённый код неверен. Проверьте код из приложения Google Authenticator и попробуйте снова.\n\n" +
+                        "• Убедитесь, что время на вашем устройстве синхронизировано и установлено правильно.\n" +
+                        "• Введите актуальный шестизначный код, который обновляется каждые 30 секунд.\n" +
+                        "• Если проблема сохраняется, попробуйте заново отсканировать QR-код и повторить регистрацию.",
+                        "Ошибка 2FA",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                }
+            }
+            catch (Exception exc)
+            {
+                StatusInformer.ReportFailure($"Непредвиденная ошибка при проверке кода регистрации 2FA: {exc.Message.ToString()}");
+                MessageBox.Show("Произошла непредвиденная ошибка при проверке кода: " + exc.Message.ToString() +
+                    "Попробуйте повторить попытку позже.\n\n" +
+                    "Если проблема сохраняется, обратитесь в службу поддержки для получения помощи.",
+                    "Ошибка 2FA",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                }
         }
     }
 }
