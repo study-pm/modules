@@ -112,5 +112,30 @@ namespace HR.Services
                 return image;
             }
         }
+        /// <summary>
+        /// Asynchronously reads all bytes from the specified file path.
+        /// </summary>
+        /// <param name="path">The full file path to read from.</param>
+        /// <returns>A task that represents the asynchronous read operation. The task result contains a byte array with the file's contents.</returns>
+        /// <remarks>
+        /// The method opens the file with asynchronous read enabled and reads its entire content into a byte array.
+        /// It reads in a loop until all bytes are read or the end of the file is reached.
+        /// </remarks>
+        public static async Task<byte[]> ReadAllBytesAsync(string path)
+        {
+            using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, useAsync: true))
+            {
+                byte[] result = new byte[fs.Length];
+                int bytesRead = 0;
+                while (bytesRead < fs.Length)
+                {
+                    int read = await fs.ReadAsync(result, bytesRead, (int)(fs.Length - bytesRead));
+                    if (read == 0)
+                        break;
+                    bytesRead += read;
+                }
+                return result;
+            }
+        }
     }
 }
