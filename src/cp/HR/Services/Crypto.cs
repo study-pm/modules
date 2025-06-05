@@ -142,12 +142,25 @@ namespace HR.Services
             return salt;
         }
         /// <summary>
-        /// Generates random secret
+        /// Generates a new cryptographic secret key and its Base32-encoded string representation.
         /// </summary>
-        /// <returns>Base32 secret string</returns>
-        public static byte[] GenerateSecret()
+        /// <returns>
+        /// A tuple containing:
+        /// <list type="bullet">
+        /// <item><description><c>SecretBytes</c> - The raw secret key as a byte array.</description></item>
+        /// <item><description><c>Base32Secret</c> - The Base32-encoded string representation of the secret key.</description></item>
+        /// </list>
+        /// </returns>
+        /// <remarks>
+        /// The secret key is generated as a 20-byte random key suitable for cryptographic use.
+        /// The Base32 encoding facilitates easy sharing or storage of the secret in a human-readable format,
+        /// commonly used in authentication scenarios such as TOTP (Time-based One-Time Password).
+        /// </remarks>
+        public static (byte[] SecretBytes, string Base32Secret) GenerateSecret()
         {
-            return KeyGeneration.GenerateRandomKey(20);
+            byte[] secret = KeyGeneration.GenerateRandomKey(20);
+            string base32Secret = Base32Encoding.ToString(secret);
+            return (secret, base32Secret);
         }
         /// <summary>
         /// Forms URI for QR code
