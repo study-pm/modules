@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace HR.Services
 {
-    internal class Crypto
+    internal static class Crypto
     {
         /// <summary>
         /// Generates a new random initialization vector (IV) for AES encryption.
