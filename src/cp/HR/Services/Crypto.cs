@@ -1,10 +1,12 @@
 ﻿using OtpNet;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace HR.Services
 {
@@ -14,6 +16,72 @@ namespace HR.Services
         /// AES IV storage relative path
         /// </summary>
         public static readonly string keysPath = "Static\\Keys";
+        /// <summary>
+        /// Decrypts a Base64-encoded ciphertext string using AES encryption with the specified key and initialization vector (IV).
+        /// </summary>
+        /// <param name="cipherTextBase64">The ciphertext encoded as a Base64 string.</param>
+        /// <param name="key">The AES encryption key as a byte array.</param>
+        /// <param name="iv">The AES initialization vector (IV) as a byte array.</param>
+        /// <returns>The decrypted plaintext string.</returns>
+        /// <remarks>
+        /// The method uses AES in CBC mode with PKCS7 padding to perform the decryption.
+        /// </remarks>
+        public static string Decrypt(string cipherTextBase64, byte[] key, byte[] iv)
+        {
+            byte[] cipherText = Convert.FromBase64String(cipherTextBase64);
+
+            using (Aes aesAlg = Aes.Create())
+            {
+                aesAlg.Key = key;
+                aesAlg.IV = iv;
+                aesAlg.Mode = CipherMode.CBC;
+                aesAlg.Padding = PaddingMode.PKCS7;
+
+                ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
+
+                using (var msDecrypt = new MemoryStream(cipherText))
+                using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                using (var srDecrypt = new StreamReader(csDecrypt))
+                {
+                    return srDecrypt.ReadToEnd();
+                }
+            }
+        }
+        /// <summary>
+        /// Encrypts the specified plaintext string using AES encryption with the provided key and initialization vector (IV),
+        /// and returns the result as a Base64-encoded string.
+        /// </summary>
+        /// <param name="plainText">The plaintext string to encrypt.</param>
+        /// <param name="key">The AES encryption key as a byte array.</param>
+        /// <param name="iv">The AES initialization vector (IV) as a byte array.</param>
+        /// <returns>A Base64-encoded string representing the encrypted ciphertext.</returns>
+        /// <remarks>
+        /// The method uses AES in CBC mode with PKCS7 padding to perform the encryption.
+        /// The output is Base64-encoded for safe storage or transmission, such as saving in a database.
+        /// </remarks>
+        public static string Encrypt(string plainText, byte[] key, byte[] iv)
+        {
+            using (Aes aesAlg = Aes.Create())
+            {
+                aesAlg.Key = key;
+                aesAlg.IV = iv;
+                aesAlg.Mode = CipherMode.CBC;
+                aesAlg.Padding = PaddingMode.PKCS7;
+
+                ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
+
+                using (var msEncrypt = new MemoryStream())
+                {
+                    using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                    using (var swEncrypt = new StreamWriter(csEncrypt))
+                    {
+                        swEncrypt.Write(plainText);
+                    }
+                    byte[] encrypted = msEncrypt.ToArray();
+                    return Convert.ToBase64String(encrypted); // Сохраняйте в базе в Base64
+                }
+            }
+        }
         /// <summary>
         /// Generates a new random initialization vector (IV) for AES encryption.
         /// </summary>
