@@ -151,7 +151,31 @@
                                                     Visibility="{Binding IsSecret, Converter={StaticResource BoolToVis}}"
                                                     >
                                             <Label>Секретный ключ</Label>
-                                            <TextBox Text="{Binding Secret}" Visibility="{Binding IsSecret, Converter={StaticResource BoolToVis}}" />
+                                            <Grid>
+                                                <TextBox x:Name="SecretTxb" Text="{Binding Secret}" Padding="5 0 25 0" />
+                                                <Button x:Name="CopySecretBtn" Style="{StaticResource IconButton}" HorizontalAlignment="Right"
+                                                        Click="CopySecretBtn_Click"
+                                                        >
+                                                    <StackPanel>
+                                                        <Viewbox Stretch="Fill" Width="16" Height="16">
+                                                            <Path Fill="{StaticResource cyanDarkBrush}" Data="{StaticResource CopySolidPath}"/>
+                                                        </Viewbox>
+                                                    </StackPanel>
+                                                </Button>
+
+                                                <TextBlock x:Name="CopiedTextBlock" Text="Скопировано!"
+                                                           Foreground="{StaticResource CyanNormalBrush}"
+                                                           FontWeight="Bold"
+                                                           HorizontalAlignment="Right"
+                                                           Margin="0 0 5 0"
+                                                           Opacity="0"
+                                                           RenderTransformOrigin="0.5,0.5"
+                                                           IsHitTestVisible="False">
+                                                    <TextBlock.RenderTransform>
+                                                        <TranslateTransform Y="0" />
+                                                    </TextBlock.RenderTransform>
+                                                </TextBlock>
+                                            </Grid>
                                         </StackPanel>
                                     </BlockUIContainer>
                                     <BlockUIContainer>

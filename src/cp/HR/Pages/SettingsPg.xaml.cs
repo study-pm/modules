@@ -26,6 +26,7 @@ using System.Windows.Xps.Packaging;
 using PdfSharp.Xps;
 using System.Diagnostics;
 using OtpNet;
+using System.Windows.Media.Animation;
 
 namespace HR.Pages
 {
@@ -372,6 +373,33 @@ namespace HR.Pages
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
                 }
+        }
+
+        private async void CopySecretBtn_Click(object sender, RoutedEventArgs e)
+        {
+            // Select all text in TextBox
+            SecretTxb.Focus();
+            SecretTxb.SelectAll();
+
+            // Copy text to clipboard
+            Clipboard.SetText(SecretTxb.Text);
+
+            // Appear animation
+            var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(200));
+            CopiedTextBlock.BeginAnimation(UIElement.OpacityProperty, fadeIn);
+            // Parallel hover and disappear animation
+            var moveUp = new DoubleAnimation(0, -20, TimeSpan.FromMilliseconds(800)) { BeginTime = TimeSpan.Zero };
+            var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(800)) { BeginTime = TimeSpan.Zero };
+
+            // Apply animations
+            CopiedTextBlock.BeginAnimation(UIElement.OpacityProperty, fadeIn);
+            (CopiedTextBlock.RenderTransform as TranslateTransform)?.BeginAnimation(TranslateTransform.YProperty, moveUp);
+
+            // Timeout before hiding
+            await Task.Delay(1000);
+
+            // Hiding animation
+            CopiedTextBlock.BeginAnimation(UIElement.OpacityProperty, fadeOut);
         }
     }
 }
