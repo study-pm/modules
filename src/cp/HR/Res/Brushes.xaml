@@ -8,6 +8,7 @@
     <SolidColorBrush x:Key="BaseLightBrush" Color="#dde0e2" />
     <SolidColorBrush x:Key="BlueBrush" Color="#21a0df" />
     <SolidColorBrush x:Key="CsvBrush" Color="#088409" />
+    <SolidColorBrush x:Key="CyanNormalBrush" Color="#46b8bc" />
     <SolidColorBrush x:Key="DisabledForegroundBrush" Color="Gray" />
     <SolidColorBrush x:Key="DisabledBackgroundBrush" Color="#FFE5E5E5" />
     <SolidColorBrush x:Key="DisabledBorderBrush" Color="#FFADB2B5" />

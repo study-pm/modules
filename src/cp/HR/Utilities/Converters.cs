@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HR.Services;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -86,14 +87,14 @@ namespace HR.Utilities
 
             // If no image specified, use fallback
             if (string.IsNullOrWhiteSpace(imageName))
-                return Utils.CreateBitmapImage(fallbackPath);
+                return Fs.CreateBitmapImage(fallbackPath);
 
             // Add default extension if imageName has none
             if (!Path.HasExtension(imageName)) imageName += "." + extension;
 
             // 1. If imageName is an absolute path and exists, load from file
             if (File.Exists(imageName))
-                return Utils.CreateBitmapImageFromFile(imageName);
+                return Fs.CreateBitmapImageFromFile(imageName);
 
             // 2. Search beside the executive file (i.e. Images/imageName)
             string appDir = AppDomain.CurrentDomain.BaseDirectory;
@@ -103,12 +104,12 @@ namespace HR.Utilities
                 filePath += "." + extension;
 
             if (File.Exists(filePath))
-                return Utils.CreateBitmapImageFromFile(filePath);
+                return Fs.CreateBitmapImageFromFile(filePath);
 
             // 3. Search Images in parent project's folders (ascending)
-            string projectRootImages = Utils.FindInParentDirectories(appDir, basePath, imageName, extension);
+            string projectRootImages = Fs.FindInParentDirectories(appDir, basePath, imageName, extension);
             if (projectRootImages != null)
-                return Utils.CreateBitmapImageFromFile(projectRootImages);
+                return Fs.CreateBitmapImageFromFile(projectRootImages);
 
             // Try to load as pack resource (legacy images)
             string resourcePath = $"pack://application:,,,/{basePath}/{imageName}";
@@ -117,12 +118,12 @@ namespace HR.Utilities
 
             try
             {
-                return Utils.CreateBitmapImage(resourcePath);
+                return Fs.CreateBitmapImage(resourcePath);
             }
             catch
             {
                 // Fallback if nothing found
-                return Utils.CreateBitmapImage(fallbackPath);
+                return Fs.CreateBitmapImage(fallbackPath);
             }
         }
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

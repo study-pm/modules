@@ -14,6 +14,42 @@ using System.Windows.Media;
 
 namespace HR.Utilities
 {
+    public class DigitsOnlyValidationRule : ValidationRule
+    {
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
+        {
+            string input = value as string ?? string.Empty;
+
+            // Проверяем, что строка содержит только цифры
+            foreach (char c in input)
+            {
+                if (!char.IsDigit(c))
+                {
+                    return new ValidationResult(false, "Допустимы только цифры.");
+                }
+            }
+
+            return ValidationResult.ValidResult;
+        }
+    }
+    public class ExactLengthValidationRule : ValidationRule
+    {
+        public int RequiredLength { get; set; } = 6;
+
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
+        {
+            string input = value as string ?? string.Empty;
+
+            if (input.Length == RequiredLength)
+            {
+                return ValidationResult.ValidResult;
+            }
+            else
+            {
+                return new ValidationResult(false, $"Длина должна быть ровно {RequiredLength} символов.");
+            }
+        }
+    }
     public class NotEmptyValidationRule : ValidationRule
     {
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
