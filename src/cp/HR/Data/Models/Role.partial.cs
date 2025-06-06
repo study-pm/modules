@@ -15,13 +15,13 @@ namespace HR.Data.Models
                 switch (Id)
                 {
                     case 1:
-                        return "Администратор";
+                        return "администратор";
                     case 2:
-                        return "Сопровождающий";
+                        return "сопровождающий";
                     case 3:
-                        return "Редактор";
+                        return "редактор";
                     case 4:
-                        return "Пользователь";
+                        return "пользователь";
                     default:
                         return Title;
                 }
