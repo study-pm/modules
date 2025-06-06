@@ -16,6 +16,23 @@ namespace HR.Data.Models
     {
         public static string basePath = AppDomain.CurrentDomain.BaseDirectory;
         public static string uidFilePath = System.IO.Path.Combine(basePath, "user.uid");
+        public string StatusName
+        {
+            get
+            {
+                switch (Status)
+                {
+                    case 0:
+                        return "новый";
+                    case 1:
+                        return "активный";
+                    case 2:
+                        return "заблокирован";
+                    default:
+                        return "удален";
+                }
+            }
+        }
         UserStatus State {
             get => (UserStatus)Status;
             set => Status = (byte)value;
