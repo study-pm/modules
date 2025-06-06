@@ -12,6 +12,7 @@
     <Page.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <utils:InverseBoolToVisibilityConverter x:Key="InvBoolConv"/>
+        <utils:StatusToPathConverter x:Key="StatPathConv"/>
     </Page.Resources>
     <Grid Margin="30">
         <Grid.RowDefinitions>
@@ -36,7 +37,19 @@
                   PreviewKeyDown="UsersDataGrid_PreviewKeyDown"
                   >
             <DataGrid.Columns>
-                <DataGridTemplateColumn Header="" Width="40" IsReadOnly="True">
+                <DataGridTemplateColumn Header="" Width="30">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Viewbox Stretch="Fill" Width="16" Height="14" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5 2 0 0">
+                                <Path Fill="{StaticResource BlueBrush}"
+                                      Data="{Binding Status, Converter={StaticResource StatPathConv}}"
+                                      ToolTip="{Binding StatusName}"
+                                      />
+                            </Viewbox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="№" Width="40">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=Header}"
@@ -48,7 +61,7 @@
                 <DataGridTextColumn Header="Логин" Binding="{Binding Login}" />
                 <DataGridTextColumn Header="Сотрудник" Binding="{Binding Employee.FullName}" />
                 <DataGridTextColumn Header="Роль" Binding="{Binding Role.Name}" />
-                <DataGridTextColumn Binding="{Binding Status}" Width="40" />
+                <DataGridTextColumn Header="Статус" Binding="{Binding StatusName}" />
             </DataGrid.Columns>
             <DataGrid.ContextMenu>
                 <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
