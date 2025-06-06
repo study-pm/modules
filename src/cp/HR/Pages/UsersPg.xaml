@@ -12,6 +12,7 @@
     <Page.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <utils:InverseBoolToVisibilityConverter x:Key="InvBoolConv"/>
+        <utils:StatusToBrushConverter x:Key="StatBrushConv"/>
         <utils:StatusToPathConverter x:Key="StatPathConv"/>
     </Page.Resources>
     <Grid Margin="30">
@@ -40,9 +41,9 @@
                 <DataGridTemplateColumn Header="" Width="30">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Viewbox Stretch="Fill" Width="16" Height="14" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5 2 0 0">
-                                <Path Fill="{StaticResource BlueBrush}"
-                                      Data="{Binding Status, Converter={StaticResource StatPathConv}}"
+                            <Viewbox Stretch="Fill" Width="15" Height="14" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5 2 0 0">
+                                <Path Data="{Binding Status, Converter={StaticResource StatPathConv}}"
+                                      Fill="{Binding Status, Converter={StaticResource StatBrushConv}}"
                                       ToolTip="{Binding StatusName}"
                                       />
                             </Viewbox>
