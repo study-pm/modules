@@ -210,6 +210,11 @@ namespace HR.Pages
             StatusInformer.ReportProgress("Проверка данных пользователя");
             App app = Application.Current as App;
             app.CurrentUser = await GetUser(Login, Password);
+            if (app.CurrentUser == null)
+            {
+                IsInProgress = false;
+                return;
+            }
             // Read and apply user preferences
             Preferences preferences = await Services.Request.GetPreferences(app.CurrentUser.Id);
             if (preferences.IsStayLoggedIn) await Services.Request.SaveUidToFileAsync(app.CurrentUser.Id, Data.Models.User.uidFilePath);
