@@ -216,6 +216,7 @@
       <DependentUpon>SplashWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utilities\Converters.cs" />
+    <Compile Include="Utilities\Filters.cs" />
     <Compile Include="Utilities\RelayCommand.cs" />
     <Compile Include="Utilities\StatusInformer.cs" />
     <Compile Include="Utilities\Utils.cs" />
