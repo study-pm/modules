@@ -6,7 +6,6 @@
              xmlns:local="clr-namespace:HR.Controls"
              xmlns:utils="clr-namespace:HR.Utilities"
              mc:Ignorable="d"
-             Loaded="Control_Loaded"
              d:DesignHeight="450" d:DesignWidth="800">
     <local:NavCtl.Resources>
         <ResourceDictionary>
@@ -15,80 +14,12 @@
             </ResourceDictionary.MergedDictionaries>
             <utils:InverseBooleanConverter x:Key="InvBoolConv"/>
             <utils:InvertedPageToIsCheckedConverter x:Key="InvPgChkConv" />
+            <utils:NavigationDataConverter x:Key="NavDataConv" />
             <utils:PageToIsCheckedConverter x:Key="CheckedConverter" />
             <utils:PageToIsEnabledConverter x:Key="EnabledConverter" />
         </ResourceDictionary>
     </local:NavCtl.Resources>
     <StackPanel>
-        <Menu x:Name="RightMenu" Margin="10" Background="Transparent">
-            <MenuItem ToolTip="Сотрудники"
-                      Width="{Binding ElementName=RightMenu,Path=ActualWidth}"
-                      IsChecked="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource CheckedConverter}, ConverterParameter='StaffPg'}"
-                      Command="NavigationCommands.GoToPage"
-                      CommandParameter="Pages/StaffPg.xaml"
-                      CommandTarget="{Binding ElementName=mainFrame}"
-                  >
-                <MenuItem.Header>
-                    <TextBlock TextTrimming="CharacterEllipsis">Сотрудники</TextBlock>
-                </MenuItem.Header>
-                <MenuItem.Icon>
-                    <Viewbox Height="16" Width="16" ToolTip="Сотрудники">
-                        <Canvas Height="512" Width="512">
-                            <Path Data="{StaticResource UsersSolidPath}">
-                                <Path.RenderTransform>
-                                    <TranslateTransform X="0" Y="0"/>
-                                </Path.RenderTransform>
-                            </Path>
-                        </Canvas>
-                    </Viewbox>
-                </MenuItem.Icon>
-            </MenuItem>
-            <MenuItem ToolTip="Руководяший состав"
-                      Width="{Binding ElementName=RightMenu,Path=ActualWidth}"
-                      IsEnabled="{Binding PageParam, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter='Management'}"
-                      Command="{Binding NavigateCommand}">
-                <MenuItem.CommandParameter>
-                    <local:NavigationData Name="StaffPg" Uri="Pages/StaffPg.xaml" Parameter="Management" />
-                </MenuItem.CommandParameter>
-                <MenuItem.Header>
-                    <TextBlock TextTrimming="CharacterEllipsis">Руководство</TextBlock>
-                </MenuItem.Header>
-                <MenuItem.Icon>
-                    <RadioButton Margin="3 0 0 0" IsHitTestVisible="False"
-                                 IsChecked="{Binding PageParam, Mode=OneWay, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource InvPgChkConv}, ConverterParameter='Management'}"/>
-                </MenuItem.Icon>
-            </MenuItem>
-            <MenuItem ToolTip="Учителя"
-                      Width="{Binding ElementName=RightMenu,Path=ActualWidth}"
-                      IsEnabled="{Binding PageParam, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter='Teachers'}"
-                      Command="{Binding NavigateCommand}">
-                <MenuItem.CommandParameter>
-                    <local:NavigationData Name="StaffPg" Uri="Pages/StaffPg.xaml" Parameter="Teachers" />
-                </MenuItem.CommandParameter>
-                <MenuItem.Header>
-                    <TextBlock TextTrimming="CharacterEllipsis">Учителя</TextBlock>
-                </MenuItem.Header>
-                <MenuItem.Icon>
-                    <RadioButton Margin="3 0 0 0" IsHitTestVisible="False"
-                                 IsChecked="{Binding PageParam, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource InvPgChkConv}, ConverterParameter=Teachers}"/>
-                </MenuItem.Icon>
-            </MenuItem>
-            <MenuItem ToolTip="Педагоги и преподаватели"
-                      Width="{Binding ElementName=RightMenu,Path=ActualWidth}"
-                      IsEnabled="{Binding PageParam, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter='Pedagogues'}"
-                      Command="{Binding NavigateCommand}">
-                <MenuItem.CommandParameter>
-                    <local:NavigationData Name="StaffPg" Uri="Pages/StaffPg.xaml" Parameter="Pedagogues" />
-                </MenuItem.CommandParameter>
-                <MenuItem.Header>
-                    <TextBlock TextTrimming="CharacterEllipsis">Педагоги</TextBlock>
-                </MenuItem.Header>
-                <MenuItem.Icon>
-                    <RadioButton Margin="3 0 0 0" IsHitTestVisible="False"
-                                 IsChecked="{Binding PageParam, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource InvPgChkConv}, ConverterParameter=Pedagogues}"/>
-                </MenuItem.Icon>
-            </MenuItem>
-        </Menu>
         <ItemsControl ItemsSource="{Binding Filters}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
@@ -117,8 +48,20 @@
                         <ItemsControl ItemsSource="{Binding Values}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                        <CheckBox Content="{Binding Title}" ToolTip="{Binding Title}" IsChecked="{Binding IsChecked}" />
-                                    </DataTemplate>
+                                    <CheckBox Content="{Binding Title}" ToolTip="{Binding Title}"
+                                              Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                              IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                              >
+                                            <CheckBox.CommandParameter>
+                                                <MultiBinding Converter="{StaticResource NavDataConv}">
+                                                    <!-- Передаем всю коллекцию Values -->
+                                                    <Binding RelativeSource="{RelativeSource AncestorType=ItemsControl, AncestorLevel=1}" Path="ItemsSource" />
+                                                    <!-- Второй параметр — Uri страницы из родительского MenuFilter (например, Tag или свойство Uri) -->
+                                                    <Binding RelativeSource="{RelativeSource AncestorType=ItemsControl, AncestorLevel=1}" Path="DataContext.PageUri" />
+                                                </MultiBinding>
+                                            </CheckBox.CommandParameter>
+                                    </CheckBox>
+                                </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                         </StackPanel>

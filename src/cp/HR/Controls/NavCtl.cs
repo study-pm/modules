@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HR.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,6 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Navigation;
 using System.Windows;
-using HR.Utilities;
 using PdfSharp.Pdf.Filters;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -29,7 +29,14 @@ namespace HR.Controls
         }
 
         // Остальные свойства
-        public string Uri { get; set; }
+        public static readonly DependencyProperty UriProperty =
+            DependencyProperty.Register("Uri", typeof(string), typeof(NavigationData));
+
+        public string Uri
+        {
+            get => (string)GetValue(UriProperty);
+            set => SetValue(UriProperty, value);
+        }
         public string Name { get; set; }
     }
     public abstract class NavCtl : UserControl, INotifyPropertyChanged
@@ -62,13 +69,14 @@ namespace HR.Controls
             get => (string)GetValue(PageParamProperty);
             set => SetValue(PageParamProperty, value);
         }
-        public ObservableCollection<Filter> Filters { get; } = new ObservableCollection<Filter>()
+        public ObservableCollection<MenuFilter> Filters { get; } = new ObservableCollection<MenuFilter>()
         {
-            new Filter()
+            new MenuFilter()
             {
                 Icon = (Geometry)Application.Current.FindResource("UsersSolidPath"),
                 Name = "Виды деятельности",
                 Title = "Сотрудники",
+                PageUri = "Pages/StaffPg.xaml",
                 Values = new ObservableCollection<FilterValue>
                 {
                     new FilterValue { Id = 1, Title = "Администрация" },
@@ -77,25 +85,28 @@ namespace HR.Controls
                     new FilterValue { Id = 4, Title = "Воспитатели" },
                 }
             },
-            new Filter()
+            new MenuFilter()
             {
                 Icon = (Geometry)Application.Current.FindResource("SitemapSolidPath"),
                 Name = "Структурные подразделения",
                 Title = "Подразделения",
+                PageUri = "Pages/StaffPg.xaml",
                 Values = new ObservableCollection<FilterValue>() // initialize empty collection
             },
-            new Filter()
+            new MenuFilter()
             {
                 Icon = (Geometry)Application.Current.FindResource("BookOpenSolidPath"),
                 Name = "Учебные предметы",
                 Title = "Предметы",
+                PageUri = "Pages/StaffPg.xaml",
                 Values = new ObservableCollection<FilterValue>() // initialize empty collection
             },
-            new Filter()
+            new MenuFilter()
             {
                 Icon = (Geometry)Application.Current.FindResource("BookOpenSolidPath"),
                 Name = "Классное руководство",
                 Title = "Классы",
+                PageUri = "Pages/ClassesPg.xaml",
                 Values = new ObservableCollection<FilterValue>
                 {
                     new FilterValue { Id = 1, Title = "1 параллель" },
@@ -118,7 +129,7 @@ namespace HR.Controls
             Loaded += Page_Loaded;
             this.DataContext = this;
 
-            foreach (Filter filter in Filters)
+            foreach (MenuFilter filter in Filters)
                 filter.PropertyChanged += Filter_PropertyChanged;
 
             NavigateCommand = new RelayCommand(
@@ -168,20 +179,26 @@ namespace HR.Controls
         {
 
         }
-        private void Page_Loaded(object sender, RoutedEventArgs e)
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             if (MainWindow.frame == null) return;
             MainWindow.frame.Navigated += Nav_Navigated;
+            await SetFilterData();
         }
 
         private void Nav_Navigated(object sender, NavigationEventArgs e)
         {
-            // Имя типа страницы
+            // Page name
             CurrentPage = e.Content.GetType().Name;
-            PageParam = e.ExtraData as string;
-            if (e.Content is ClassesPg classesPage)
+            var navigationParameter = e.ExtraData;
+            if (navigationParameter is IEnumerable<FilterValue> selectedFilters)
             {
-                classesPage.FilterParam = e.ExtraData as FilterValue; // добавить свойство FilterParam в ClassesPg
+                MessageBox.Show("ISE");
+            }
+                if (navigationParameter is FilterValue filterValue)
+            {
+                // Page subpath
+                PageParam = filterValue.Title;
             }
         }
     }

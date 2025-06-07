@@ -1,4 +1,5 @@
-﻿using HR.Utilities;
+﻿using HR.Controls;
+using HR.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -37,27 +38,54 @@ namespace HR.Pages
         }
         private void NavigationService_Navigated(object sender, NavigationEventArgs e)
         {
-            // Check if the current page
             if (e.Content != this) return;
             var navigationParameter = e.ExtraData;
-            if (navigationParameter is FilterValue filterValue)
+
+            // Если пришёл один FilterValue — используем его
+            if (navigationParameter is HR.Utilities.FilterValue filterValue)
             {
-                MessageBox.Show("IF");
-                // Используйте filterValue.Id, filterValue.Title и т.д.
-                // Например, обновить UI или загрузить данные
                 HandleFilterValue(filterValue);
+            }
+            // Если пришла коллекция FilterValue — используем ее
+            if (navigationParameter is IEnumerable<FilterValue> filterValues)
+            {
+                HandleFilterValues(filterValues);
+            }
+            // Если пришёл NavigationData — извлекаем Parameter
+            else if (navigationParameter is NavigationData navData)
+            {
+                // Если Parameter — один FilterValue
+                if (navData.Parameter is HR.Utilities.FilterValue filter)
+                {
+                    HandleFilterValue(filter);
+                }
+                // Если Parameter — коллекция FilterValue
+                else if (navData.Parameter is IEnumerable<HR.Utilities.FilterValue> filters)
+                {
+                    HandleFilterValues(filters);
+                }
+                else
+                {
+                    // Обработка других типов параметров, если нужно
+                    MessageBox.Show("NavigationData.Parameter имеет неожиданный тип: " + navData.Parameter?.GetType().Name);
+                }
             }
             else if (navigationParameter != null)
             {
-                MessageBox.Show("ELSE");
-                // Обработка других типов параметров, если нужно
+                MessageBox.Show("ELSE: " + navigationParameter.GetType().Name);
             }
         }
-        private void HandleFilterValue(FilterValue filter)
+        private void HandleFilterValue(Utilities.FilterValue filter)
         {
             // Логика обработки параметра
             // Например, показать выбранный фильтр в интерфейсе
             MessageBox.Show($"Выбран класс: {filter.Title}");
+        }
+
+        private void HandleFilterValues(IEnumerable<FilterValue> filters)
+        {
+            // Логика обработки списка выбранных фильтров
+            MessageBox.Show("Collection");
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)

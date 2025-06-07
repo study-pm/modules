@@ -12,6 +12,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Res/TopMenuStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <utils:NavigationDataConverter x:Key="NavigationDataConverter" />
             <utils:PageToIsCheckedConverter x:Key="CheckedConverter" />
             <utils:PageToIsEnabledConverter x:Key="EnabledConverter" />
             <BooleanToVisibilityConverter x:Key="BoolToVis" />
@@ -22,7 +23,12 @@
                 <Setter Property="Command" Value="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                 <Setter Property="CommandParameter">
                     <Setter.Value>
-                        <local:NavigationData Uri="Pages/ClassesPg.xaml" Parameter="{Binding}" />
+                        <MultiBinding Converter="{StaticResource NavigationDataConverter}">
+                            <!-- Передаем всю коллекцию Values -->
+                            <Binding Path="ItemsSource" RelativeSource="{RelativeSource AncestorType=ItemsControl, AncestorLevel=1}" />
+                            <!-- Передаем Uri из Tag родительского MenuItem -->
+                            <Binding RelativeSource="{RelativeSource AncestorType=MenuItem, AncestorLevel=1}" Path="Tag" />
+                        </MultiBinding>
                     </Setter.Value>
                 </Setter>
             </Style>
@@ -114,9 +120,7 @@
                     </MenuItem>
                     <MenuItem Header="_Классы"
                               IsChecked="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource CheckedConverter}, ConverterParameter='ClassesPg'}"
-                              Command="NavigationCommands.GoToPage"
-                              CommandParameter="Pages/ClassesPg.xaml"
-                              CommandTarget="{Binding ElementName=mainFrame}"
+                              Tag="Pages/ClassesPg.xaml" 
                               >
                         <MenuItem.ItemsSource>
                             <Binding Path="Filters[3].Values" />
