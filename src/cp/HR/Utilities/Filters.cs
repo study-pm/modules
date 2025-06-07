@@ -84,6 +84,9 @@ namespace HR.Utilities
             if (e.PropertyName == nameof(FilterValue.IsChecked))
             {
                 OnPropertyChanged(nameof(AllChecked));
+                OnPropertyChanged(nameof(AnyChecked));
+                if (AnyChecked && !IsChecked) IsChecked = true;
+                else if (!AnyChecked && IsChecked) IsChecked = false;
             }
         }
         public bool AllChecked
@@ -96,6 +99,7 @@ namespace HR.Utilities
                 OnPropertyChanged();
             }
         }
+        public bool AnyChecked => Values.Any(x => x.IsChecked);
         public MenuFilter()
         {
             Values = new ObservableCollection<FilterValue>();
