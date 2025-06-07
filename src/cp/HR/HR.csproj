@@ -184,6 +184,9 @@
     <Compile Include="Data\Models\User.partial.cs" />
     <Compile Include="Models\Employee.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="Pages\ClassesPg.xaml.cs">
+      <DependentUpon>ClassesPg.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\PreferencesPg.xaml.cs">
       <DependentUpon>PreferencesPg.xaml</DependentUpon>
     </Compile>
@@ -269,6 +272,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Pages\AuthPg.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\ClassesPg.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
