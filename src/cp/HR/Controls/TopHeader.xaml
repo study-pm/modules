@@ -16,6 +16,16 @@
             <utils:PageToIsEnabledConverter x:Key="EnabledConverter" />
             <BooleanToVisibilityConverter x:Key="BoolToVis" />
             <utils:InverseBoolToVisibilityConverter x:Key="InverseBoolToVis" />
+            <Style x:Key="SubMenuItem" TargetType="MenuItem" BasedOn="{StaticResource SubMenuItemStyle}">
+                <Setter Property="Header" Value="{Binding Title}" />
+                <Setter Property="IsCheckable" Value="True" />
+                <Setter Property="Command" Value="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                <Setter Property="CommandParameter">
+                    <Setter.Value>
+                        <local:NavigationData Uri="Pages/ClassesPg.xaml" Parameter="{Binding}" />
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </ResourceDictionary>
     </local:NavCtl.Resources>
     <Border CornerRadius="5">
@@ -102,9 +112,18 @@
                         <MenuItem Header="_Предметы" Style="{StaticResource SubMenuItemStyle}" />
                         <MenuItem Header="П_реподаватели" Style="{StaticResource SubMenuItemStyle}" />
                     </MenuItem>
-                    <MenuItem Header="_Воспитательная работа">
-                        <MenuItem Header="_Классы" Style="{StaticResource SubMenuItemStyle}" />
-                        <MenuItem Header="Классные _руководители" Style="{StaticResource SubMenuItemStyle}" />
+                    <MenuItem Header="_Классы"
+                              IsChecked="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource CheckedConverter}, ConverterParameter='ClassesPg'}"
+                              Command="NavigationCommands.GoToPage"
+                              CommandParameter="Pages/ClassesPg.xaml"
+                              CommandTarget="{Binding ElementName=mainFrame}"
+                              >
+                        <MenuItem.ItemsSource>
+                            <Binding Path="Filters[3].Values" />
+                        </MenuItem.ItemsSource>
+                        <MenuItem.ItemContainerStyle>
+                            <StaticResource ResourceKey="SubMenuItem"/>
+                        </MenuItem.ItemContainerStyle>
                     </MenuItem>
                     <MenuItem Header="_Дополнительное образование">
                         <MenuItem Header="_Педагоги ОДОД" Style="{StaticResource SubMenuItemStyle}" />
