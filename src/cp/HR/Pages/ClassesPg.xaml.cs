@@ -85,7 +85,7 @@ namespace HR.Pages
         private void HandleFilterValues(IEnumerable<FilterValue> filters)
         {
             // Логика обработки списка выбранных фильтров
-            MessageBox.Show("Collection");
+            MessageBox.Show("ClassesPg Filters Change");
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
