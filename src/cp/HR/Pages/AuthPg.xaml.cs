@@ -27,7 +27,7 @@ namespace HR.Pages
     /// <summary>
     /// Interaction logic for AuthPg.xaml
     /// </summary>
-    public partial class AuthPg : Page
+    public partial class AuthPg : Page, INotifyPropertyChanged
     {
         public static readonly DependencyProperty LoginErrProp =
             DependencyProperty.Register(nameof(IsLoginErr), typeof(bool), typeof(AuthPg), new PropertyMetadata(false));
@@ -52,13 +52,31 @@ namespace HR.Pages
         protected void OnPropertyChanged(string propertyName) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
+        private bool _isPwdOn;
+        public bool IsPwdOn
+        {
+            get => _isPwdOn;
+            set
+            {
+                if (_isPwdOn == value) return;
+                _isPwdOn = value;
+                if (!_isPwdOn)
+                {
+                    // Update PasswordBox value when toggling its visibility on
+                    PasswordPwb.Password = Password;
+                }
+                OnPropertyChanged(nameof(IsPwdOn));
+            }
+        }
         private string _password;
         public string Password
         {
             get => _password;
             set
             {
+                if (_password == value) return;
                 _password = value;
+                OnPropertyChanged(nameof(Password));
                 ValidatePassword();
             }
         }
@@ -210,6 +228,11 @@ namespace HR.Pages
             StatusInformer.ReportProgress("Проверка данных пользователя");
             App app = Application.Current as App;
             app.CurrentUser = await GetUser(Login, Password);
+            if (app.CurrentUser == null)
+            {
+                IsInProgress = false;
+                return;
+            }
             // Read and apply user preferences
             Preferences preferences = await Services.Request.GetPreferences(app.CurrentUser.Id);
             if (preferences.IsStayLoggedIn) await Services.Request.SaveUidToFileAsync(app.CurrentUser.Id, Data.Models.User.uidFilePath);
@@ -222,5 +245,6 @@ namespace HR.Pages
             ResetFields();
         }
 
+        private void TogglePwdBtn_Click(object sender, RoutedEventArgs e) => IsPwdOn = !IsPwdOn;
     }
 }
