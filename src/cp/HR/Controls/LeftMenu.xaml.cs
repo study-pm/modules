@@ -20,12 +20,8 @@ namespace HR.Controls
     /// <summary>
     /// Interaction logic for LeftMenu.xaml
     /// </summary>
-    public partial class LeftMenu : NavCtl, INotifyPropertyChanged
+    public partial class LeftMenu : NavCtl
     {
-        // Реализация интерфейса INotifyPropertyChanged
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string prop = null)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         private bool isOpen = false;
         public bool IsOpen
         {
