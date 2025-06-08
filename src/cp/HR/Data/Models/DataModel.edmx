@@ -81,7 +81,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Title" Type="int" Nullable="false" />
+          <Property Name="Title" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="Organization">
           <Key>
@@ -172,8 +172,9 @@
           <Property Name="RoleId" Type="int" Nullable="false" />
           <Property Name="Status" Type="tinyint" Nullable="false" />
           <Property Name="Is2faOn" Type="bit" Nullable="false" />
-          <Property Name="Secret" Type="nvarchar" MaxLength="50" />
+          <Property Name="Secret" Type="varchar(max)" />
           <Property Name="Salt" Type="binary" MaxLength="16" />
+          <Property Name="Image" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <Association Name="FK_Assignment_Staff">
           <End Role="Staff" Type="Self.Staff" Multiplicity="1">
@@ -619,7 +620,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Title" Type="Int32" Nullable="false" />
+          <Property Name="Title" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
           <NavigationProperty Name="ClassGuidances" Relationship="Self.FK_ClassGuidance_Grade" FromRole="Grade" ToRole="ClassGuidance" />
         </EntityType>
         <EntityType Name="Organization">
@@ -727,9 +728,10 @@
           <NavigationProperty Name="Role" Relationship="Self.FK_User_Role" FromRole="User" ToRole="Role" />
           <Property Name="Status" Type="Byte" Nullable="false" />
           <Property Name="Is2faOn" Type="Boolean" Nullable="false" />
-          <Property Name="Secret" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Secret" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="PasswordHash" Type="Binary" Nullable="false" MaxLength="32" FixedLength="true" />
           <Property Name="Salt" Type="Binary" MaxLength="16" FixedLength="true" />
+          <Property Name="Image" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_Assignment_Staff">
           <End Role="Staff" Type="Self.Staff" Multiplicity="1">
@@ -1161,8 +1163,8 @@
           <EntitySetMapping Name="Grades">
             <EntityTypeMapping TypeName="HRModel.Grade">
               <MappingFragment StoreEntitySet="Grade">
-                <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1257,6 +1259,7 @@
           <EntitySetMapping Name="Users">
             <EntityTypeMapping TypeName="HRModel.User">
               <MappingFragment StoreEntitySet="User">
+                <ScalarProperty Name="Image" ColumnName="Image" />
                 <ScalarProperty Name="Salt" ColumnName="Salt" />
                 <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
                 <ScalarProperty Name="Secret" ColumnName="Secret" />

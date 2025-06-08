@@ -21,7 +21,7 @@ namespace HR.Data.Models
         }
     
         public int Id { get; set; }
-        public int Title { get; set; }
+        public string Title { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ClassGuidance> ClassGuidances { get; set; }
