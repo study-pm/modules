@@ -43,7 +43,7 @@ namespace HR
         {
             new MenuFilter()
             {
-                Icon = (Geometry)Application.Current.FindResource("UsersSolidPath"),
+                Icon = (Geometry)Application.Current.FindResource("UserFriendsSolidPath"),
                 Name = "Виды деятельности",
                 Title = "Сотрудники",
                 PageUri = "Pages/StaffPg.xaml",
@@ -73,7 +73,7 @@ namespace HR
             },
             new MenuFilter()
             {
-                Icon = (Geometry)Application.Current.FindResource("BookOpenSolidPath"),
+                Icon = (Geometry)Application.Current.FindResource("UsersSolidPath"),
                 Name = "Классное руководство",
                 Title = "Классы",
                 PageUri = "Pages/ClassesPg.xaml",
