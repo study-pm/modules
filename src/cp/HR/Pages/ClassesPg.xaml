@@ -13,12 +13,66 @@
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <utils:InverseBoolToVisibilityConverter x:Key="InvBoolConv"/>
     </Page.Resources>
-    <ScrollViewer Style="{StaticResource MainView}">
+    <Grid Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
         <StackPanel>
             <uc:Header HeaderText="Классы"></uc:Header>
             <TextBlock Style="{StaticResource Paragraph}">
                 Данный раздел содержит информацию о классном руководстве.
             </TextBlock>
+            <TextBlock Style="{StaticResource NoData}" Visibility="{Binding IsListEmpty, Converter={StaticResource BoolToVis}}">
+                Информация отсутствует
+            </TextBlock>
+            <StackPanel Visibility="{Binding IsListNotEmpty, Converter={StaticResource BoolToVis}}">
+            </StackPanel>
         </StackPanel>
-    </ScrollViewer>
+        <DataGrid   x:Name="dataGrid" Grid.Row="1" IsReadOnly="False"
+                    AutoGenerateColumns="False" ColumnWidth="*" AlternationCount="2"
+                    CanUserAddRows="True" CanUserDeleteRows="False"
+                    HeadersVisibility="Column" VerticalScrollBarVisibility="Auto"
+                    ItemsSource="{Binding Classes}"
+                    SelectedItem="{Binding Selected, Mode=TwoWay}"
+                    Visibility="{Binding IsListNotEmpty, Converter={StaticResource BoolToVis}}"
+                    LoadingRow="DataGrid_LoadingRow"
+                    PreviewKeyDown="DataGrid_PreviewKeyDown"
+                    >
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="" Width="40" IsReadOnly="True">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock HorizontalAlignment="Center"
+                                       Text="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=Header}"
+                                       />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Класс" Binding="{Binding Title}" Width="50" />
+                <DataGridTextColumn Header="Классный руководитель" Binding="{Binding Employee.FullName}" IsReadOnly="True" />
+            </DataGrid.Columns>
+            <DataGrid.ContextMenu>
+                <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                    <MenuItem Header="Удалить класс"
+                              InputGestureText="Del"
+                              Command="{Binding DeleteItemCommand}"
+                              CommandParameter="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                              >
+                        <MenuItem.Icon>
+                            <Viewbox Height="16" Width="16">
+                                <Canvas Height="496" Width="512">
+                                    <Path x:Name="IconPath" Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource UserTimesSolidPath}">
+                                        <Path.RenderTransform>
+                                            <TranslateTransform X="0" Y="0"/>
+                                        </Path.RenderTransform>
+                                    </Path>
+                                </Canvas>
+                            </Viewbox>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+        </DataGrid>
+    </Grid>
 </Page>
