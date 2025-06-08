@@ -20,14 +20,14 @@
         </ResourceDictionary>
     </local:NavCtl.Resources>
     <StackPanel>
-        <ItemsControl ItemsSource="{Binding Filters}">
+        <ItemsControl ItemsSource="{Binding DataContext.MenuVM.Filters, RelativeSource={RelativeSource AncestorType=Window}}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <StackPanel>
                         <RadioButton Margin="10 1" GroupName="AsideFilterGroup"
                                      Content="{Binding Title}" ToolTip="{Binding Name}"
                                      Style="{StaticResource AsideToggleButton}"
-                                     IsChecked="{Binding IsChecked}"
+                                     IsChecked="{Binding IsChecked, Mode=TwoWay}"
                                      IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
                                      PreviewMouseLeftButtonDown="RadioButton_PreviewMouseLeftButtonDown"
                                      >
@@ -44,8 +44,20 @@
                             </RadioButton.Tag>
                         </RadioButton>
                         <StackPanel x:Name="ExpanderPanel" Opacity="0" MaxHeight="0" Margin="0,5,0,0">
-                            <CheckBox Content="Все" ToolTip="Все" IsChecked="{Binding AllChecked}"></CheckBox>
-                        <ItemsControl ItemsSource="{Binding Values}">
+                            <CheckBox Content="Все" ToolTip="Выбрать/скрыть все элементы"
+                                      IsChecked="{Binding AllChecked, Mode=TwoWay}"
+                                      Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      >
+                                <CheckBox.CommandParameter>
+                                    <MultiBinding Converter="{StaticResource NavDataConv}">
+                                        <!-- Pass the entire Values collection from the current MenuFilter -->
+                                        <Binding Path="Values" />
+                                        <!-- The second param — the page Uri from the current MenuFilter -->
+                                        <Binding Path="PageUri" />
+                                    </MultiBinding>
+                                </CheckBox.CommandParameter>
+                            </CheckBox>
+                            <ItemsControl ItemsSource="{Binding Values}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <CheckBox Content="{Binding Title}" ToolTip="{Binding Title}"
@@ -54,9 +66,9 @@
                                               >
                                             <CheckBox.CommandParameter>
                                                 <MultiBinding Converter="{StaticResource NavDataConv}">
-                                                    <!-- Передаем всю коллекцию Values -->
+                                                    <!-- Pass the entire Values collection -->
                                                     <Binding RelativeSource="{RelativeSource AncestorType=ItemsControl, AncestorLevel=1}" Path="ItemsSource" />
-                                                    <!-- Второй параметр — Uri страницы из родительского MenuFilter (например, Tag или свойство Uri) -->
+                                                    <!-- The second param — the page Uri from the parent MenuFilter (e.g., Tag or Uri) -->
                                                     <Binding RelativeSource="{RelativeSource AncestorType=ItemsControl, AncestorLevel=1}" Path="DataContext.PageUri" />
                                                 </MultiBinding>
                                             </CheckBox.CommandParameter>
