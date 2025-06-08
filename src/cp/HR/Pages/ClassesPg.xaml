@@ -31,7 +31,7 @@
         </StackPanel>
         <DataGrid   x:Name="dataGrid" Grid.Row="1" IsReadOnly="False"
                     AutoGenerateColumns="False" ColumnWidth="*" AlternationCount="2"
-                    CanUserAddRows="True" CanUserDeleteRows="False"
+                    CanUserAddRows="False" CanUserDeleteRows="False"
                     HeadersVisibility="Column" VerticalScrollBarVisibility="Auto"
                     ItemsSource="{Binding Classes}"
                     SelectedItem="{Binding Selected, Mode=TwoWay}"
