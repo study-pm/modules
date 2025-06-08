@@ -126,7 +126,7 @@
                 <MenuItem.Icon>
                     <Viewbox Height="16" Width="16" ToolTip="Профиль">
                         <Canvas Height="512" Width="512">
-                            <Path Data="{StaticResource UserSolidPath}">
+                            <Path Data="{StaticResource UserSolidNewPath}">
                                 <Path.RenderTransform>
                                     <TranslateTransform X="0" Y="0"/>
                                 </Path.RenderTransform>

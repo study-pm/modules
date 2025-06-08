@@ -212,6 +212,70 @@
         <Setter Property="Foreground" Value="{StaticResource greyDarkBrush}" />
         <Setter Property="Padding" Value="0 10" />
     </Style>
+    <Style x:Key="CheckMenuItemStyle" TargetType="MenuItem">
+        <Setter Property="IsCheckable" Value="True" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Foreground" Value="{StaticResource greyDarkBrush}" />
+        <Setter Property="Padding" Value="0 10" />
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="MenuItem">
+                    <Border x:Name="Border"
+                            Background="Transparent"
+                            Padding="0 10 30 10"
+                            BorderThickness="1"
+                            SnapsToDevicePixels="True"
+                            >
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="30"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Check mark -->
+                            <Path x:Name="CheckMark"
+                                  Grid.Column="0"
+                                  VerticalAlignment="Center" HorizontalAlignment="Center"
+                                  Data="M2,7 L6,11 L14,3"
+                                  Fill="Transparent"
+                                  Margin="0 0 5 0"
+                                  Stroke="DodgerBlue" StrokeThickness="2"
+                                  Visibility="Collapsed"
+                                  />
+
+                            <!-- Header -->
+                            <ContentPresenter Grid.Column="1"
+                      ContentSource="Header"
+                      RecognizesAccessKey="True" />
+                        </Grid>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <!-- Display check mark on checked -->
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
+                            <!-- Remove background and border on Checked -->
+                            <Setter TargetName="Border" Property="Background" Value="Transparent"/>
+                            <Setter TargetName="Border" Property="BorderThickness" Value="1"/>
+                        </Trigger>
+
+                        <!-- Highlight on mouse over -->
+                        <Trigger Property="IsHighlighted" Value="True">
+                            <Setter TargetName="Border" Property="Background" Value="#FFBEE6FD"/>
+                            <Setter TargetName="Border" Property="BorderBrush" Value="#FF3C7FB1"/>
+                            <Setter TargetName="Border" Property="BorderThickness" Value="1"/>
+                        </Trigger>
+
+                        <!-- Disabled state -->
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="#ADADAD"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 
     <Style x:Key="IconOverlayButtonStyle" TargetType="Button">
         <Setter Property="Background" Value="Transparent"/>

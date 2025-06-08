@@ -12,10 +12,26 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Res/TopMenuStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <utils:NavigationDataConverter x:Key="NavigationDataConverter" />
             <utils:PageToIsCheckedConverter x:Key="CheckedConverter" />
             <utils:PageToIsEnabledConverter x:Key="EnabledConverter" />
             <BooleanToVisibilityConverter x:Key="BoolToVis" />
             <utils:InverseBoolToVisibilityConverter x:Key="InverseBoolToVis" />
+            <Style x:Key="SubMenuItem" TargetType="MenuItem" BasedOn="{StaticResource CheckMenuItemStyle}">
+                <Setter Property="Header" Value="{Binding Title}" />
+                <Setter Property="IsChecked" Value="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <Setter Property="Command" Value="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                <Setter Property="CommandParameter">
+                    <Setter.Value>
+                        <MultiBinding Converter="{StaticResource NavigationDataConverter}">
+                            <!-- Pass the entire Values collection -->
+                            <Binding Path="ItemsSource" RelativeSource="{RelativeSource AncestorType=ItemsControl, AncestorLevel=1}" />
+                            <!-- Pass Uri from the parent MenuItem Tag -->
+                            <Binding RelativeSource="{RelativeSource AncestorType=MenuItem, AncestorLevel=1}" Path="Tag" />
+                        </MultiBinding>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </ResourceDictionary>
     </local:NavCtl.Resources>
     <Border CornerRadius="5">
@@ -81,7 +97,7 @@
                         <MenuItem Header="_Воспитатели" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
                         <MenuItem Header="Вспо_могательный персонал" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
                     </MenuItem>
-                    <MenuItem Header="_Подразделения">
+                    <MenuItem Header="По_дразделения">
                         <MenuItem Header="Все" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" IsChecked="True" />
                         <MenuItem Header="_Администрация" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
                         <MenuItem Header="МО _начальных классов" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
@@ -102,17 +118,25 @@
                         <MenuItem Header="_Предметы" Style="{StaticResource SubMenuItemStyle}" />
                         <MenuItem Header="П_реподаватели" Style="{StaticResource SubMenuItemStyle}" />
                     </MenuItem>
-                    <MenuItem Header="_Воспитательная работа">
-                        <MenuItem Header="_Классы" Style="{StaticResource SubMenuItemStyle}" />
-                        <MenuItem Header="Классные _руководители" Style="{StaticResource SubMenuItemStyle}" />
+                    <MenuItem Header="_Классы"
+                              IsChecked="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource CheckedConverter}, ConverterParameter='ClassesPg'}"
+                              Tag="Pages/ClassesPg.xaml" 
+                              >
+                        <MenuItem.ItemsSource>
+                            <Binding Path="DataContext.MenuVM.Filters[3].Values" RelativeSource="{RelativeSource AncestorType=Window}" />
+                        </MenuItem.ItemsSource>
+                        <MenuItem.ItemContainerStyle>
+                            <StaticResource ResourceKey="SubMenuItem"/>
+                        </MenuItem.ItemContainerStyle>
                     </MenuItem>
                     <MenuItem Header="_Дополнительное образование">
                         <MenuItem Header="_Педагоги ОДОД" Style="{StaticResource SubMenuItemStyle}" />
                         <MenuItem Header="_Кружки и секции" Style="{StaticResource SubMenuItemStyle}" />
                     </MenuItem>
-                    <MenuItem Header="П_ользователь"
+                    <MenuItem Header="_Пользователь"
                               IsChecked="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl},
-                                Converter={StaticResource CheckedConverter}, ConverterParameter='AuthPg, RegisterPg, PreferencesPg, ProfilePg'}"
+                                                  Converter={StaticResource CheckedConverter},
+                                                  ConverterParameter='AuthPg, RegisterPg, PreferencesPg, ProfilePg, SettingsPg, UsersPg'}"
                               >
                         <MenuItem Header="В_ход"
                                   Style="{StaticResource SubMenuItemStyle}"

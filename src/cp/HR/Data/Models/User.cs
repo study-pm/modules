@@ -16,7 +16,6 @@ namespace HR.Data.Models
     {
         public int Id { get; set; }
         public string Login { get; set; }
-        public string Password { get; set; }
         public Nullable<int> EmployeeId { get; set; }
         public int RoleId { get; set; }
         public byte Status { get; set; }
@@ -24,6 +23,7 @@ namespace HR.Data.Models
         public string Secret { get; set; }
         public byte[] PasswordHash { get; set; }
         public byte[] Salt { get; set; }
+        public string Image { get; set; }
     
         public virtual Employee Employee { get; set; }
         public virtual Role Role { get; set; }

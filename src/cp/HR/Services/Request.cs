@@ -20,6 +20,22 @@ namespace HR.Services
     {
         public static HREntities ctx = new HREntities();
         private static string basePath = "Data/Sources/";
+        public static async Task<List<ClassGuidance>> GetClassGuidance()
+        {
+            try
+            {
+                StatusInformer.ReportProgress("Загрузка классов");
+                List<ClassGuidance> roles = await ctx.ClassGuidances.ToListAsync();
+                StatusInformer.ReportSuccess("Классы успешно извлечены");
+                return roles;
+            }
+            catch (Exception exc)
+            {
+                Debug.WriteLine(exc.Message);
+                StatusInformer.ReportFailure($"Ошибка извлечения классов: {exc.Message}");
+                return new List<ClassGuidance>();
+            }
+        }
         public static async Task<List<EmployeeX>> GetEmployeesFromXML()
         {
             string path = basePath + "employees.xml";
