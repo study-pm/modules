@@ -109,7 +109,7 @@ namespace HR
             {
                 using (var ctx = new HR.Data.Models.HREntities())
                 {
-                    return await ctx.Grades.Select(x => new FilterValue { Id = x.Id, Title = x.Title }).OrderBy(x => x.Title).ToListAsync();
+                    return await ctx.Grades.Select(x => new FilterValue { Id = x.Id, Title = x.Title }).ToListAsync();
                 }
             });
 
