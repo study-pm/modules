@@ -50,6 +50,22 @@ namespace HR.Utilities
             }
         }
     }
+    public class MaxLengthValidationRule : ValidationRule
+    {
+        public int MaxLength { get; set; }
+
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
+        {
+            var str = value as string ?? string.Empty;
+
+            if (str.Length > MaxLength)
+            {
+                return new ValidationResult(false, $"Должно быть не более {MaxLength} символов.");
+            }
+
+            return ValidationResult.ValidResult;
+        }
+    }
     public class MinLengthValidationRule : ValidationRule
     {
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
