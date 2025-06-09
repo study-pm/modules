@@ -50,6 +50,32 @@ namespace HR.Utilities
             }
         }
     }
+    public class MaxLengthValidationRule : ValidationRule
+    {
+        public int MaxLength { get; set; }
+
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
+        {
+            var str = value as string ?? string.Empty;
+
+            if (str.Length > MaxLength)
+            {
+                return new ValidationResult(false, $"Должно быть не более {MaxLength} символов.");
+            }
+
+            return ValidationResult.ValidResult;
+        }
+    }
+    public class MinLengthValidationRule : ValidationRule
+    {
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
+        {
+            string input = value as string;
+            if (input.Length < 5)
+                return new ValidationResult(false, "Поле должно быть содержать более {5} символов");
+            return new ValidationResult(true, null);
+        }
+    }
     public class NotEmptyValidationRule : ValidationRule
     {
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
@@ -64,16 +90,6 @@ namespace HR.Utilities
             {
                 return new ValidationResult(false, "Поле обязательно для заполнения");
             }
-            return new ValidationResult(true, null);
-        }
-    }
-    public class MinLengthValidationRule : ValidationRule
-    {
-        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
-        {
-            string input = value as string;
-            if (input.Length < 5)
-                return new ValidationResult(false, "Поле должно быть содержать более {5} символов");
             return new ValidationResult(true, null);
         }
     }
