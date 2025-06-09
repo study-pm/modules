@@ -187,6 +187,9 @@
     <Compile Include="Pages\ClassesPg.xaml.cs">
       <DependentUpon>ClassesPg.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\EmployeePg.xaml.cs">
+      <DependentUpon>EmployeePg.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\PreferencesPg.xaml.cs">
       <DependentUpon>PreferencesPg.xaml</DependentUpon>
     </Compile>
@@ -277,6 +280,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\ClassesPg.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\EmployeePg.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
