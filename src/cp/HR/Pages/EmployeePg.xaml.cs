@@ -26,7 +26,9 @@ namespace HR.Pages
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
 
         private Employee dm;
-        public bool IsChanged => dm.Surname != Surname;
+        public bool IsChanged => GivenName  != dm.GivenName ||
+                                 Patronymic != dm.Patronymic ||
+                                 Surname    != dm.Surname;
         public bool IsEnabled => IsChanged && !IsProgress;
         private bool _isProgress;
         public bool IsProgress
@@ -37,6 +39,33 @@ namespace HR.Pages
                 if (_isProgress == value) return;
                 _isProgress = value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(IsEnabled));
+            }
+        }
+
+        private string _givenName;
+        public string GivenName
+        {
+            get => _givenName;
+            set
+            {
+                if (_givenName == value) return;
+                _givenName = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsChanged));
+                OnPropertyChanged(nameof(IsEnabled));
+            }
+        }
+        private string _patronymic;
+        public string Patronymic
+        {
+            get => _patronymic;
+            set
+            {
+                if (_patronymic == value) return;
+                _patronymic = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsChanged));
                 OnPropertyChanged(nameof(IsEnabled));
             }
         }
@@ -61,12 +90,16 @@ namespace HR.Pages
         }
         public void Reset()
         {
+            GivenName = dm.GivenName;
+            Patronymic = dm.Patronymic;
             Surname = dm.Surname;
             OnPropertyChanged(nameof(IsChanged));
             OnPropertyChanged(nameof(IsEnabled));
         }
         public void Set()
         {
+            dm.GivenName = Surname;
+            dm.Patronymic = Patronymic;
             dm.Surname = Surname;
             OnPropertyChanged(nameof(IsChanged));
             OnPropertyChanged(nameof(IsEnabled));
@@ -95,7 +128,9 @@ namespace HR.Pages
             }
         }
 
-        private bool HasValidationErrors => Validation.GetHasError(SurnameTxb);
+        private bool HasValidationErrors => Validation.GetHasError(GivenNameTxb) ||
+                                            Validation.GetHasError(PatronymicTxb) ||
+                                            Validation.GetHasError(SurnameTxb);
 
         public EmployeePg(Employee employee = null)
         {
