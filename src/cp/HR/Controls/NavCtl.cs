@@ -92,7 +92,7 @@ namespace HR.Controls
             {
                 // Handle collection param here
             }
-                if (navigationParameter is FilterValue filterValue)
+            if (navigationParameter is FilterValue filterValue)
             {
                 // Page subpath
                 PageParam = filterValue.Title;
