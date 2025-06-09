@@ -12,6 +12,7 @@
     <Page.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <utils:InverseBoolToVisibilityConverter x:Key="InvBoolConv"/>
+        <utils:NotNullToBoolConverter  x:Key="NotNullToBoolConverter"/>
     </Page.Resources>
     <Grid Margin="30">
         <Grid.RowDefinitions>
@@ -50,7 +51,20 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTextColumn Header="Класс" Binding="{Binding Title}" Width="50" />
-                <DataGridTextColumn Header="Классный руководитель" Binding="{Binding Employee.FullName}" IsReadOnly="True" />
+                <DataGridTemplateColumn Header="Классный руководитель" IsReadOnly="True" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock>
+                                <Hyperlink Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=Page}}"
+                                           CommandParameter="{Binding Employee}"
+                                           IsEnabled="{Binding Employee, Converter={StaticResource NotNullToBoolConverter}}"
+                                           >
+                                           <TextBlock Text="{Binding Employee.FullName}" />
+                                </Hyperlink>
+                            </TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
             </DataGrid.Columns>
             <DataGrid.ContextMenu>
                 <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">

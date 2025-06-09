@@ -33,6 +33,7 @@ namespace HR.Pages
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
 
         public ICommand DeleteItemCommand { get; }
+        public ICommand NavigateCommand { get; }
 
         private NavigationService _navigationService;
         public FilterValue FilterParam { get; set; }
@@ -107,6 +108,24 @@ namespace HR.Pages
                 {
                     return true;
                 }
+            );
+            NavigateCommand = new RelayCommand(
+                execute: param =>
+                {
+                    if (param is Employee employee)
+                    {
+                        MainWindow.frame.Navigate(new EmployeePg(employee));
+                    }
+                    else if (param is NavigationData navData)
+                    {
+                        MainWindow.frame.Navigate(new Uri(navData.Uri, UriKind.Relative), navData.Parameter);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Ошибка: сотрудник не выбран или не найден.");
+                    }
+                },
+                canExecute: param => param is Employee || param is NavigationData
             );
 
             // Subscribe to navigation events for the main frame
