@@ -11,7 +11,8 @@
       Title="EmployeePg">
     <Page.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
-        <utils:InverseBoolToVisibilityConverter x:Key="InvBoolConv"/>
+        <utils:InverseBoolToVisibilityConverter x:Key="InvBoolToVis"/>
+        <utils:InverseBooleanConverter x:Key="InvBoolConv"/>
     </Page.Resources>
     <ScrollViewer Style="{StaticResource MainView}">
         <StackPanel>
@@ -28,7 +29,7 @@
                     <StackPanel Style="{StaticResource FormElement}">
                         <Label>Фамилия</Label>
                         <TextBox x:Name="SurnameTxb"
-                                 IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
+                                 IsEnabled="{Binding IsProgress, Converter={StaticResource InvBoolConv}}"
                                  utils:ValidationHelper.AutoErrorVisibility="True"
                                  utils:ValidationHelper.EnableTouchedTracking="True"
                                  >
@@ -62,7 +63,7 @@
                         Command="{Binding SubmitCommand, RelativeSource={RelativeSource AncestorType=Page}}"
                         >
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Сохранить" Visibility="{Binding IsProgress, Converter={StaticResource InvBoolConv}}" />
+                        <TextBlock Text="Сохранить" Visibility="{Binding IsProgress, Converter={StaticResource InvBoolToVis}}" />
                         <uc:Dots Visibility="{Binding IsProgress, Converter={StaticResource BoolToVis}}" />
                     </StackPanel>
                 </Button>
