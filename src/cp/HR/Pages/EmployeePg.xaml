@@ -19,6 +19,53 @@
             <TextBlock Style="{StaticResource Paragraph}">
                 Данный раздел содержит информацию о сотруднике.
             </TextBlock>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="200" />
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <StackPanel Style="{StaticResource FormElement}">
+                        <Label>Фамилия</Label>
+                        <TextBox x:Name="SurnameTxb"
+                                 IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
+                                 utils:ValidationHelper.AutoErrorVisibility="True"
+                                 utils:ValidationHelper.EnableTouchedTracking="True"
+                                 >
+                            <TextBox.Text>
+                                <Binding Path="Surname" UpdateSourceTrigger="PropertyChanged"
+                                         ValidatesOnDataErrors="True" NotifyOnValidationError="True"
+                                         ValidatesOnNotifyDataErrors="True"
+                                         >
+                                    <Binding.ValidationRules>
+                                        <utils:NotEmptyValidationRule/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+            <Grid Margin="0 10 0 0" HorizontalAlignment="Right">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Content="Отменить" IsCancel="True"
+                        Style="{StaticResource BlueBtn}"
+                        Command="{Binding ResetCommand, RelativeSource={RelativeSource AncestorType=Page}}"
+                        />
+                <Button Grid.Column="2" IsDefault="True"
+                        Style="{StaticResource GreenBtn}"
+                        Command="{Binding SubmitCommand, RelativeSource={RelativeSource AncestorType=Page}}"
+                        >
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Сохранить" Visibility="{Binding IsProgress, Converter={StaticResource InvBoolConv}}" />
+                        <uc:Dots Visibility="{Binding IsProgress, Converter={StaticResource BoolToVis}}" />
+                    </StackPanel>
+                </Button>
+            </Grid>
         </StackPanel>
     </ScrollViewer>
 </Page>
