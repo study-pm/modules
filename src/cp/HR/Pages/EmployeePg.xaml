@@ -38,6 +38,7 @@
                                          ValidatesOnNotifyDataErrors="True"
                                          >
                                     <Binding.ValidationRules>
+                                        <utils:MaxLengthValidationRule MaxLength="50"/>
                                         <utils:NotEmptyValidationRule/>
                                     </Binding.ValidationRules>
                                 </Binding>
