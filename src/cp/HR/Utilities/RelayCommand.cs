@@ -28,11 +28,26 @@ namespace HR.Utilities
             _execute(parameter);
         }
 
+        // Private field for storing subscribers
+        private EventHandler _canExecuteChanged;
+
         public event EventHandler CanExecuteChanged
         {
-            add { CommandManager.RequerySuggested += value; }
-            remove { CommandManager.RequerySuggested -= value; }
+            add
+            {
+                CommandManager.RequerySuggested += value;
+                _canExecuteChanged += value;
+            }
+            remove
+            {
+                CommandManager.RequerySuggested -= value;
+                _canExecuteChanged -= value;
+            }
+        }
+
+        public void RaiseCanExecuteChanged()
+        {
+            _canExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }
-
