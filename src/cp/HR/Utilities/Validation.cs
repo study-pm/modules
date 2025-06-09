@@ -50,6 +50,16 @@ namespace HR.Utilities
             }
         }
     }
+    public class MinLengthValidationRule : ValidationRule
+    {
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
+        {
+            string input = value as string;
+            if (input.Length < 5)
+                return new ValidationResult(false, "Поле должно быть содержать более {5} символов");
+            return new ValidationResult(true, null);
+        }
+    }
     public class NotEmptyValidationRule : ValidationRule
     {
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
@@ -64,16 +74,6 @@ namespace HR.Utilities
             {
                 return new ValidationResult(false, "Поле обязательно для заполнения");
             }
-            return new ValidationResult(true, null);
-        }
-    }
-    public class MinLengthValidationRule : ValidationRule
-    {
-        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
-        {
-            string input = value as string;
-            if (input.Length < 5)
-                return new ValidationResult(false, "Поле должно быть содержать более {5} символов");
             return new ValidationResult(true, null);
         }
     }
