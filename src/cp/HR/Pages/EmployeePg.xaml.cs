@@ -94,6 +94,9 @@ namespace HR.Pages
                 OnPropertyChanged();
             }
         }
+
+        private bool HasValidationErrors => Validation.GetHasError(SurnameTxb);
+
         public EmployeePg(Employee employee = null)
         {
             InitializeComponent();
@@ -110,8 +113,16 @@ namespace HR.Pages
                 {
                     SaveEmployee();
                 },
-                _ => vm.IsEnabled
+                _ => vm.IsEnabled && !HasValidationErrors
             );
+
+            // Subscribe to validation errors
+            Validation.AddErrorHandler(SurnameTxb, ValidationErrorHandler);
+        }
+        private void ValidationErrorHandler(object sender, ValidationErrorEventArgs e)
+        {
+            ResetCommand.RaiseCanExecuteChanged();
+            SubmitCommand.RaiseCanExecuteChanged();
         }
         private async void SaveEmployee()
         {
