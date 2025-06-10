@@ -140,6 +140,7 @@ namespace HR.Pages
                         try
                         {
                             IsProgress = true;
+                            StatusInformer.ReportProgress("Сохранение данных");
                             await Services.Request.ctx.SaveChangesAsync();
                             StatusInformer.ReportSuccess("Данные успешно сохранены");
                         }
