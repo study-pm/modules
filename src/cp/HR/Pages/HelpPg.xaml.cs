@@ -77,7 +77,8 @@ namespace HR.Pages
                             $"Вы действительно хотите удалить сотрудника \"{item.FullName}\"?",
                             "Подтверждение удаления",
                             MessageBoxButton.YesNo,
-                            MessageBoxImage.Warning
+                            MessageBoxImage.Warning,
+                            MessageBoxResult.No
                         );
 
                         if (result == MessageBoxResult.Yes)
