@@ -11,6 +11,16 @@ using System.Windows.Media;
 
 namespace HR.Utilities
 {
+    public class FilterParam
+    {
+        public string Name { get; set; }
+        public object Value { get; set; }
+        public FilterParam(string name, object value)
+        {
+            Name = name;
+            Value = value;
+        }
+    }
     public class MenuFilter : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
