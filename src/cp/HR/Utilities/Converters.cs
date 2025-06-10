@@ -51,6 +51,23 @@ namespace HR.Utilities
             throw new NotImplementedException();
         }
     }
+    public class CollectionToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var collection = value as ICollection;
+            if (collection != null && collection.Count > 0)
+            {
+                return Visibility.Visible;
+            }
+            return Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
     public class ImagePathConverter : IValueConverter
     {
         private string basePath = "Images";
