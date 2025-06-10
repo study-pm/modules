@@ -36,7 +36,15 @@
                         Visibility="{Binding IsListNotEmpty, Converter={StaticResource ColToVisConv}}"
                         LoadingRow="DataGrid_LoadingRow"
                         PreviewKeyDown="DataGrid_PreviewKeyDown"
+                        RowEditEnding="DataGrid_RowEditEnding"
                         >
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}">
+                        <Setter Property="IsEnabled" Value="{Binding DataContext.IsProgress,
+                            RelativeSource={RelativeSource AncestorType=DataGrid},
+                            Converter={StaticResource InvBoolConv}}" />
+                    </Style>
+                </DataGrid.RowStyle>
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Header="" Width="40" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>

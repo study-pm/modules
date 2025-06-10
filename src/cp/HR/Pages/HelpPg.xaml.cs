@@ -6,8 +6,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data.Entity;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -35,6 +37,18 @@ namespace HR.Pages
         public ICommand NavigateItemCommand { get; }
 
         private NavigationService _navigationService;
+
+        private bool _isProgress;
+        public bool IsProgress
+        {
+            get => _isProgress;
+            set
+            {
+                if (_isProgress == value) return;
+                _isProgress = value;
+                OnPropertyChanged();
+            }
+        }
 
         private ObservableCollection<Employee> _staff;
         public ObservableCollection<Employee> Staff
@@ -77,7 +91,7 @@ namespace HR.Pages
                 },
                 canExecute: param =>
                 {
-                    return true;
+                    return !IsProgress;
                 }
             );
             NavigateItemCommand = new RelayCommand(
@@ -96,7 +110,7 @@ namespace HR.Pages
                         MainWindow.frame.Navigate(new EmployeePg());
                     }
                 },
-                canExecute: param => true
+                canExecute: param => !IsProgress
             );
 
             // Subscribe to navigation events for the main frame
@@ -107,6 +121,40 @@ namespace HR.Pages
             }
         }
 
+        private void DataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
+        {
+            if (e.EditAction == DataGridEditAction.Commit)
+            {
+                Dispatcher.BeginInvoke(
+                    (Action)(async () =>  // Явное указание типа делегата Action
+                    {
+                        var item = e.Row.Item as Employee;
+                        if (item == null) return;
+
+                        var entry = Services.Request.ctx.Entry(item);
+                        bool isModified = entry.State == EntityState.Modified;
+
+                        if (!isModified) return;
+
+                        try
+                        {
+                            IsProgress = true;
+                            await Services.Request.ctx.SaveChangesAsync();
+                            StatusInformer.ReportSuccess("Данные успешно сохранены");
+                        }
+                        catch (Exception exc)
+                        {
+                            StatusInformer.ReportFailure($"Ошибка при сохранении данных: {exc}");
+                            MessageBox.Show($"Ошибка при сохранении данных: {exc}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                        finally
+                        {
+                            IsProgress = false;
+                        }
+                    }),
+                    System.Windows.Threading.DispatcherPriority.Background); // Приоритет передается вторым аргументом
+            }
+        }
         private void DataGrid_LoadingRow(object sender, DataGridRowEventArgs e)
         {
             // Numbering from 1
