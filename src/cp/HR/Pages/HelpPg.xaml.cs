@@ -286,8 +286,14 @@ namespace HR.Pages
         private void DataGrid_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             var depObj = (DependencyObject)e.OriginalSource;
+            // Обход вверх по дереву, учитывая, что Run не является Visual
             while (depObj != null && !(depObj is DataGridCell))
-                depObj = VisualTreeHelper.GetParent(depObj);
+            {
+                if (depObj is Run)
+                    depObj = LogicalTreeHelper.GetParent(depObj);
+                else
+                    depObj = VisualTreeHelper.GetParent(depObj);
+            }
 
             if (depObj is DataGridCell cell)
             {

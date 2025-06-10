@@ -59,6 +59,34 @@
                     <DataGridTextColumn Header="Фамилия" Binding="{Binding Surname}" Width="*" ElementStyle="{StaticResource TextBlockWithEllipsisStyle}"/>
                     <DataGridTextColumn Header="Имя" Binding="{Binding GivenName}" Width="*"  ElementStyle="{StaticResource TextBlockWithEllipsisStyle}"/>
                     <DataGridTextColumn Header="Отчество" Binding="{Binding Patronymic}" Width="*"  ElementStyle="{StaticResource TextBlockWithEllipsisStyle}"/>
+                    <DataGridTemplateColumn Header="МО: Должность" Width="2*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ItemsControl ItemsSource="{Binding Staffs}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Style="{StaticResource TextBlockWithEllipsisStyle}">
+                                                <Run Text="{Binding Department.Title}" /><Run Text=":" />
+                                                <Run Text="{Binding Position.Title}" />
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <ListBox ItemsSource="{Binding Staffs}" DisplayMemberPath="Position.Title" SelectionMode="Single" x:Name="positionsList"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <Button Content="Добавить"/>
+                                        <Button Content="Удалить"
+                                    />
+                                    </StackPanel>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellEditingTemplate>
+                    </DataGridTemplateColumn>
                 </DataGrid.Columns>
                 <DataGrid.ContextMenu>
                     <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
