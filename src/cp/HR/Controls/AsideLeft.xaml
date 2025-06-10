@@ -29,7 +29,6 @@
                                      Content="{Binding Title}" ToolTip="{Binding Name}"
                                      Style="{StaticResource AsideToggleButton}"
                                      IsChecked="{Binding IsChecked, Mode=TwoWay}"
-                                     IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
                                      PreviewMouseLeftButtonDown="RadioButton_PreviewMouseLeftButtonDown"
                                      >
                             <RadioButton.Tag>
