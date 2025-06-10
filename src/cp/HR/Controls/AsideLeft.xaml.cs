@@ -45,6 +45,9 @@ namespace HR.Controls
                 // If your ViewModel binding is TwoWay, this will update IsChecked in VM as well
                 e.Handled = true; // prevent default toggle behavior
             }
+            MenuFilter mainItem = radioButton.DataContext as MenuFilter;
+            if (mainItem.Title == "Справка")
+                MainWindow.frame.Navigate(new HelpPg());
         }
     }
 }

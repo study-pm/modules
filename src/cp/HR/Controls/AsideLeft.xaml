@@ -12,6 +12,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Res/AsideMenuStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <utils:CollectionToVisibilityConverter x:Key="ColToVisConv"/>
             <utils:InverseBooleanConverter x:Key="InvBoolConv"/>
             <utils:InvertedPageToIsCheckedConverter x:Key="InvPgChkConv" />
             <utils:NavigationDataConverter x:Key="NavDataConv" />
@@ -47,6 +48,7 @@
                             <CheckBox Content="Все" ToolTip="Выбрать/скрыть все элементы"
                                       IsChecked="{Binding AllChecked, Mode=TwoWay}"
                                       Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      Visibility="{Binding Values, Converter={StaticResource ColToVisConv}}"
                                       >
                                 <CheckBox.CommandParameter>
                                     <MultiBinding Converter="{StaticResource NavDataConv}">
