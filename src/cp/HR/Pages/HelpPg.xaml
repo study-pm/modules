@@ -80,7 +80,7 @@
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem Header="Добавить" InputGestureText="Ctrl+Insert"
-                                  Command="{Binding NavigateItemCommand}"
+                                  Command="{Binding NavigateCmd}"
                                   >
                             <MenuItem.Icon>
                                 <Viewbox Height="14" Width="14">
@@ -95,7 +95,7 @@
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem Header="Редактировать" InputGestureText="Ctrl+Enter"
-                                  Command="{Binding NavigateItemCommand}"
+                                  Command="{Binding NavigateCmd}"
                                   CommandParameter="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                   >
                             <MenuItem.Icon>
@@ -111,7 +111,7 @@
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem Header="Удалить" InputGestureText="Ctrl+Del"
-                                  Command="{Binding DeleteItemCommand}"
+                                  Command="{Binding DeleteCmd}"
                                   CommandParameter="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                   >
                             <MenuItem.Icon>
@@ -140,7 +140,7 @@
                                 </Viewbox>
                             </MenuItem.Icon>
                             <MenuItem Header="Экспорт в CSV" InputGestureText="Ctrl+S"
-                                      Command="{Binding ExportCommand}" CommandParameter="CSV"
+                                      Command="{Binding ExportCmd}" CommandParameter="CSV"
                                       >
                                 <MenuItem.Icon>
                                     <Viewbox Height="14" Width="14">
@@ -155,7 +155,7 @@
                                 </MenuItem.Icon>
                             </MenuItem>
                             <MenuItem Header="Экспорт в PDF" InputGestureText="Ctrl+P"
-                                      Command="{Binding ExportCommand}" CommandParameter="PDF"
+                                      Command="{Binding ExportCmd}" CommandParameter="PDF"
                                       >
                                 <MenuItem.Icon>
                                     <Viewbox Height="14" Width="14">

@@ -33,10 +33,10 @@ namespace HR.Pages
         protected void OnPropertyChanged([CallerMemberName] string prop = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
 
-        public ICommand DeleteItemCommand { get; }
-        public ICommand ExportCommand { get; }
+        public ICommand DeleteCmd { get; }
+        public ICommand ExportCmd { get; }
         public ICommand FilterCmd { get; }
-        public ICommand NavigateItemCommand { get; }
+        public ICommand NavigateCmd { get; }
 
         private NavigationService _navigationService;
 
@@ -72,7 +72,7 @@ namespace HR.Pages
             DataContext = this;
             Loaded += Page_Loaded;
 
-            DeleteItemCommand = new RelayCommand(
+            DeleteCmd = new RelayCommand(
                 execute: param =>
                 {
                     if (param is HR.Data.Models.Employee item)
@@ -99,7 +99,7 @@ namespace HR.Pages
                     return !IsProgress;
                 }
             );
-            ExportCommand = new RelayCommand(
+            ExportCmd = new RelayCommand(
                 execute: param =>
                 {
                     switch(param)
@@ -149,7 +149,7 @@ namespace HR.Pages
                 },
                 _ => !IsProgress
             );
-            NavigateItemCommand = new RelayCommand(
+            NavigateCmd = new RelayCommand(
                 execute: param =>
                 {
                     if (param is Employee employee)
@@ -235,23 +235,23 @@ namespace HR.Pages
             var item = dg?.SelectedItem as HR.Data.Models.Employee;
             if (e.Key == Key.Delete && Keyboard.Modifiers == ModifierKeys.Control)
             {
-                if (item != null && DeleteItemCommand.CanExecute(item))
+                if (item != null && DeleteCmd.CanExecute(item))
                 {
-                    DeleteItemCommand.Execute(item);
+                    DeleteCmd.Execute(item);
                     e.Handled = true;
                 }
             }
             if (e.Key == Key.Enter && Keyboard.Modifiers == ModifierKeys.Control)
             {
-                if (item != null && NavigateItemCommand.CanExecute(item))
+                if (item != null && NavigateCmd.CanExecute(item))
                 {
-                    NavigateItemCommand.Execute(item);
+                    NavigateCmd.Execute(item);
                     e.Handled = true;
                 }
             }
             if (e.Key == Key.F && Keyboard.Modifiers == ModifierKeys.Control)
             {
-                if (item != null && NavigateItemCommand.CanExecute(item))
+                if (item != null && NavigateCmd.CanExecute(item))
                 {
                     _lastRightClickedCell = null; // Invalidate last right clicked cell
                     FilterCmd.Execute(dataGrid);
@@ -260,25 +260,25 @@ namespace HR.Pages
             }
             if (e.Key == Key.Insert && Keyboard.Modifiers == ModifierKeys.Control)
             {
-                if (item != null && NavigateItemCommand.CanExecute(item))
+                if (item != null && NavigateCmd.CanExecute(item))
                 {
-                    NavigateItemCommand.Execute(null);
+                    NavigateCmd.Execute(null);
                     e.Handled = true;
                 }
             }
             if (e.Key == Key.P && Keyboard.Modifiers == ModifierKeys.Control)
             {
-                if (item != null && ExportCommand.CanExecute(null))
+                if (item != null && ExportCmd.CanExecute(null))
                 {
-                    ExportCommand.Execute("PDF");
+                    ExportCmd.Execute("PDF");
                     e.Handled = true;
                 }
             }
             if (e.Key == Key.S && Keyboard.Modifiers == ModifierKeys.Control)
             {
-                if (item != null && ExportCommand.CanExecute(null))
+                if (item != null && ExportCmd.CanExecute(null))
                 {
-                    ExportCommand.Execute("CSV");
+                    ExportCmd.Execute("CSV");
                     e.Handled = true;
                 }
             }
