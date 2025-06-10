@@ -80,7 +80,7 @@
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem Header="Добавить"
-                                  InputGestureText="Ctrl+N"
+                                  InputGestureText="Ctrl+Insert"
                                   Command="{Binding NavigateItemCommand}"
                                   >
                             <MenuItem.Icon>

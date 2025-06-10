@@ -181,7 +181,7 @@ namespace HR.Pages
                     e.Handled = true;
                 }
             }
-            if (e.Key == Key.N && Keyboard.Modifiers == ModifierKeys.Control)
+            if (e.Key == Key.Insert && Keyboard.Modifiers == ModifierKeys.Control)
             {
                 if (item != null && NavigateItemCommand.CanExecute(item))
                 {
