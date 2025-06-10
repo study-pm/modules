@@ -64,8 +64,6 @@
 
                         <MenuItem Header="Фильтровать"
                                   InputGestureText="Ctrl+F"
-                                  Command="{Binding DeleteItemCommand}"
-                                  CommandParameter="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                   >
                             <MenuItem.Icon>
                                 <Viewbox Height="14" Width="14">
@@ -128,6 +126,50 @@
                                     </Canvas>
                                 </Viewbox>
                             </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator/>
+                        <MenuItem Header="Экспорт списка">
+                            <MenuItem.Icon>
+                                <Viewbox Height="14" Width="14">
+                                    <Canvas Height="496" Width="512">
+                                        <Path Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource FileExportSolidPath}">
+                                            <Path.RenderTransform>
+                                                <TranslateTransform X="0" Y="0"/>
+                                            </Path.RenderTransform>
+                                        </Path>
+                                    </Canvas>
+                                </Viewbox>
+                            </MenuItem.Icon>
+                            <MenuItem Header="Экспорт в CSV" InputGestureText="Ctrl+S"
+                                      Command="{Binding ExportCommand}" CommandParameter="CSV"
+                                      >
+                                <MenuItem.Icon>
+                                    <Viewbox Height="14" Width="14">
+                                        <Canvas Height="496" Width="512">
+                                            <Path Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource FileCsvSolidPath}">
+                                                <Path.RenderTransform>
+                                                    <TranslateTransform X="0" Y="0"/>
+                                                </Path.RenderTransform>
+                                            </Path>
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Экспорт в PDF" InputGestureText="Ctrl+P"
+                                      Command="{Binding ExportCommand}" CommandParameter="PDF"
+                                      >
+                                <MenuItem.Icon>
+                                    <Viewbox Height="14" Width="14">
+                                        <Canvas Height="496" Width="512">
+                                            <Path Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource FilePdfSolidPath}">
+                                                <Path.RenderTransform>
+                                                    <TranslateTransform X="0" Y="0"/>
+                                                </Path.RenderTransform>
+                                            </Path>
+                                        </Canvas>
+                                    </Viewbox>
+                                </MenuItem.Icon>
+                            </MenuItem>
                         </MenuItem>
                     </ContextMenu>
                 </DataGrid.ContextMenu>

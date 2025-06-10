@@ -34,6 +34,7 @@ namespace HR.Pages
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
 
         public ICommand DeleteItemCommand { get; }
+        public ICommand ExportCommand { get; }
         public ICommand NavigateItemCommand { get; }
 
         private NavigationService _navigationService;
@@ -95,6 +96,21 @@ namespace HR.Pages
                     return !IsProgress;
                 }
             );
+            ExportCommand = new RelayCommand(
+                execute: param =>
+                {
+                    switch(param)
+                    {
+                        case "CSV": default:
+                            ExportCSV();
+                            break;
+                        case "PDF":
+                            ExportPDF();
+                            break;
+                    }
+                },
+                _ => !IsProgress
+            );
             NavigateItemCommand = new RelayCommand(
                 execute: param =>
                 {
@@ -120,6 +136,15 @@ namespace HR.Pages
             {
                 _navigationService.Navigated += NavigationService_Navigated;
             }
+        }
+
+        private void ExportCSV()
+        {
+            MessageBox.Show("Export CSV");
+        }
+        private void ExportPDF()
+        {
+            MessageBox.Show("Export PDF");
         }
 
         private void DataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
@@ -187,6 +212,22 @@ namespace HR.Pages
                 if (item != null && NavigateItemCommand.CanExecute(item))
                 {
                     NavigateItemCommand.Execute(null);
+                    e.Handled = true;
+                }
+            }
+            if (e.Key == Key.P && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                if (item != null && ExportCommand.CanExecute(null))
+                {
+                    ExportCommand.Execute("PDF");
+                    e.Handled = true;
+                }
+            }
+            if (e.Key == Key.S && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                if (item != null && ExportCommand.CanExecute(null))
+                {
+                    ExportCommand.Execute("CSV");
                     e.Handled = true;
                 }
             }
