@@ -91,7 +91,7 @@ namespace HR.Utilities
         }
         public bool AllChecked
         {
-            get => Values.All(x => x.IsChecked);
+            get => Values != null ? Values.All(x => x.IsChecked) : false;
             set
             {
                 foreach (var v in Values)
