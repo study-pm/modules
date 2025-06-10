@@ -36,6 +36,7 @@
                         Visibility="{Binding IsListNotEmpty, Converter={StaticResource ColToVisConv}}"
                         LoadingRow="DataGrid_LoadingRow"
                         PreviewKeyDown="DataGrid_PreviewKeyDown"
+                        PreviewMouseRightButtonDown="DataGrid_PreviewMouseRightButtonDown"
                         RowEditEnding="DataGrid_RowEditEnding"
                         >
                 <DataGrid.RowStyle>
@@ -63,6 +64,8 @@
                     <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
 
                         <MenuItem Header="Фильтровать" InputGestureText="Ctrl+F"
+                                  Command="{Binding FilterCmd}"
+                                  CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                   >
                             <MenuItem.Icon>
                                 <Viewbox Height="14" Width="14">

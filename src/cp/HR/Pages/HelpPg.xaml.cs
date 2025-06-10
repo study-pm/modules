@@ -35,9 +35,12 @@ namespace HR.Pages
 
         public ICommand DeleteItemCommand { get; }
         public ICommand ExportCommand { get; }
+        public ICommand FilterCmd { get; }
         public ICommand NavigateItemCommand { get; }
 
         private NavigationService _navigationService;
+
+        private DataGridCellInfo? _lastRightClickedCell;
 
         private bool _isProgress;
         public bool IsProgress
@@ -111,6 +114,41 @@ namespace HR.Pages
                 },
                 _ => !IsProgress
             );
+            FilterCmd = new RelayCommand(
+                execute: param =>
+                {
+                    DataGrid dg = param as DataGrid ?? dataGrid; // dataGrid — это ссылка на твой DataGrid (например, через поле)
+                    DataGridCellInfo? cellInfo = null;
+
+                    // 1. Если был клик правой кнопкой мыши — используем _lastRightClickedCell
+                    if (_lastRightClickedCell != null)
+                    {
+                        cellInfo = _lastRightClickedCell;
+                    }
+                    // 2. Если команда вызвана через горячую клавишу — используем CurrentCell
+                    else if (dg != null && dg.CurrentCell != null && dg.CurrentCell.Column is DataGridBoundColumn)
+                    {
+                        cellInfo = dg.CurrentCell;
+                    }
+
+                    if (cellInfo != null)
+                    {
+                        var item = cellInfo.Value.Item;
+                        var column = cellInfo.Value.Column as DataGridBoundColumn;
+                        if (column != null)
+                        {
+                            var binding = column.Binding as Binding;
+                            if (binding != null)
+                            {
+                                string propertyName = binding.Path.Path;
+                                var value = item.GetType().GetProperty(propertyName)?.GetValue(item, null);
+                                FilterByCellValue(new FilterParam(propertyName, value));
+                            }
+                        }
+                    }
+                },
+                _ => !IsProgress
+            );
             NavigateItemCommand = new RelayCommand(
                 execute: param =>
                 {
@@ -145,6 +183,10 @@ namespace HR.Pages
         private void ExportPDF()
         {
             MessageBox.Show("Export PDF");
+        }
+        private void FilterByCellValue(FilterParam param)
+        {
+            MessageBox.Show($"Filter by {param.Name} with value {param.Value}");
         }
 
         private void DataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
@@ -207,6 +249,15 @@ namespace HR.Pages
                     e.Handled = true;
                 }
             }
+            if (e.Key == Key.F && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                if (item != null && NavigateItemCommand.CanExecute(item))
+                {
+                    _lastRightClickedCell = null; // Invalidate last right clicked cell
+                    FilterCmd.Execute(dataGrid);
+                    e.Handled = true;
+                }
+            }
             if (e.Key == Key.Insert && Keyboard.Modifiers == ModifierKeys.Control)
             {
                 if (item != null && NavigateItemCommand.CanExecute(item))
@@ -230,6 +281,22 @@ namespace HR.Pages
                     ExportCommand.Execute("CSV");
                     e.Handled = true;
                 }
+            }
+        }
+        private void DataGrid_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var depObj = (DependencyObject)e.OriginalSource;
+            while (depObj != null && !(depObj is DataGridCell))
+                depObj = VisualTreeHelper.GetParent(depObj);
+
+            if (depObj is DataGridCell cell)
+            {
+                var dataGrid = (DataGrid)sender;
+                _lastRightClickedCell = new DataGridCellInfo(cell);
+            }
+            else
+            {
+                _lastRightClickedCell = null;
             }
         }
         private void NavigationService_Navigated(object sender, NavigationEventArgs e)
