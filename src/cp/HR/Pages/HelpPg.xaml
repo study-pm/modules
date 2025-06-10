@@ -32,13 +32,24 @@
                         CanUserAddRows="False" CanUserDeleteRows="False"
                         HeadersVisibility="Column" VerticalScrollBarVisibility="Auto"
                         ItemsSource="{Binding Staff}"
-                        SelectedItem="{Binding Selected, Mode=TwoWay}"
-                        Visibility="{Binding IsListNotEmpty, Converter={StaticResource ColToVisConv}}"
+                        Visibility="{Binding Staff, Converter={StaticResource ColToVisConv}}"
                         LoadingRow="DataGrid_LoadingRow"
                         PreviewKeyDown="DataGrid_PreviewKeyDown"
                         PreviewMouseRightButtonDown="DataGrid_PreviewMouseRightButtonDown"
                         RowEditEnding="DataGrid_RowEditEnding"
                         >
+                <DataGrid.Resources>
+                    <ContextMenu x:Key="ColumnHeaderContextMenu">
+                        <MenuItem Header="Фамилия" IsCheckable="True" Click="DataGridColumnHeaderMenuItem_Click" Tag="1"/>
+                        <MenuItem Header="Имя" IsCheckable="True" Click="DataGridColumnHeaderMenuItem_Click" Tag="2"/>
+                        <MenuItem Header="Отчество" IsCheckable="True" Click="DataGridColumnHeaderMenuItem_Click" Tag="3"/>
+                        <MenuItem Header="МО: Должность" IsCheckable="True" Click="DataGridColumnHeaderMenuItem_Click" Tag="4"/>
+                    </ContextMenu>
+                    <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                        <Setter Property="ContextMenu" Value="{StaticResource ColumnHeaderContextMenu}"/>
+                        <EventSetter Event="ContextMenuOpening" Handler="DataGridColumnHeader_ContextMenuOpening"/>
+                    </Style>
+                </DataGrid.Resources>
                 <DataGrid.RowStyle>
                     <Style TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}">
                         <Setter Property="IsEnabled" Value="{Binding DataContext.IsProgress,
@@ -77,12 +88,25 @@
                         <DataGridTemplateColumn.CellEditingTemplate>
                             <DataTemplate>
                                 <StackPanel>
-                                    <ListBox ItemsSource="{Binding Staffs}" DisplayMemberPath="Position.Title" SelectionMode="Single" x:Name="positionsList"/>
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                        <Button Content="Добавить"/>
-                                        <Button Content="Удалить"
-                                    />
-                                    </StackPanel>
+                                    <ListBox ItemsSource="{Binding Staffs}" SelectionMode="Single" x:Name="positionsList">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" Margin="0,2,0,2">
+                                                    <ComboBox Width="150"
+                                                              ItemsSource="{Binding DataContext.AllDepartments, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                              SelectedItem="{Binding Department, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                              DisplayMemberPath="Title"
+                                                              Margin="0,0,10,0"
+                                                              />
+                                                    <ComboBox Width="150"
+                                                              ItemsSource="{Binding DataContext.AllPositions, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                              SelectedItem="{Binding Position, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                              DisplayMemberPath="Title"
+                                                              />
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
                                 </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellEditingTemplate>

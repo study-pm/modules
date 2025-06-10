@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -189,6 +190,29 @@ namespace HR.Pages
             MessageBox.Show($"Filter by {param.Name} with value {param.Value}");
         }
 
+        private void DataGridColumnHeader_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+            if (sender is DataGridColumnHeader header && header.ContextMenu != null)
+            {
+                foreach (MenuItem item in header.ContextMenu.Items)
+                {
+                    if (int.TryParse(item.Tag?.ToString(), out int columnIndex))
+                    {
+                        var column = dataGrid.Columns[columnIndex];
+                        item.IsChecked = column.Visibility == Visibility.Visible;
+                    }
+                }
+            }
+        }
+        private void DataGridColumnHeaderMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem menuItem && int.TryParse(menuItem.Tag?.ToString(), out int columnIndex))
+            {
+                var column = dataGrid.Columns[columnIndex];
+                // Переключаем видимость в зависимости от состояния чекбокса
+                column.Visibility = menuItem.IsChecked ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
         private void DataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
             if (e.EditAction == DataGridEditAction.Commit)
