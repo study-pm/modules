@@ -170,8 +170,8 @@ namespace HR.Pages
             }
             catch (Exception exc)
             {
-                StatusInformer.ReportSuccess($"Ошибка при сохранении: {exc.ToString()}");
-                MessageBox.Show($"Ошибка при сохранении: {exc.ToString()}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                StatusInformer.ReportFailure($"Ошибка при сохранении данных: {exc.ToString()}");
+                MessageBox.Show($"Ошибка при сохранении данных: {exc.ToString()}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
