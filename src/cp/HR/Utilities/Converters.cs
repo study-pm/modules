@@ -408,5 +408,22 @@ namespace HR.Utilities
             throw new NotImplementedException();
         }
     }
+    public class VisibilityToBooleanConverter : IValueConverter
+    {
+        // Transform Visibility to bool: Visible -> true, Collapsed/Hidden -> false
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is Visibility visibility)
+                return visibility == Visibility.Visible;
+            return false;
+        }
 
+        // Transform bool to Visibility
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is bool flag)
+                return flag ? Visibility.Visible : Visibility.Collapsed;
+            return Visibility.Collapsed;
+        }
+    }
 }
