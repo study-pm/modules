@@ -164,7 +164,7 @@ namespace HR.Pages
         {
             var dg = sender as DataGrid;
             var item = dg?.SelectedItem as HR.Data.Models.Employee;
-            if (e.Key == Key.Delete)
+            if (e.Key == Key.Delete && Keyboard.Modifiers == ModifierKeys.Control)
             {
                 if (item != null && DeleteItemCommand.CanExecute(item))
                 {
