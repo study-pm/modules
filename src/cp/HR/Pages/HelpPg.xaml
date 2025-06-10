@@ -62,8 +62,7 @@
                 <DataGrid.ContextMenu>
                     <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
 
-                        <MenuItem Header="Фильтровать"
-                                  InputGestureText="Ctrl+F"
+                        <MenuItem Header="Фильтровать" InputGestureText="Ctrl+F"
                                   >
                             <MenuItem.Icon>
                                 <Viewbox Height="14" Width="14">
@@ -77,8 +76,7 @@
                                 </Viewbox>
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="Добавить"
-                                  InputGestureText="Ctrl+Insert"
+                        <MenuItem Header="Добавить" InputGestureText="Ctrl+Insert"
                                   Command="{Binding NavigateItemCommand}"
                                   >
                             <MenuItem.Icon>
@@ -93,8 +91,7 @@
                                 </Viewbox>
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="Редактировать"
-                                  InputGestureText="Ctrl+Enter"
+                        <MenuItem Header="Редактировать" InputGestureText="Ctrl+Enter"
                                   Command="{Binding NavigateItemCommand}"
                                   CommandParameter="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                   >
@@ -110,8 +107,7 @@
                                 </Viewbox>
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="Удалить"
-                                  InputGestureText="Ctrl+Del"
+                        <MenuItem Header="Удалить" InputGestureText="Ctrl+Del"
                                   Command="{Binding DeleteItemCommand}"
                                   CommandParameter="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                   >
