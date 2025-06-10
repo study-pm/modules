@@ -55,12 +55,18 @@ namespace HR.Utilities
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            bool plain = true; // Default param value (not inverted)
+            if (parameter is string paramString)
+            {
+                // Try parsing param as bool
+                if (bool.TryParse(paramString, out bool parsed)) plain = parsed;
+            }
             var collection = value as ICollection;
             if (collection != null && collection.Count > 0)
             {
-                return Visibility.Visible;
+                return plain ? Visibility.Visible : Visibility.Collapsed;
             }
-            return Visibility.Collapsed;
+            return plain ? Visibility.Collapsed : Visibility.Hidden;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
