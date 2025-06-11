@@ -55,6 +55,7 @@ namespace HR.Utilities
                 }
             }
         }
+        public string Page {  get; set; }
         private ObservableCollection<FilterValue> values = new ObservableCollection<FilterValue>();
         public ObservableCollection<FilterValue> Values
         {
