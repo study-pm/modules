@@ -29,6 +29,7 @@
                                      Content="{Binding Title}" ToolTip="{Binding Name}"
                                      Style="{StaticResource AsideToggleButton}"
                                      IsChecked="{Binding IsChecked, Mode=TwoWay}"
+                                     IsEnabled="{Binding IsEnabled}"
                                      PreviewMouseLeftButtonDown="RadioButton_PreviewMouseLeftButtonDown"
                                      >
                             <RadioButton.Tag>

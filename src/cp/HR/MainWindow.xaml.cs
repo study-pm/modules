@@ -46,6 +46,7 @@ namespace HR
                 Icon = (Geometry)Application.Current.FindResource("UserFriendsSolidPath"),
                 Name = "Виды деятельности",
                 Title = "Сотрудники",
+                Page = "StaffPg",
                 PageUri = "Pages/StaffPg.xaml",
                 Values = new ObservableCollection<FilterValue>
                 {
@@ -60,6 +61,7 @@ namespace HR
                 Icon = (Geometry)Application.Current.FindResource("SitemapSolidPath"),
                 Name = "Структурные подразделения",
                 Title = "Подразделения",
+                Page = "StaffPg",
                 PageUri = "Pages/StaffPg.xaml",
                 Values = new ObservableCollection<FilterValue>() // initialize empty collection
             },
@@ -68,6 +70,7 @@ namespace HR
                 Icon = (Geometry)Application.Current.FindResource("BookOpenSolidPath"),
                 Name = "Учебные предметы",
                 Title = "Предметы",
+                Page = "StaffPg",
                 PageUri = "Pages/StaffPg.xaml",
                 Values = new ObservableCollection<FilterValue>() // initialize empty collection
             },
@@ -76,6 +79,7 @@ namespace HR
                 Icon = (Geometry)Application.Current.FindResource("UsersSolidPath"),
                 Name = "Классное руководство",
                 Title = "Классы",
+                Page = "ClassesPg",
                 PageUri = "Pages/ClassesPg.xaml",
                 Values = new ObservableCollection<FilterValue>() // initialize empty collection
             },
@@ -84,8 +88,10 @@ namespace HR
                 Icon = (Geometry)Application.Current.FindResource("QuestionCircleSolidPath"),
                 Name = "Справочная информация",
                 Title = "Справка",
+                Page = "HelpPg",
                 PageUri = "Pages/HelpPg.xaml",
-                Values = null
+                IsDisabledOnChecked = true,
+                Values = new ObservableCollection<FilterValue>() // initialize empty collection
             }
         };
 

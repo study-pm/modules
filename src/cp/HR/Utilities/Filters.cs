@@ -40,8 +40,11 @@ namespace HR.Utilities
                 if (!value) AllChecked = false;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(AllChecked));
+                OnPropertyChanged(nameof(IsEnabled));
             }
         }
+        public bool IsDisabledOnChecked { get; set; }
+        public bool IsEnabled => IsDisabledOnChecked ? !IsChecked : true;
         private string pageUri;
         public string PageUri
         {
@@ -55,6 +58,7 @@ namespace HR.Utilities
                 }
             }
         }
+        public string Page {  get; set; }
         private ObservableCollection<FilterValue> values = new ObservableCollection<FilterValue>();
         public ObservableCollection<FilterValue> Values
         {
