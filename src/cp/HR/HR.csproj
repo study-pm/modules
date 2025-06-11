@@ -217,6 +217,7 @@
     <Compile Include="Pages\WorkersPg.xaml.cs">
       <DependentUpon>WorkersPg.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Services\AppEventHelper.cs" />
     <Compile Include="Services\CommandHelper.cs" />
     <Compile Include="Services\Crypto.cs" />
     <Compile Include="Services\Fs.cs" />
