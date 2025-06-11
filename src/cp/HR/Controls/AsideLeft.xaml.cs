@@ -27,9 +27,39 @@ namespace HR.Controls
     /// </summary>
     public partial class AsideLeft : NavCtl
     {
+        private NavigationService _navigationService;
+        private MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
         public AsideLeft()
         {
             InitializeComponent();
+            Loaded += Page_Loaded;
+        }
+        private void NavigationService_Navigated(object sender, NavigationEventArgs e)
+        {
+            var navigationParameter = e.ExtraData;
+            CurrentPage = e.Content.GetType().Name;
+            // Sync AsideLeft item to TopMenu item for HelpPg
+            if (CurrentPage == "HelpPg")
+            {
+                var item = ((MainWindow)((App)Application.Current).MainWindow)?.MenuVM.Filters.First(x => x.PageUri == "Pages/HelpPg.xaml");
+                item.IsChecked = true;
+            }
+
+            if (navigationParameter != null) return;
+            if (mainWindow?.MenuVM is MenuViewModel && mainWindow.MenuVM.Filters is IEnumerable<MenuFilter>)
+            {
+                foreach (var filter in mainWindow.MenuVM.Filters)
+                    if (filter.Page != CurrentPage) filter.IsChecked = false;
+            }
+        }
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Subscribe to navigation events for the main frame
+            _navigationService = MainWindow.frame.NavigationService;
+            if (_navigationService != null)
+            {
+               _navigationService.Navigated += NavigationService_Navigated;
+            }
         }
         private void RadioButton_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -47,7 +77,7 @@ namespace HR.Controls
             }
             MenuFilter mainItem = radioButton.DataContext as MenuFilter;
             if (mainItem.Title == "Справка")
-                MainWindow.frame.Navigate(new HelpPg());
+                NavigateCommand.Execute(new NavigationData() { Uri = "Pages/HelpPg.xaml", Parameter = mainItem.Values });
         }
     }
 }

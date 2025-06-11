@@ -229,6 +229,7 @@
                                   />
                     </MenuItem>
                     <MenuItem Header="Сп_равка"
+                              IsChecked="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource CheckedConverter}, ConverterParameter='HelpPg'}"
                               IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=HelpPg}"
                               Command="NavigationCommands.GoToPage"
                               CommandParameter="Pages/HelpPg.xaml"
