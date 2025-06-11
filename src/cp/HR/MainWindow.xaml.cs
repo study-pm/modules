@@ -78,6 +78,14 @@ namespace HR
                 Title = "Классы",
                 PageUri = "Pages/ClassesPg.xaml",
                 Values = new ObservableCollection<FilterValue>() // initialize empty collection
+            },
+            new MenuFilter()
+            {
+                Icon = (Geometry)Application.Current.FindResource("QuestionCircleSolidPath"),
+                Name = "Справочная информация",
+                Title = "Справка",
+                PageUri = "Pages/HelpPg.xaml",
+                Values = null
             }
         };
 

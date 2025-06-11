@@ -51,6 +51,29 @@ namespace HR.Utilities
             throw new NotImplementedException();
         }
     }
+    public class CollectionToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            bool notInverse = true; // Default param value (not inverted)
+            if (parameter is string paramString)
+            {
+                // Try parsing param as bool
+                if (bool.TryParse(paramString, out bool parsed)) notInverse = parsed;
+            }
+            var collection = value as ICollection;
+            if (collection != null && collection.Count > 0)
+            {
+                return notInverse ? Visibility.Visible : Visibility.Collapsed;
+            }
+            return notInverse ? Visibility.Collapsed : Visibility.Hidden;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
     public class ImagePathConverter : IValueConverter
     {
         private string basePath = "Images";
@@ -385,5 +408,22 @@ namespace HR.Utilities
             throw new NotImplementedException();
         }
     }
+    public class VisibilityToBooleanConverter : IValueConverter
+    {
+        // Transform Visibility to bool: Visible -> true, Collapsed/Hidden -> false
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is Visibility visibility)
+                return visibility == Visibility.Visible;
+            return false;
+        }
 
+        // Transform bool to Visibility
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is bool flag)
+                return flag ? Visibility.Visible : Visibility.Collapsed;
+            return Visibility.Collapsed;
+        }
+    }
 }
