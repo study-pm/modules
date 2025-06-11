@@ -9,31 +9,29 @@ namespace HR.Services
 {
     public static class AppEventHelper
     {
-        [DataContract]
         public enum EventCategory
         {
-            [EnumMember] Auth = 0,
-            [EnumMember] Data = 1,
-            [EnumMember] Navigation = 2,
-            [EnumMember] Service = 3,
+            Auth = 0,
+            Data = 1,
+            Navigation = 2,
+            Service = 3,
         }
-        [DataContract]
         public enum EventType
         {
-            [EnumMember] Progress = 0,
-            [EnumMember] Success = 1,
-            [EnumMember] Error = 2,
-            [EnumMember] Info = 3,
-            [EnumMember] Warning = 4,
+            Progress = 0,
+            Success = 1,
+            Error = 2,
+            Info = 3,
+            Warning = 4,
         }
         public class AppEventArgs : EventArgs
         {
-            [DataMember] public Guid Id { get; set; }
-            [DataMember] public DateTime Timestamp { get; set; }
-            [DataMember] public EventCategory Category { get; set; }
-            [DataMember] public EventType Type { get; set; }
-            [DataMember] public string Message { get; set; }
-            [DataMember] public string Details { get; set; }
+            public Guid Id { get; set; }
+            public DateTime Timestamp { get; set; }
+            public EventCategory Category { get; set; }
+            public EventType Type { get; set; }
+            public string Message { get; set; }
+            public string Details { get; set; }
         }
 
         public static event EventHandler<AppEventArgs> AppEvent;
