@@ -40,8 +40,11 @@ namespace HR.Utilities
                 if (!value) AllChecked = false;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(AllChecked));
+                OnPropertyChanged(nameof(IsEnabled));
             }
         }
+        public bool IsDisabledOnChecked { get; set; }
+        public bool IsEnabled => IsDisabledOnChecked ? !IsChecked : true;
         private string pageUri;
         public string PageUri
         {

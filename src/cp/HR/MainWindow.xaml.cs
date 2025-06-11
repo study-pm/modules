@@ -90,6 +90,7 @@ namespace HR
                 Title = "Справка",
                 Page = "HelpPg",
                 PageUri = "Pages/HelpPg.xaml",
+                IsDisabledOnChecked = true,
                 Values = new ObservableCollection<FilterValue>() // initialize empty collection
             }
         };
