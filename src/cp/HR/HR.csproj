@@ -227,6 +227,7 @@
     <Compile Include="Services\Fs.cs" />
     <Compile Include="Services\JsonHelper.cs" />
     <Compile Include="Services\Request.cs" />
+    <Compile Include="Services\XmlHelper.cs" />
     <Compile Include="SplashWindow.xaml.cs">
       <DependentUpon>SplashWindow.xaml</DependentUpon>
     </Compile>
