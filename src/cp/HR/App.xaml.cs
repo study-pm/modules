@@ -42,6 +42,7 @@ namespace HR
         }
         public Preferences Preferences { get; set; }
         public bool IsAuth => CurrentUser != null;
+        public Logger EventLogger { get; set; }
         public App()
         {
             LogOutCommand = new RelayCommand(_ => LogOut());
@@ -50,6 +51,7 @@ namespace HR
         {
             CurrentUser = null;
             Preferences = null;
+            EventLogger = null;
             var mainWindow = Application.Current.MainWindow as MainWindow;
             mainWindow.mainFrame.Navigate(new AuthPg());
             await Request.DeleteUidFileAsync(Data.Models.User.uidFilePath);
@@ -99,8 +101,23 @@ namespace HR
                 splash.Show(false); // show splash screen without auto closing (true to auto-close)
 
                 CurrentUser = await GetCurrentUser();
-                Preferences = await Request.GetPreferences(user.Id);
-
+                if (IsAuth)
+                {
+                    Preferences = await Request.GetPreferences(user.Id);
+                    List<AppEventHelper.EventCategory> categories = new List<AppEventHelper.EventCategory> {
+                        AppEventHelper.EventCategory.Auth,
+                        AppEventHelper.EventCategory.Data,
+                        AppEventHelper.EventCategory.Navigation,
+                        AppEventHelper.EventCategory.Service
+                    };
+                    List<AppEventHelper.EventType> types = new List<AppEventHelper.EventType> {
+                        AppEventHelper.EventType.Fatal,
+                        AppEventHelper.EventType.Error,
+                        AppEventHelper.EventType.Warning,
+                        AppEventHelper.EventType.Success
+                    };
+                    EventLogger = new Logger(CurrentUser.Id, categories, types);
+                }
                 var mainWindow = new MainWindow();
                 // this.MainWindow = mainWindow; // Assign as main window
                 mainWindow.Show();
