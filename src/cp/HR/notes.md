@@ -235,3 +235,7 @@ All major methods are documented with XML comments
 - Пароли не хранятся и не логируются в открытом виде.
 
 Так вы обеспечите баланс между удобством и безопасностью.
+
+===
+
+Приложение имеет развитую систему регистрации и журналирования событий построена на событийно модели: использование `AppEventHelper` (Services) и `AppEventLogger` (Utilities) и `AppStatus` (Components)
