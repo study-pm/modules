@@ -246,7 +246,19 @@
                                   Style="{StaticResource SubMenuItemStyle}"
                                   Click="LogoutItem_Click"
                                   Visibility="{Binding IsAuth, Source={x:Static Application.Current}, Converter={StaticResource BoolToVis}}"
-                                  />
+                                  >
+                            <MenuItem.Icon>
+                                <Viewbox ToolTip="Выйти из системы">
+                                    <Canvas Height="512" Width="512">
+                                        <Path Fill="DodgerBlue" Data="{StaticResource RightFromBracketSolidPath}">
+                                            <Path.RenderTransform>
+                                                <TranslateTransform X="100" Y="0"/>
+                                            </Path.RenderTransform>
+                                        </Path>
+                                    </Canvas>
+                                </Viewbox>
+                            </MenuItem.Icon>
+                        </MenuItem>
                     </MenuItem>
                     <MenuItem Header="Сп_равка"
                               IsChecked="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource CheckedConverter}, ConverterParameter='HelpPg'}"
