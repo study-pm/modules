@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HR.Services;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -15,6 +16,9 @@ namespace HR.Data.Models
         public static readonly string prefsFolder = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, basePath);
         public int UserId {  get; set; }
         public bool IsStayLoggedIn { get; set; }
+        public bool IsLogOn { get; set; }
+        public List<AppEventHelper.EventCategory> LogCategories { get; set; }
+        public List<AppEventHelper.EventType> LogTypes { get; set; }
         private static string GetFilePath(int uid) => System.IO.Path.Combine(prefsFolder, $"{uid.ToString()}.xml");
         public static async Task<Preferences> LoadAsync(int uid)
         {
