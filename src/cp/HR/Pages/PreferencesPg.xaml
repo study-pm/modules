@@ -24,7 +24,10 @@
                 оставаться в системе (сохранение состояния аутентификации),
                 тема интерфейса (светлая или темная).
             </TextBlock>
-            <StackPanel Margin="0 30 0 0">
+            <StackPanel Margin="0 10 0 0">
+                <StackPanel  Margin="0 10">
+                    <Label Foreground="{StaticResource magentaDarkBrush}" FontSize="16">Параметры входа</Label>
+                </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <CheckBox Content="Оставаться в системе"
                               IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
