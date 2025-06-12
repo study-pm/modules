@@ -35,8 +35,6 @@ namespace HR.Pages
         {
             AppEventArgs evt = new AppEventArgs
             {
-                Id = Guid.NewGuid(),
-                Timestamp = DateTime.Now,
                 Category = EventCategory.Service,
                 Type = EventType.Warning,
                 Message = "Тест генерации",

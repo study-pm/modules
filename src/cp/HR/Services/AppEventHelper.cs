@@ -41,12 +41,12 @@ namespace HR.Services
         /// </summary>
         public class AppEventArgs : EventArgs
         {
-            public Guid Id { get; set; }                // Gets or sets the unique identifier of the event.
-            public DateTime Timestamp { get; set; }     // Gets or sets the timestamp when the event occurred.
-            public EventCategory Category { get; set; } // Gets or sets the category of the event.
-            public EventType Type { get; set; }         // Gets or sets the type of the event.
-            public string Message { get; set; }         // Gets or sets the main message or description of the event.
-            public string Details { get; set; }         // Gets or sets additional details about the event.
+            public Guid Id { get; set; } = Guid.NewGuid();          // Gets or sets the unique identifier of the event.
+            public DateTime Timestamp { get; set; } = DateTime.Now; // Gets or sets the timestamp when the event occurred.
+            public EventCategory Category { get; set; }             // Gets or sets the category of the event.
+            public EventType Type { get; set; }                     // Gets or sets the type of the event.
+            public string Message { get; set; }                     // Gets or sets the main message or description of the event.
+            public string Details { get; set; }                     // Gets or sets additional details about the event.
         }
 
         /// <summary>
