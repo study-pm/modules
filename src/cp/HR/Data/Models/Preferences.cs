@@ -17,8 +17,8 @@ namespace HR.Data.Models
         public int UserId {  get; set; }
         public bool IsStayLoggedIn { get; set; }
         public bool IsLogOn { get; set; }
-        public List<AppEventHelper.EventCategory> LogCategories { get; set; }
-        public List<AppEventHelper.EventType> LogTypes { get; set; }
+        public HashSet<int> LogCategories { get; set; } = new HashSet<int> { 0, 1, 2, 3 };
+        public HashSet<int> LogTypes { get; set; } = new HashSet<int> { 1, 2, 3, 4, 5 };
         private static string GetFilePath(int uid) => System.IO.Path.Combine(prefsFolder, $"{uid.ToString()}.xml");
         public static async Task<Preferences> LoadAsync(int uid)
         {

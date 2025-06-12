@@ -104,21 +104,7 @@ namespace HR
                 if (IsAuth)
                 {
                     Preferences = await Request.GetPreferences(user.Id);
-                    List<AppEventHelper.EventCategory> categories = new List<AppEventHelper.EventCategory> {
-                        AppEventHelper.EventCategory.Auth,
-                        AppEventHelper.EventCategory.Data,
-                        AppEventHelper.EventCategory.Navigation,
-                        AppEventHelper.EventCategory.Service
-                    };
-                    List<AppEventHelper.EventType> types = new List<AppEventHelper.EventType> {
-                        AppEventHelper.EventType.Fatal,
-                        AppEventHelper.EventType.Error,
-                        AppEventHelper.EventType.Warning,
-                        AppEventHelper.EventType.Success
-                    };
                     Preferences.IsLogOn = true;
-                    Preferences.LogCategories = categories;
-                    Preferences.LogTypes = types;
                     if (Preferences.IsLogOn) EventLogger = new Logger(CurrentUser.Id, Preferences.LogCategories, Preferences.LogTypes);
                 }
                 var mainWindow = new MainWindow();
