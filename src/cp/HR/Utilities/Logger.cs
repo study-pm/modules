@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static HR.Services.AppEventHelper;
 using System.Windows;
+using System.Diagnostics;
 
 namespace HR.Utilities
 {
@@ -42,8 +43,8 @@ namespace HR.Utilities
         /// <param name="types">The event types to filter.</param>
         public Logger(int uid, List<EventCategory> categories, List<EventType> types)
         {
-            string logFilePath = System.IO.Path.Combine(logsDir, uid + ".log");
-            string logDirectory = System.IO.Path.GetDirectoryName(logFilePath);
+            filePath = System.IO.Path.Combine(logsDir, uid + ".json");
+            string logDirectory = System.IO.Path.GetDirectoryName(filePath);
 
             if (!System.IO.Directory.Exists(logDirectory))
             {
@@ -75,12 +76,11 @@ namespace HR.Utilities
 
             if (disposing)
             {
-                // Освобождаем управляемые ресурсы
+                // Release managed resources
                 AppEvent -= AppEventHelper_AppEvent;
             }
 
-            // Освобождение неуправляемых ресурсов, если есть
-
+            // Release unmanage resources (if any)
             _disposed = true;
         }
         /// <summary>
@@ -97,7 +97,7 @@ namespace HR.Utilities
         /// <param name="e">The event arguments.</param>
         private void AppEventHelper_AppEvent(object sender, AppEventArgs e)
         {
-            LogEvent(e, filePath);
+            LogEvent(e);
         }
         /// <summary>
         /// Logs the specified event to the log file if it matches the configured categories and types.
@@ -105,7 +105,7 @@ namespace HR.Utilities
         /// </summary>
         /// <param name="evt">The event to log.</param>
         /// <param name="fileName">The log file name.</param>
-        public void LogEvent(AppEventArgs evt, string fileName)
+        public void LogEvent(AppEventArgs evt)
         {
             try
             {
@@ -116,16 +116,7 @@ namespace HR.Utilities
             }
             catch (Exception exc)
             {
-                AppEventArgs appEvt = new AppEventArgs
-                {
-                    Id = new Guid(),
-                    Timestamp = DateTime.Now,
-                    Category = EventCategory.Service,
-                    Type = EventType.Error,
-                    Message = "Ошибка при сохранении записи в журнал событий",
-                    Details = exc.Message
-                };
-                RaiseAppEvent(appEvt);
+                Debug.WriteLine($"Error logging event: {exc.ToString()}");
             }
         }
     }
