@@ -116,7 +116,10 @@ namespace HR
                         AppEventHelper.EventType.Warning,
                         AppEventHelper.EventType.Success
                     };
-                    EventLogger = new Logger(CurrentUser.Id, categories, types);
+                    Preferences.IsLogOn = true;
+                    Preferences.LogCategories = categories;
+                    Preferences.LogTypes = types;
+                    if (Preferences.IsLogOn) EventLogger = new Logger(CurrentUser.Id, Preferences.LogCategories, Preferences.LogTypes);
                 }
                 var mainWindow = new MainWindow();
                 // this.MainWindow = mainWindow; // Assign as main window
