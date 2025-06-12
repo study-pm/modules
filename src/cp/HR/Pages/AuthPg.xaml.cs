@@ -235,6 +235,7 @@ namespace HR.Pages
             }
             // Read and apply user preferences
             Preferences preferences = await Services.Request.GetPreferences(app.CurrentUser.Id);
+            app.Preferences = preferences;
             if (preferences.IsStayLoggedIn) await Services.Request.SaveUidToFileAsync(app.CurrentUser.Id, Data.Models.User.uidFilePath);
             IsInProgress = false;
             // @TODO: Go to Startup page

@@ -13,7 +13,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using HR.Models;
+using HR.Data.Models;
 using HR.Pages;
 using HR.Services;
 using HR.Utilities;
@@ -40,7 +40,9 @@ namespace HR
                 OnPropertyChanged(nameof(IsAuth));
             }
         }
+        public Preferences Preferences { get; set; }
         public bool IsAuth => CurrentUser != null;
+        public Logger EventLogger { get; set; }
         public App()
         {
             LogOutCommand = new RelayCommand(_ => LogOut());
@@ -48,6 +50,8 @@ namespace HR
         public async void LogOut()
         {
             CurrentUser = null;
+            Preferences = null;
+            EventLogger = null;
             var mainWindow = Application.Current.MainWindow as MainWindow;
             mainWindow.mainFrame.Navigate(new AuthPg());
             await Request.DeleteUidFileAsync(Data.Models.User.uidFilePath);
@@ -97,7 +101,26 @@ namespace HR
                 splash.Show(false); // show splash screen without auto closing (true to auto-close)
 
                 CurrentUser = await GetCurrentUser();
-
+                if (IsAuth)
+                {
+                    Preferences = await Request.GetPreferences(user.Id);
+                    List<AppEventHelper.EventCategory> categories = new List<AppEventHelper.EventCategory> {
+                        AppEventHelper.EventCategory.Auth,
+                        AppEventHelper.EventCategory.Data,
+                        AppEventHelper.EventCategory.Navigation,
+                        AppEventHelper.EventCategory.Service
+                    };
+                    List<AppEventHelper.EventType> types = new List<AppEventHelper.EventType> {
+                        AppEventHelper.EventType.Fatal,
+                        AppEventHelper.EventType.Error,
+                        AppEventHelper.EventType.Warning,
+                        AppEventHelper.EventType.Success
+                    };
+                    Preferences.IsLogOn = true;
+                    Preferences.LogCategories = categories;
+                    Preferences.LogTypes = types;
+                    if (Preferences.IsLogOn) EventLogger = new Logger(CurrentUser.Id, Preferences.LogCategories, Preferences.LogTypes);
+                }
                 var mainWindow = new MainWindow();
                 // this.MainWindow = mainWindow; // Assign as main window
                 mainWindow.Show();

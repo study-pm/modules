@@ -41,6 +41,9 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="Otp.NET, Version=1.4.0.0, Culture=neutral, PublicKeyToken=38a48df817e173a6, processorArchitecture=MSIL">
       <HintPath>packages\Otp.NET.1.4.0\lib\net461\Otp.NET.dll</HintPath>
     </Reference>
@@ -193,6 +196,9 @@
     <Compile Include="Pages\HelpPg.xaml.cs">
       <DependentUpon>HelpPg.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\LogPg.xaml.cs">
+      <DependentUpon>LogPg.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\PreferencesPg.xaml.cs">
       <DependentUpon>PreferencesPg.xaml</DependentUpon>
     </Compile>
@@ -214,15 +220,18 @@
     <Compile Include="Pages\WorkersPg.xaml.cs">
       <DependentUpon>WorkersPg.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Services\AppEventHelper.cs" />
     <Compile Include="Services\CommandHelper.cs" />
     <Compile Include="Services\Crypto.cs" />
     <Compile Include="Services\Fs.cs" />
+    <Compile Include="Services\JsonHelper.cs" />
     <Compile Include="Services\Request.cs" />
     <Compile Include="SplashWindow.xaml.cs">
       <DependentUpon>SplashWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utilities\Converters.cs" />
     <Compile Include="Utilities\Filters.cs" />
+    <Compile Include="Utilities\Logger.cs" />
     <Compile Include="Utilities\RelayCommand.cs" />
     <Compile Include="Utilities\StatusInformer.cs" />
     <Compile Include="Utilities\Utils.cs" />
@@ -295,6 +304,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\HomePg.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\LogPg.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

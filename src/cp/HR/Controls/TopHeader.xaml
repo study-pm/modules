@@ -222,6 +222,26 @@
                                 </Viewbox>
                             </MenuItem.Icon>
                         </MenuItem>
+                        <MenuItem Header="Журнал"
+                                  Style="{StaticResource SubMenuItemStyle}"
+                                  Command="NavigationCommands.GoToPage"
+                                  CommandParameter="Pages/LogPg.xaml"
+                                  CommandTarget="{Binding ElementName=mainFrame}"
+                                  IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=LogPg}"
+                                  Visibility="{Binding IsAuth, Source={x:Static Application.Current}, Converter={StaticResource BoolToVis}}"
+                                  >
+                            <MenuItem.Icon>
+                                <Viewbox ToolTip="Журнал событий">
+                                    <Canvas Height="512" Width="512">
+                                        <Path Fill="DodgerBlue" Data="{StaticResource HistorySolidPath}">
+                                            <Path.RenderTransform>
+                                                <TranslateTransform X="100" Y="0"/>
+                                            </Path.RenderTransform>
+                                        </Path>
+                                    </Canvas>
+                                </Viewbox>
+                            </MenuItem.Icon>
+                        </MenuItem>
                         <MenuItem Header="Вы_ход"
                                   Style="{StaticResource SubMenuItemStyle}"
                                   Click="LogoutItem_Click"
