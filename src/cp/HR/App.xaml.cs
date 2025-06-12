@@ -13,7 +13,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using HR.Models;
+using HR.Data.Models;
 using HR.Pages;
 using HR.Services;
 using HR.Utilities;
@@ -40,6 +40,7 @@ namespace HR
                 OnPropertyChanged(nameof(IsAuth));
             }
         }
+        public Preferences Preferences { get; set; }
         public bool IsAuth => CurrentUser != null;
         public App()
         {
@@ -48,6 +49,7 @@ namespace HR
         public async void LogOut()
         {
             CurrentUser = null;
+            Preferences = null;
             var mainWindow = Application.Current.MainWindow as MainWindow;
             mainWindow.mainFrame.Navigate(new AuthPg());
             await Request.DeleteUidFileAsync(Data.Models.User.uidFilePath);
@@ -97,6 +99,7 @@ namespace HR
                 splash.Show(false); // show splash screen without auto closing (true to auto-close)
 
                 CurrentUser = await GetCurrentUser();
+                Preferences = await Request.GetPreferences(user.Id);
 
                 var mainWindow = new MainWindow();
                 // this.MainWindow = mainWindow; // Assign as main window
