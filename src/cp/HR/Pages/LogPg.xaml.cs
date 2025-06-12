@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HR.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static HR.Services.AppEventHelper;
 
 namespace HR.Pages
 {
@@ -23,6 +25,24 @@ namespace HR.Pages
         public LogPg()
         {
             InitializeComponent();
+            AppEventHelper.AppEvent +=  (sender, args) =>
+            {
+                MessageBox.Show($"App evt: {args.Message}: {args.Details}");
+            };
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            AppEventArgs evt = new AppEventArgs
+            {
+                Id = Guid.NewGuid(),
+                Timestamp = DateTime.Now,
+                Category = EventCategory.Service,
+                Type = EventType.Warning,
+                Message = "Тест генерации",
+                Details = "Детали генерации"
+            };
+            AppEventHelper.RaiseAppEvent(evt);
         }
     }
 }

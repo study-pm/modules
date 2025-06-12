@@ -31,6 +31,7 @@
             <StackPanel Visibility="{Binding Log, Converter={StaticResource BoolToVis}}">
                 <TextBlock>Группировка, поиск, фильтрация, редактирование, добавление, удаление</TextBlock>
             </StackPanel>
+            <Button Click="Button_Click">Raise App event</Button>
         </StackPanel>
     </Grid>
 </Page>
