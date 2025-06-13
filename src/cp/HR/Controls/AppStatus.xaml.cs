@@ -16,20 +16,22 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using HR.Services;
 using HR.Utilities;
+using static HR.Services.AppEventHelper;
 
 namespace HR.Controls
 {
     public class StatusToVisibilityConverter : IValueConverter
     {
-        public StatusType TargetStatus { get; set; } = StatusType.Success;
+        public EventType TargetStatus { get; set; } = EventType.Success;
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is StatusType status)
+            if (value is EventType status)
             {
-                StatusType target = TargetStatus;
-                if (parameter != null && Enum.TryParse(parameter.ToString(), out StatusType paramStatus))
+                EventType target = TargetStatus;
+                if (parameter != null && Enum.TryParse(parameter.ToString(), out EventType paramStatus))
                     target = paramStatus;
                 return status == target ? Visibility.Visible : Visibility.Collapsed;
             }
@@ -58,17 +60,16 @@ namespace HR.Controls
             }
         }
         public DateTime Timestamp { get; set; }
-        public StatusType _status;
-        public StatusType Status
+        public EventType _status;
+        public EventType Status
         {
             get => _status;
             set
             {
                 _status = value;
                 OnPropertyChanged(nameof(Status));
-                Timestamp = DateTime.Now;
                 OnPropertyChanged(nameof(Timestamp));
-                if (value == StatusType.Progress) StartAnimation();
+                if (value == EventType.Progress) StartAnimation();
                 else StopAnimation();
             }
         }
@@ -76,10 +77,11 @@ namespace HR.Controls
         {
             InitializeComponent();
             this.DataContext = this;
-            StatusInformer.StatusChanged += (sender, args) =>
+            AppEventHelper.AppEvent += (sender, args) =>
             {
                 Message = args.Message;
                 Status = args.Type;
+                Timestamp = args.Timestamp;
             };
         }
         private DispatcherTimer _animTimer;
