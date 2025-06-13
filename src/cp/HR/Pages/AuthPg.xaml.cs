@@ -228,7 +228,7 @@ namespace HR.Pages
             StatusInformer.ReportProgress("Проверка данных пользователя");
             App app = Application.Current as App;
             app.CurrentUser = await GetUser(Login, Password);
-            if (app.CurrentUser == null)
+            if (!app.IsAuth)
             {
                 IsInProgress = false;
                 return;
@@ -236,7 +236,10 @@ namespace HR.Pages
             // Read and apply user preferences
             Preferences preferences = await Services.Request.GetPreferences(app.CurrentUser.Id);
             app.Preferences = preferences;
+            // Manage user file
             if (preferences.IsStayLoggedIn) await Services.Request.SaveUidToFileAsync(app.CurrentUser.Id, Data.Models.User.uidFilePath);
+            // Manage logging
+            if (preferences.IsLogOn) App.Current.EventLogger = new Logger(app.CurrentUser.Id, preferences.LogCategories, preferences.LogTypes);
             IsInProgress = false;
             // @TODO: Go to Startup page
             if (app.IsAuth == true) MainWindow.frame.Navigate(new PreferencesPg());
