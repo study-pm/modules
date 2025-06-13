@@ -45,6 +45,7 @@ namespace HR.Services
             public DateTime Timestamp { get; set; } = DateTime.Now; // Gets or sets the timestamp when the event occurred.
             public EventCategory Category { get; set; }             // Gets or sets the category of the event.
             public EventType Type { get; set; }                     // Gets or sets the type of the event.
+            public string Name { get; set; }                        // Gets or sets the name for the event.
             public string Message { get; set; }                     // Gets or sets the main message or description of the event.
             public string Details { get; set; }                     // Gets or sets additional details about the event.
         }
