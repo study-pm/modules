@@ -27,11 +27,11 @@ namespace HR.Utilities
         /// <summary>
         /// List of event categories that this logger processes.
         /// </summary>
-        public HashSet<int> categories;
+        public IEnumerable<int> categories;
         /// <summary>
         /// List of event types that this logger processes.
         /// </summary>
-        public HashSet<int> types;
+        public IEnumerable<int> types;
 
         private bool _disposed = false; // Flag to prevent multiple calls to Dispose
         /// <summary>
@@ -41,7 +41,7 @@ namespace HR.Utilities
         /// <param name="uid">The unique user identifier used as the log file name.</param>
         /// <param name="categories">The event categories to filter.</param>
         /// <param name="types">The event types to filter.</param>
-        public Logger(int uid, HashSet<int> categories, HashSet<int> types)
+        public Logger(int uid, IEnumerable<int> categories, IEnumerable<int> types)
         {
             filePath = System.IO.Path.Combine(logsDir, uid + ".json");
             string logDirectory = System.IO.Path.GetDirectoryName(filePath);
