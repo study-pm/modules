@@ -52,6 +52,7 @@ namespace HR
         {
             CurrentUser = null;
             Preferences = null;
+            EventLogger?.Dispose();
             EventLogger = null;
             var mainWindow = Application.Current.MainWindow as MainWindow;
             mainWindow.mainFrame.Navigate(new AuthPg());
