@@ -104,7 +104,6 @@ namespace HR
                 if (IsAuth)
                 {
                     Preferences = await Request.GetPreferences(user.Id);
-                    Preferences.IsLogOn = true;
                     if (Preferences.IsLogOn) EventLogger = new Logger(CurrentUser.Id, Preferences.LogCategories, Preferences.LogTypes);
                 }
                 var mainWindow = new MainWindow();
