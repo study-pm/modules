@@ -32,6 +32,17 @@ namespace HR.Pages
         protected void OnPropertyChanged([CallerMemberName] string prop = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
 
+        private bool _isLogOn;
+        public bool IsLogOn
+        {
+            get => _isLogOn;
+            set
+            {
+                if (_isLogOn == value) return;
+                _isLogOn = value;
+                OnPropertyChanged();
+            }
+        }
         private bool _isStayLoggedIn;
         public bool IsStayLoggedIn
         {
