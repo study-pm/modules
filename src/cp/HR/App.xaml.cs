@@ -17,6 +17,7 @@ using HR.Data.Models;
 using HR.Pages;
 using HR.Services;
 using HR.Utilities;
+using static HR.Services.AppEventHelper;
 
 namespace HR
 {
@@ -55,7 +56,7 @@ namespace HR
             var mainWindow = Application.Current.MainWindow as MainWindow;
             mainWindow.mainFrame.Navigate(new AuthPg());
             await Request.DeleteUidFileAsync(Data.Models.User.uidFilePath);
-            StatusInformer.ReportInfo("Гостевой режим");
+            RaiseAppEvent(new AppEventArgs { Category = EventCategory.Data, Type = EventType.Info, Message = "Гостевой режим" });
         }
 
         protected override void OnStartup(StartupEventArgs e)
@@ -75,19 +76,18 @@ namespace HR
             }
             try
             {
-                StatusInformer.ReportProgress("Проверка файла пользователя");
                 int uid = int.Parse(File.ReadAllText(Data.Models.User.uidFilePath));
                 // Check for user with provided login existence
                 return await Request.ctx.Users.FirstAsync(x => x.Id == uid);
             }
             catch (FormatException exc)
             {
-                StatusInformer.ReportFailure($"Неверный формат данных файла пользователя: {exc.Message}");
+                Debug.WriteLine($"Invalid user file data format: {exc.Message}");
                 return null;
             }
             catch (Exception exc)
             {
-                StatusInformer.ReportFailure($"Отсутствует пользователь из файла пользователя: {exc.Message}");
+                Debug.WriteLine($"File data points to missing or invalid user: {exc.Message}");
                 return null;
             }
         }
@@ -112,9 +112,10 @@ namespace HR
                 mainWindow.Show();
 
                 splash.Close(TimeSpan.FromMilliseconds(200));
-                if (IsAuth) StatusInformer.ReportSuccess("Пользовательский режим");
-                else StatusInformer.ReportInfo("Гостевой режим");
-                // StatusInformer.ReportProgress("Загрузка данных...");
+                if (IsAuth)
+                    RaiseAppEvent(new AppEventArgs { Category = EventCategory.Data, Type = EventType.Success, Message = "Пользовательский режим" });
+                else
+                    RaiseAppEvent(new AppEventArgs { Category = EventCategory.Data, Type = EventType.Info, Message = "Гостевой режим" });
             }
             catch (Exception ex)
             {
