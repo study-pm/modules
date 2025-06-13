@@ -57,7 +57,13 @@ namespace HR
             var mainWindow = Application.Current.MainWindow as MainWindow;
             mainWindow.mainFrame.Navigate(new AuthPg());
             await Request.DeleteUidFileAsync(Data.Models.User.uidFilePath);
-            RaiseAppEvent(new AppEventArgs { Category = EventCategory.Auth, Type = EventType.Info, Message = "Выход из системы", Details = "Гостевой режим (завершение сеанса)" });
+            RaiseAppEvent(new AppEventArgs {
+                Category = EventCategory.Auth,
+                Type = EventType.Info,
+                Name = "Logout",
+                Message = "Выход из системы",
+                Details = "Гостевой режим (завершение сеанса)"
+            });
         }
 
         protected override void OnStartup(StartupEventArgs e)
@@ -112,7 +118,13 @@ namespace HR
                 mainWindow.Show();
 
                 splash.Close(TimeSpan.FromMilliseconds(200));
-                RaiseAppEvent(new AppEventArgs { Category = EventCategory.Auth, Type = EventType.Info, Message = "Запуск приложения", Details = IsAuth ? "Пользовательский режим (возобновление сеанса)" : "Гостевой режим (новый сеанс)" });
+                RaiseAppEvent(new AppEventArgs {
+                    Category = EventCategory.Auth,
+                    Type = EventType.Info,
+                    Name = "Startup",
+                    Message = "Запуск приложения",
+                    Details = IsAuth ? "Пользовательский режим (возобновление сеанса)" : "Гостевой режим (новый сеанс)" }
+                );
             }
             catch (Exception ex)
             {
