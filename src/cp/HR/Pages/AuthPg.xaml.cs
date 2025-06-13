@@ -21,6 +21,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static HR.Services.AppEventHelper;
 
 namespace HR.Pages
 {
@@ -240,6 +241,7 @@ namespace HR.Pages
             if (preferences.IsStayLoggedIn) await Services.Request.SaveUidToFileAsync(app.CurrentUser.Id, Data.Models.User.uidFilePath);
             // Manage logging
             if (preferences.IsLogOn) App.Current.EventLogger = new Logger(app.CurrentUser.Id, preferences.LogCategories, preferences.LogTypes);
+            RaiseAppEvent(new AppEventArgs { Category = EventCategory.Auth, Type = EventType.Info, Message = "Вход в систему", Details = "Пользовательский режим (новый сеанс)" });
             IsInProgress = false;
             // @TODO: Go to Startup page
             if (app.IsAuth == true) MainWindow.frame.Navigate(new PreferencesPg());
