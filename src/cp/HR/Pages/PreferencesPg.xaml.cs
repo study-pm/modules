@@ -1,5 +1,6 @@
 ﻿using HR.Controls;
 using HR.Data.Models;
+using HR.Models;
 using HR.Services;
 using HR.Utilities;
 using System;
@@ -19,29 +20,18 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml.Serialization;
+using static HR.Services.AppEventHelper;
 
 namespace HR.Pages
 {
-    public class PreferencesViewModel : INotifyPropertyChanged
+    [XmlRoot("Preferences")]
+    public class PreferencesModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string prop = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
-        internal Preferences dm;
-        public bool IsChanged => dm.IsStayLoggedIn != IsStayLoggedIn;
-        public bool IsEnabled => IsChanged && !IsInProgress;
-        private bool _isInProgress;
-        public bool IsInProgress
-        {
-            get => _isInProgress;
-            set
-            {
-                if (_isInProgress == value) return;
-                _isInProgress = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(IsEnabled));
-            }
-        }
+
         private bool _isStayLoggedIn;
         public bool IsStayLoggedIn
         {
@@ -51,30 +41,10 @@ namespace HR.Pages
                 if (_isStayLoggedIn == value) return;
                 _isStayLoggedIn = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(IsChanged));
-                OnPropertyChanged(nameof(IsEnabled));
             }
         }
-        public PreferencesViewModel()
-        {
-            IsStayLoggedIn = false;
-        }
-        public PreferencesViewModel(Preferences dataModel)
-        {
-            dm = dataModel;
-            IsStayLoggedIn = dm.IsStayLoggedIn;
-        }
-        public void Reset()
-        {
-            IsStayLoggedIn = dm.IsStayLoggedIn;
-        }
-        public void Set()
-        {
-            dm.IsStayLoggedIn = IsStayLoggedIn;
-            OnPropertyChanged(nameof(IsChanged));
-            OnPropertyChanged(nameof(IsEnabled));
-        }
     }
+
     /// <summary>
     /// Interaction logic for PreferencesPg.xaml
     /// </summary>
@@ -83,9 +53,17 @@ namespace HR.Pages
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string prop = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+
         private int uid = ((App)(Application.Current)).CurrentUser.Id;
-        private PreferencesViewModel _vM;
-        public PreferencesViewModel vm
+
+        private string prefsDir = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Preferences");
+        private string prefsPath;
+
+        public RelayCommand ResetCmd { get; }
+        public RelayCommand SubmitCmd { get; }
+
+        private ItemViewModel<Preferences, PreferencesModel> _vM;
+        public ItemViewModel<Preferences, PreferencesModel> vm
         {
             get => _vM;
             set
@@ -97,65 +75,41 @@ namespace HR.Pages
         public PreferencesPg()
         {
             InitializeComponent();
-            vm = new PreferencesViewModel();
+            prefsPath = System.IO.Path.Combine(prefsDir, uid.ToString() + ".xml");
+            vm = new ItemViewModel<Preferences, PreferencesModel>(App.Current.Preferences);
             DataContext = vm;
+
+            ResetCmd = new RelayCommand(
+                _ => vm.Reset(),
+                _ => vm.IsEnabled
+            );
+
+            SubmitCmd = new RelayCommand(
+                _ => Save(),
+                _ => vm.IsEnabled
+            );
         }
-        private async Task<PreferencesViewModel> GetPreferences()
+        private async void Save()
         {
             try
             {
-                vm.IsInProgress = true;
-                return new PreferencesViewModel(await Services.Request.GetPreferences(uid));
+                vm.IsProgress = true;
+                RaiseAppEvent(new AppEventArgs { Category = EventCategory.Data, Type = EventType.Progress, Message = "Сохранение предпочтений пользователя" });
+                await XmlHelper.SaveAsync(vm.Dm, prefsPath);
+                vm.Set();
+                RaiseAppEvent(new AppEventArgs { Category = EventCategory.Data, Type = EventType.Success, Message = "Предпочтения пользователя успешно сохранены" });
+                // Handle user authentication state file
+                if (vm.Dm.IsStayLoggedIn) await Services.Request.SaveUidToFileAsync(uid, Data.Models.User.uidFilePath);
+                else await Request.DeleteUidFileAsync(Data.Models.User.uidFilePath);
             }
             catch (Exception exc)
             {
-                StatusInformer.ReportFailure($"Ошибка извлечения предпочтений пользователя: ${exc.Message}");
-                return null;
+                RaiseAppEvent(new AppEventArgs { Category = EventCategory.Data, Type = EventType.Error, Message = "Ошибка сохранения предпочтений пользователя", Details = exc.Message });
             }
             finally
             {
-                vm.IsInProgress = false;
-                StatusInformer.ReportSuccess("Предпочтения пользователя успешно извлечены");
+                vm.IsProgress = false;
             }
-        }
-        private async Task SetPreferences()
-        {
-            try
-            {
-                vm.IsInProgress = true;
-                StatusInformer.ReportProgress("Сохранение предпочтений пользователя");
-                await vm.dm.SaveAsync();
-                StatusInformer.ReportSuccess("Предпочтения пользователя успешно сохранены");
-            }
-            catch (Exception exc)
-            {
-                StatusInformer.ReportFailure($"Ошибка сохранения предпочтений пользователя: ${exc.Message}");
-            }
-            finally
-            {
-                // Restore persisted data model
-                vm.dm = (await GetPreferences()).dm;
-                vm.IsInProgress = false;
-            }
-        }
-        private async void Page_Loaded(object sender, RoutedEventArgs e)
-        {
-            vm = await GetPreferences();
-            DataContext = vm;
-        }
-
-        private void ResetBtn_Click(object sender, RoutedEventArgs e)
-        {
-            vm.Reset();
-        }
-
-        private async void SubmitBtn_Click(object sender, RoutedEventArgs e)
-        {
-            vm.Set();
-            await SetPreferences();
-            // Handle user authentication state file
-            if (vm.IsStayLoggedIn) await Services.Request.SaveUidToFileAsync(uid, Data.Models.User.uidFilePath);
-            else await Request.DeleteUidFileAsync(Data.Models.User.uidFilePath);
         }
     }
 }

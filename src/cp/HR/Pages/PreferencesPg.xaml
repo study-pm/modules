@@ -9,7 +9,6 @@
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="PreferencesPg"
-      Loaded="Page_Loaded"
       >
     <Page.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
@@ -30,8 +29,8 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <CheckBox Content="Оставаться в системе"
-                              IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
-                              IsChecked="{Binding IsStayLoggedIn}"
+                              IsEnabled="{Binding IsProgress, Converter={StaticResource InvBoolConv}}"
+                              IsChecked="{Binding Dm.IsStayLoggedIn}"
                               />
                     <uc:Details Type="Question"
                                 ToolTip="Сохраняет состояние аутентификации между запусками приложения (автоматический вход)"
@@ -46,17 +45,15 @@
                 </Grid.ColumnDefinitions>
                 <Button x:Name="ResetBtn" Grid.Column="0" Content="Отменить" IsCancel="True"
                         Style="{StaticResource BlueBtn}"
-                        IsEnabled="{Binding IsEnabled}"
-                        Click="ResetBtn_Click"
+                        Command="{Binding ResetCmd, RelativeSource={RelativeSource AncestorType=Page}}"
                         />
                 <Button x:Name="SignInBtn" Grid.Column="2" IsDefault="True"
                         Style="{StaticResource GreenBtn}"
-                        IsEnabled="{Binding IsEnabled}"
-                        Click="SubmitBtn_Click"
+                        Command="{Binding SubmitCmd, RelativeSource={RelativeSource AncestorType=Page}}"
                         >
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Сохранить" Visibility="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}" />
-                        <uc:Dots Visibility="{Binding IsInProgress, Converter={StaticResource BoolToVis}}" />
+                        <TextBlock Text="Сохранить" Visibility="{Binding IsProgress, Converter={StaticResource InvBoolConv}}" />
+                        <uc:Dots Visibility="{Binding IsProgress, Converter={StaticResource BoolToVis}}" />
                     </StackPanel>
                 </Button>
             </Grid>
