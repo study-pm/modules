@@ -79,6 +79,7 @@
                         </EventTrigger>
                     </TextBlock.Triggers>
                 </TextBlock>
+                <TextBlock Text="{Binding Details}" FontWeight="Light" FontStretch="Condensed" Margin="5 0 0 0" />
             </WrapPanel>
         </StatusBar>
     </DockPanel>

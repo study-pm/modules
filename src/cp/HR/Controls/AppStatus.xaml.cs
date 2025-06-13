@@ -49,6 +49,17 @@ namespace HR.Controls
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string propertyName) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        private string _details;
+        public string Details
+        {
+            get => _details;
+            set
+            {
+                _details = value;
+                OnPropertyChanged(nameof(Details));
+            }
+        }
         public string _message;
         public string Message
         {
@@ -59,7 +70,16 @@ namespace HR.Controls
                 OnPropertyChanged(nameof(Message));
             }
         }
-        public DateTime Timestamp { get; set; }
+        private DateTime _timestamp;
+        public DateTime Timestamp
+        {
+            get => _timestamp;
+            set
+            {
+                _timestamp = value;
+                OnPropertyChanged(nameof(Timestamp));
+            }
+        }
         public EventType _status;
         public EventType Status
         {
@@ -79,6 +99,7 @@ namespace HR.Controls
             this.DataContext = this;
             AppEventHelper.AppEvent += (sender, args) =>
             {
+                Details = args.Details;
                 Message = args.Message;
                 Status = args.Type;
                 Timestamp = args.Timestamp;
