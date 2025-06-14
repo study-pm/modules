@@ -17,6 +17,7 @@
     <SolidColorBrush x:Key="GreenDarkBrush" Color="#669d1e" />
     <SolidColorBrush x:Key="GreenLightBrush" Color="#c3dda2" />
     <SolidColorBrush x:Key="GreenMediumBrush" Color="#82b43c" />
+    <SolidColorBrush x:Key="InfoBrush" Color="#21a0df" />
     <SolidColorBrush x:Key="magentaDarkBrush" Color="#e53582" />
     <SolidColorBrush x:Key="magentaNormalBrush" Color="#ef91bc" />
     <SolidColorBrush x:Key="magentaLightBrush" Color="#f3c2d9" />
