@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -17,26 +18,8 @@ namespace HR.Data.Models
         public static readonly string prefsFolder = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, basePath);
         public bool IsStayLoggedIn { get; set; }
         public bool IsLogOn { get; set; }
-        [XmlIgnore]
-        public HashSet<int> LogCategories { get; set; } = new HashSet<int> { 0, 1, 2, 3 };
-
-        [XmlArray("LogCategories")]
-        [XmlArrayItem("Category")]
-        public List<int> LogCategoriesSerializable
-        {
-            get => LogCategories.ToList();
-            set => LogCategories = new HashSet<int>(value ?? new List<int>());
-        }
-        [XmlIgnore]
-        public HashSet<int> LogTypes { get; set; } = new HashSet<int> { 1, 2, 3, 4, 5 };
-
-        [XmlArray("LogTypes")]
-        [XmlArrayItem("Type")]
-        public List<int> LogTypesSerializable
-        {
-            get => LogTypes.ToList();
-            set => LogTypes = new HashSet<int>(value ?? new List<int>());
-        }
+        public List<int> LogCategories { get; set; } = new List<int>();
+        public List<int> LogTypes { get; set; } = new List<int>();
 
         private static string GetFilePath(int uid) => System.IO.Path.Combine(prefsFolder, $"{uid.ToString()}.xml");
         public static async Task<Preferences> LoadAsync(int uid)
