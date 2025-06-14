@@ -279,7 +279,6 @@ namespace HR.Pages
             {
                 vm.IsProgress = true;
                 RaiseAppEvent(new AppEventArgs { Category = EventCategory.Data, Type = EventType.Progress, Message = "Сохранение предпочтений пользователя" });
-                MessageBox.Show(App.Current.Preferences.LogCategories.Count.ToString());
                 await XmlHelper.SaveAsync(vm.Preset(), prefsPath);
                 vm.Set();
                 RaiseAppEvent(new AppEventArgs { Category = EventCategory.Data, Type = EventType.Success, Message = "Предпочтения пользователя успешно сохранены" });
