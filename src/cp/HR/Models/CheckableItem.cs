@@ -15,6 +15,7 @@ namespace HR.Models
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
 
         public int Id { get; set; }
+        public string Name { get; set; }
         public string Title { get; set; }
 
         private bool _isChecked;
