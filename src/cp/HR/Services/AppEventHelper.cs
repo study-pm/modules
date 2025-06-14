@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using static HR.Services.AppEventHelper;
 
 namespace HR.Services
 {
@@ -59,5 +60,63 @@ namespace HR.Services
         /// </summary>
         /// <param name="evt">The event data to raise.</param>
         public static void RaiseAppEvent(AppEventArgs evt) => AppEvent?.Invoke(null, evt);
+    }
+    /// <summary>
+    /// Extensions for the <see cref="EventCategory"/> enumeration.
+    /// </summary>
+    public static class EventCategoryExtensions
+    {
+        /// <summary>
+        /// Returns the string representation of the event category in English.
+        /// </summary>
+        /// <param name="category">The event category.</param>
+        /// <returns>The English title of the event category.</returns>
+        public static string ToTitle(this EventCategory category)
+        {
+            switch (category)
+            {
+                case EventCategory.Auth:
+                    return "Аутентификация";
+                case EventCategory.Data:
+                    return "Данные";
+                case EventCategory.Navigation:
+                    return "Навигация";
+                case EventCategory.Service:
+                    return "Сервис";
+                default:
+                    return category.ToString();
+            }
+        }
+    }
+    /// <summary>
+    /// Extensions for the <see cref="AppEventHelper.EventType"/> enumeration.
+    /// </summary>
+    public static class EventTypeExtensions
+    {
+        /// <summary>
+        /// Returns the string representation of the event type in English.
+        /// </summary>
+        /// <param name="eventType">The event type.</param>
+        /// <returns>The English title of the event type.</returns>
+        public static string ToTitle(this AppEventHelper.EventType eventType)
+        {
+            switch (eventType)
+            {
+                case AppEventHelper.EventType.Progress:
+                    return "Прогресс";
+                case AppEventHelper.EventType.Success:
+                    return "Успех";
+                case AppEventHelper.EventType.Error:
+                    return "Ошибка";
+                case AppEventHelper.EventType.Info:
+                    return "Информация";
+                case AppEventHelper.EventType.Warning:
+                    return "Предупреждение";
+                case AppEventHelper.EventType.Fatal:
+                    return "Фатальная ошибка";
+                default:
+                    return eventType.ToString();
+            }
+        }
     }
 }
