@@ -11,6 +11,11 @@
       Title="LogPg">
     <Page.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <local:EventCategoryToPathConverter x:Key="CatToPathConv"/>
+        <local:EventCategoryToTitleConverter x:Key="CatToTitleConv"/>
+        <local:EventTypeToBrushConverter x:Key="TypeToBrushConv"/>
+        <local:EventTypeToPathConverter x:Key="TypeToPathConv"/>
+        <local:EventTypeToTitleConverter x:Key="TypeToTitleConv"/>
         <utils:CollectionToVisibilityConverter x:Key="ColToVisConv"/>
         <utils:InverseBoolToVisibilityConverter x:Key="InvBoolConv"/>
         <utils:NotNullToBoolConverter  x:Key="NotNullToBoolConverter"/>
@@ -40,6 +45,21 @@
                     Visibility="{Binding Log, Converter={StaticResource ColToVisConv}}"
                     LoadingRow="DataGrid_LoadingRow"
             >
+            <DataGrid.Resources>
+                <ContextMenu x:Key="ColumnHeaderContextMenu">
+                    <MenuItem Header="Номер" IsCheckable="True" Click="DataGridColumnHeaderMenuItem_Click" Tag="0"/>
+                    <MenuItem Header="Тип" IsCheckable="True" Click="DataGridColumnHeaderMenuItem_Click" Tag="1"/>
+                    <MenuItem Header="Дата/время" IsCheckable="True" Click="DataGridColumnHeaderMenuItem_Click" Tag="2"/>
+                    <MenuItem Header="Контекст" IsCheckable="True" Click="DataGridColumnHeaderMenuItem_Click" Tag="3"/>
+                    <MenuItem Header="Событие" IsCheckable="True" Click="DataGridColumnHeaderMenuItem_Click" Tag="4"/>
+                    <MenuItem Header="Подробности" IsCheckable="True" Click="DataGridColumnHeaderMenuItem_Click" Tag="5"/>
+                    <MenuItem Header="Категория" IsCheckable="True" Click="DataGridColumnHeaderMenuItem_Click" Tag="6"/>
+                </ContextMenu>
+                <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                    <Setter Property="ContextMenu" Value="{StaticResource ColumnHeaderContextMenu}"/>
+                    <EventSetter Event="ContextMenuOpening" Handler="DataGridColumnHeader_ContextMenuOpening"/>
+                </Style>
+            </DataGrid.Resources>
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="" Width="Auto">
                     <DataGridTemplateColumn.CellTemplate>
@@ -50,13 +70,37 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="" Width="30">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Viewbox Stretch="Fill" Width="15" Height="14" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5 2 0 0">
+                                <Path Data="{Binding Type, Converter={StaticResource TypeToPathConv}}"
+                                      Fill="{Binding Type, Converter={StaticResource TypeToBrushConv}}"
+                                      ToolTip="{Binding Type, Converter={StaticResource TypeToTitleConv}}"
+                                />
+                            </Viewbox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTextColumn Header="Дата/время" Width="Auto"
                                     ElementStyle="{StaticResource TextBlockWithEllipsisStyle}"
                                     Binding="{Binding Timestamp, StringFormat={}{0:dd MMMM yyyy HH:mm:ss}}"
                                     />
                 <DataGridTextColumn Header="Контекст" Binding="{Binding Scope}" Width="Auto"  ElementStyle="{StaticResource TextBlockWithEllipsisStyle}"/>
                 <DataGridTextColumn Header="Событие" Binding="{Binding Message}" Width="*"  ElementStyle="{StaticResource TextBlockWithEllipsisStyle}"/>
-                <DataGridTextColumn Header="Детали" Binding="{Binding Details}" Width="*"  ElementStyle="{StaticResource TextBlockWithEllipsisStyle}"/>
+                <DataGridTextColumn Header="Подробности" Binding="{Binding Details}" Width="*"  ElementStyle="{StaticResource TextBlockWithEllipsisStyle}"/>
+                <DataGridTemplateColumn Header="" Width="30">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Viewbox Stretch="Fill" Width="12" Height="12" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5 2 0 0">
+                                <Path Data="{Binding Category, Converter={StaticResource CatToPathConv}}"
+                                      Fill="Gray"
+                                      ToolTip="{Binding Category, Converter={StaticResource CatToTitleConv}}"
+                                      />
+                            </Viewbox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
