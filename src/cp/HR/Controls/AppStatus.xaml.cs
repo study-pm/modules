@@ -60,6 +60,16 @@ namespace HR.Controls
                 OnPropertyChanged(nameof(Details));
             }
         }
+        public string _scope;
+        public string Scope
+        {
+            get => _scope;
+            set
+            {
+                _scope = value;
+                OnPropertyChanged(nameof(Scope));
+            }
+        }
         public string _message;
         public string Message
         {
@@ -101,6 +111,7 @@ namespace HR.Controls
             {
                 Details = args.Details;
                 Message = args.Message;
+                Scope = args.Scope;
                 Status = args.Type;
                 Timestamp = args.Timestamp;
             };
