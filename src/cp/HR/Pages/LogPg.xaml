@@ -19,9 +19,11 @@
         <utils:CollectionToVisibilityConverter x:Key="ColToVisConv"/>
         <utils:InverseBoolToVisibilityConverter x:Key="InvBoolConv"/>
         <utils:NotNullToBoolConverter  x:Key="NotNullToBoolConverter"/>
+        <utils:StringToVisibilityConverter  x:Key="StrToVisConv"/>
     </Page.Resources>
     <Grid Margin="30">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
@@ -33,18 +35,54 @@
             <TextBlock Style="{StaticResource NoData}" Visibility="{Binding Log, Converter={StaticResource ColToVisConv}, ConverterParameter=False}">
                 Информация отсутствует
             </TextBlock>
-            <StackPanel Visibility="{Binding Log, Converter={StaticResource BoolToVis}}">
+            <StackPanel Visibility="{Binding DataCollection, Converter={StaticResource BoolToVis}}">
                 <TextBlock>Группировка, поиск, фильтрация, редактирование, добавление, удаление</TextBlock>
             </StackPanel>
         </StackPanel>
-        <DataGrid   x:Name="dataGrid" Grid.Row="1" IsReadOnly="True"
+        <StackPanel Grid.Row="1"
+                    Visibility="{Binding DataCollection, Converter={StaticResource ColToVisConv}}"
+                    >
+            <DockPanel Margin="0 10">
+                <WrapPanel DockPanel.Dock="Right" VerticalAlignment="Center">
+                    <TextBlock VerticalAlignment="Center" Margin="10 0" FontFamily="{StaticResource Roboto}">
+                            <Run>Найдено записей:</Run>
+                            <Bold><Run Text="{Binding FilteredCount, Mode=OneWay}"></Run></Bold>
+                    </TextBlock>
+                </WrapPanel>
+                <WrapPanel VerticalAlignment="Center">
+                    <Grid>
+                        <TextBox Width="200" Padding="5,0,25,0"
+                                 Style="{StaticResource TextBoxMini}"
+                                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                                 />
+                        <Button Style="{StaticResource ClearBtn}" IsCancel="True"
+                                Visibility="{Binding SearchText, Converter={StaticResource StrToVisConv}}"
+                                Command="{Binding ResetSearchCmd}"
+                    />
+                    </Grid>
+                    <ComboBox Width="105" VerticalContentAlignment="Center" Margin="2 0"
+                              ItemsSource="{Binding FilterValues}"
+                              SelectedItem="{Binding SelectedFilter, Mode=TwoWay}"
+                              DisplayMemberPath="Title"
+                              />
+                    <Button Margin="0" Content="Найти" IsDefault="True" ToolTip="Поиск"
+                            Style="{StaticResource ButtonMini}" Background="{StaticResource BlueBrush}"
+                            Command="{Binding FilterCmd}"
+                            />
+                </WrapPanel>
+            </DockPanel>
+        </StackPanel>
+        <DataGrid   x:Name="dataGrid" Grid.Row="2" IsReadOnly="True"
                     AutoGenerateColumns="False" ColumnWidth="*" AlternationCount="2"
                     CanUserAddRows="False" CanUserDeleteRows="False"
                     HeadersVisibility="Column" VerticalScrollBarVisibility="Auto"
-                    ItemsSource="{Binding Log}"
-                    Visibility="{Binding Log, Converter={StaticResource ColToVisConv}}"
+                    ItemsSource="{Binding DataCollection}"
+                    Visibility="{Binding DataCollection, Converter={StaticResource ColToVisConv}}"
                     LoadingRow="DataGrid_LoadingRow"
-            >
+                    PreviewKeyDown="DataGrid_PreviewKeyDown"
+                    PreviewMouseLeftButtonDown="DataGrid_PreviewMouseLeftButtonDown"
+                    PreviewMouseRightButtonDown="DataGrid_PreviewMouseRightButtonDown"
+                    >
             <DataGrid.Resources>
                 <ContextMenu x:Key="ColumnHeaderContextMenu">
                     <MenuItem Header="Номер" IsCheckable="True" Click="DataGridColumnHeaderMenuItem_Click" Tag="0"/>
@@ -102,6 +140,102 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
+            <DataGrid.ContextMenu>
+                <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                    <MenuItem   Header="Фильтровать" InputGestureText="Ctrl+F"
+                                Command="{Binding FilterCmd}"
+                                CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                >
+                        <MenuItem.Icon>
+                            <Viewbox Height="14" Width="14">
+                                <Canvas Height="496" Width="512">
+                                    <Path Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource FilterSolidV6Path}">
+                                        <Path.RenderTransform>
+                                            <TranslateTransform X="0" Y="0"/>
+                                        </Path.RenderTransform>
+                                    </Path>
+                                </Canvas>
+                            </Viewbox>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem   Header="Сбросить фильтр" InputGestureText="Esc"
+                                Command="{Binding ResetFilterCmd}"
+                                CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                >
+                        <MenuItem.Icon>
+                            <Viewbox Height="14" Width="14">
+                                <Canvas Height="496" Width="512">
+                                    <Path Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource FilterCircleXmarkSolidPath}">
+                                        <Path.RenderTransform>
+                                            <TranslateTransform X="0" Y="0"/>
+                                        </Path.RenderTransform>
+                                    </Path>
+                                </Canvas>
+                            </Viewbox>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Удалить" InputGestureText="Ctrl+Del"
+                              Command="{Binding DeleteCmd}"
+                              CommandParameter="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                              >
+                        <MenuItem.Icon>
+                            <Viewbox Height="14" Width="14">
+                                <Canvas Height="496" Width="512">
+                                    <Path Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource TrashSolidPath}">
+                                        <Path.RenderTransform>
+                                            <TranslateTransform X="30" Y="0"/>
+                                        </Path.RenderTransform>
+                                    </Path>
+                                </Canvas>
+                            </Viewbox>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <Separator/>
+                    <MenuItem Header="Экспорт списка">
+                        <MenuItem.Icon>
+                            <Viewbox Height="14" Width="14">
+                                <Canvas Height="496" Width="512">
+                                    <Path Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource FileExportSolidPath}">
+                                        <Path.RenderTransform>
+                                            <TranslateTransform X="60" Y="0"/>
+                                        </Path.RenderTransform>
+                                    </Path>
+                                </Canvas>
+                            </Viewbox>
+                        </MenuItem.Icon>
+                        <MenuItem Header="Экспорт в CSV" InputGestureText="Ctrl+S"
+                                  Command="{Binding ExportCmd}" CommandParameter="CSV"
+                                  >
+                            <MenuItem.Icon>
+                                <Viewbox Height="14" Width="14">
+                                    <Canvas Height="496" Width="512">
+                                        <Path Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource FileCsvSolidPath}">
+                                            <Path.RenderTransform>
+                                                <TranslateTransform X="0" Y="0"/>
+                                            </Path.RenderTransform>
+                                        </Path>
+                                    </Canvas>
+                                </Viewbox>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Экспорт в PDF" InputGestureText="Ctrl+P"
+                                  Command="{Binding ExportCmd}" CommandParameter="PDF"
+                                  >
+                            <MenuItem.Icon>
+                                <Viewbox Height="14" Width="14">
+                                    <Canvas Height="496" Width="512">
+                                        <Path Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource FilePdfSolidPath}">
+                                            <Path.RenderTransform>
+                                                <TranslateTransform X="0" Y="0"/>
+                                            </Path.RenderTransform>
+                                        </Path>
+                                    </Canvas>
+                                </Viewbox>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </MenuItem>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
         </DataGrid>
     </Grid>
 </Page>
