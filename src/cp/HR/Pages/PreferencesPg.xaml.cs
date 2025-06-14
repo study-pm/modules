@@ -137,7 +137,8 @@ namespace HR.Pages
                     .Select(c => new CheckableItem
                     {
                         Id = (int)c,
-                        Title = c.ToString(),
+                        Name = c.ToString(),
+                        Title = c.ToTitle(),
                         IsChecked = false
                     })
             );
@@ -148,7 +149,8 @@ namespace HR.Pages
                     .Select(c => new CheckableItem
                     {
                         Id = (int)c,
-                        Title = c.ToString(),
+                        Name = c.ToString(),
+                        Title = c.ToTitle(),
                         IsChecked = false
                     })
             );
