@@ -38,9 +38,10 @@
                     HeadersVisibility="Column" VerticalScrollBarVisibility="Auto"
                     ItemsSource="{Binding Log}"
                     Visibility="{Binding Log, Converter={StaticResource ColToVisConv}}"
+                    LoadingRow="DataGrid_LoadingRow"
             >
             <DataGrid.Columns>
-                <DataGridTemplateColumn Header="" Width="40">
+                <DataGridTemplateColumn Header="" Width="Auto">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock HorizontalAlignment="Center"
@@ -49,10 +50,11 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Дата/время" Width="150"
+                <DataGridTextColumn Header="Дата/время" Width="Auto"
                                     ElementStyle="{StaticResource TextBlockWithEllipsisStyle}"
                                     Binding="{Binding Timestamp, StringFormat={}{0:dd MMMM yyyy HH:mm:ss}}"
                                     />
+                <DataGridTextColumn Header="Контекст" Binding="{Binding Scope}" Width="Auto"  ElementStyle="{StaticResource TextBlockWithEllipsisStyle}"/>
                 <DataGridTextColumn Header="Событие" Binding="{Binding Message}" Width="*"  ElementStyle="{StaticResource TextBlockWithEllipsisStyle}"/>
                 <DataGridTextColumn Header="Детали" Binding="{Binding Details}" Width="*"  ElementStyle="{StaticResource TextBlockWithEllipsisStyle}"/>
             </DataGrid.Columns>

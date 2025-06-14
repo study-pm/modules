@@ -61,6 +61,11 @@ namespace HR.Pages
             Loaded += Page_Loaded;
         }
 
+        private void DataGrid_LoadingRow(object sender, DataGridRowEventArgs e)
+        {
+            // Numbering from 1
+            e.Row.Header = (e.Row.GetIndex() + 1).ToString();
+        }
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             Log = new ObservableCollection<AppEventArgs>(await Request.GetLog(App.Current.CurrentUser.Id));
