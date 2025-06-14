@@ -56,14 +56,26 @@ namespace HR
             EventLogger = null;
             var mainWindow = Application.Current.MainWindow as MainWindow;
             mainWindow.mainFrame.Navigate(new AuthPg());
-            await Request.DeleteUidFileAsync(Data.Models.User.uidFilePath);
-            RaiseAppEvent(new AppEventArgs {
-                Category = EventCategory.Auth,
-                Type = EventType.Info,
-                Name = "Logout",
-                Message = "Выход из системы",
-                Details = "Гостевой режим (завершение сеанса)"
-            });
+
+            var (cat, name, scope) = (EventCategory.Auth, "Logout", "Приложение");
+            try
+            {
+                await Request.DeleteUidFileAsync(Data.Models.User.uidFilePath);
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Scope = scope, Type = EventType.Info,
+                    Message = "Завершение сеанса", Details = "Гостевой режим"
+                });
+            }
+            catch (Exception exc)
+            {
+                Debug.WriteLine(exc.Message, name);
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Scope = scope, Type = EventType.Error,
+                    Message = "Ошибка завершениея сеанса", Details = exc.Message
+                });
+            }
         }
 
         protected override void OnStartup(StartupEventArgs e)
@@ -100,6 +112,7 @@ namespace HR
         }
         private async void Application_Startup(object sender, StartupEventArgs e)
         {
+            var (cat, name, scope) = (EventCategory.Auth, "Startup", "Запуск приложения");
             try
             {
                 //var splash = new SplashWindow(); // Custom splash window
@@ -108,6 +121,7 @@ namespace HR
                 splash.Show(false); // show splash screen without auto closing (true to auto-close)
 
                 CurrentUser = await GetCurrentUser();
+                // Handle preferences
                 if (IsAuth)
                 {
                     Preferences = await Request.GetPreferences(user.Id);
@@ -118,17 +132,23 @@ namespace HR
                 mainWindow.Show();
 
                 splash.Close(TimeSpan.FromMilliseconds(200));
-                RaiseAppEvent(new AppEventArgs {
-                    Category = EventCategory.Auth,
-                    Type = EventType.Info,
-                    Name = "Startup",
-                    Message = "Запуск приложения",
-                    Details = IsAuth ? "Пользовательский режим (возобновление сеанса)" : "Гостевой режим (новый сеанс)" }
-                );
+
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Scope = scope, Type = EventType.Info,
+                    Message = IsAuth ? "Возобновление сеанса" : "Новый сеанс",
+                    Details = IsAuth ? "Пользовательский режим" : "Гостевой режим"
+                });
             }
-            catch (Exception ex)
+            catch (Exception exc)
             {
-                Debug.WriteLine(ex.ToString());
+                Debug.WriteLine(exc.Message, name);
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Scope = scope, Type = EventType.Error,
+                    Message = "Ошибка загрузки данных", Details = exc.Message
+                });
+
                 Environment.Exit(1);
             }
         }
