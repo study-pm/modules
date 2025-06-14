@@ -25,6 +25,28 @@ using static HR.Services.AppEventHelper;
 
 namespace HR.Pages
 {
+    public class CategoryItem : INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string prop = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+
+        public int Id { get; set; }
+        public string Title { get; set; }
+
+        private bool _isChecked;
+        public bool IsChecked
+        {
+            get => _isChecked;
+            set
+            {
+                if (_isChecked == value) return;
+                _isChecked = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
     [XmlRoot("Preferences")]
     public class PreferencesModel : INotifyPropertyChanged
     {
@@ -52,6 +74,88 @@ namespace HR.Pages
                 if (_isStayLoggedIn == value) return;
                 _isStayLoggedIn = value;
                 OnPropertyChanged();
+            }
+        }
+
+        private ObservableCollection<int> _logCategories;
+        public ObservableCollection<int> LogCategories
+        {
+            get => _logCategories;
+            set
+            {
+                if (_logCategories == value) return;
+                _logCategories = value;
+                OnPropertyChanged();
+            }
+        }
+        private ObservableCollection<CategoryItem> _categories;
+        public ObservableCollection<CategoryItem> Categories
+        {
+            get => _categories;
+            set
+            {
+                if (_categories == value) return;
+                // Отписываемся от старых элементов, если нужно
+                if (_categories != null)
+                {
+                    foreach (var item in _categories)
+                        item.PropertyChanged -= CategoryItem_PropertyChanged;
+                }
+
+                _categories = value;
+
+                // Подписываемся на новые элементы
+                if (_categories != null)
+                {
+                    foreach (var item in _categories)
+                        item.PropertyChanged += CategoryItem_PropertyChanged;
+                }
+                OnPropertyChanged();
+            }
+        }
+        public PreferencesModel()
+        {
+            // Инициализируем Categories и подписываемся на события
+            Categories = new ObservableCollection<CategoryItem>(
+                Enum.GetValues(typeof(AppEventHelper.EventCategory))
+                    .Cast<AppEventHelper.EventCategory>()
+                    .Select(c => new CategoryItem
+                    {
+                        Id = (int)c,
+                        Title = c.ToString(),
+                        IsChecked = false
+                    })
+            );
+        }
+        private void CategoryItem_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(CategoryItem.IsChecked))
+            {
+                var item = sender as CategoryItem;
+                if (item == null) return;
+
+                if (item.IsChecked)
+                {
+                    if (!LogCategories.Contains(item.Id))
+                        LogCategories.Add(item.Id);
+                }
+                else
+                {
+                    if (LogCategories.Contains(item.Id))
+                        LogCategories.Remove(item.Id);
+                }
+            }
+        }
+        public void SyncCheckedCategories()
+        {
+            if (Categories == null || LogCategories == null)
+                return;
+
+            var selectedIds = LogCategories.ToHashSet();
+
+            foreach (var categoryItem in Categories)
+            {
+                categoryItem.IsChecked = selectedIds.Contains(categoryItem.Id);
             }
         }
     }
@@ -89,9 +193,13 @@ namespace HR.Pages
             prefsPath = System.IO.Path.Combine(prefsDir, uid.ToString() + ".xml");
             vm = new ItemViewModel<Preferences, PreferencesModel>(App.Current.Preferences);
             DataContext = vm;
+            vm.Dm.SyncCheckedCategories();
 
             ResetCmd = new RelayCommand(
-                _ => vm.Reset(),
+                _ => {
+                        vm.Reset();
+                        vm.Dm.SyncCheckedCategories();
+                    },
                 _ => vm.IsEnabled
             );
 
@@ -106,7 +214,8 @@ namespace HR.Pages
             {
                 vm.IsProgress = true;
                 RaiseAppEvent(new AppEventArgs { Category = EventCategory.Data, Type = EventType.Progress, Message = "Сохранение предпочтений пользователя" });
-                await XmlHelper.SaveAsync(vm.Dm, prefsPath);
+                MessageBox.Show(App.Current.Preferences.LogCategories.Count.ToString());
+                await XmlHelper.SaveAsync(vm.Preset(), prefsPath);
                 vm.Set();
                 RaiseAppEvent(new AppEventArgs { Category = EventCategory.Data, Type = EventType.Success, Message = "Предпочтения пользователя успешно сохранены" });
                 // Handle user authentication state file
