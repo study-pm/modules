@@ -211,7 +211,7 @@ namespace HR.Services
                 }
                 if (prefs.LogTypes == null || prefs.LogTypes.Count == 0)
                 {
-                    prefs.LogTypes = new List<int> { 1, 2, 3, 4, 5 };
+                    prefs.LogTypes = new List<int> { 1, 2, 3, 4 };
                 }
                 return prefs;
             }

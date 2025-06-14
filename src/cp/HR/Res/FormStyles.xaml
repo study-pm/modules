@@ -84,7 +84,7 @@
         </Style.Triggers>
     </Style>
     <Style x:Key="GroupCheck" TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
-        <Setter Property="Margin" Value="0 0 5 0" />
+        <Setter Property="Margin" Value="5 0 5 5" />
         <Style.Triggers>
             <Trigger Property="IsChecked" Value="True">
                 <Setter Property="FontWeight" Value="Normal" />

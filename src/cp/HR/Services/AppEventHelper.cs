@@ -35,7 +35,6 @@ namespace HR.Services
             Error = 2,      // Event indicating an error occurred.
             Info = 3,       // Informational event.
             Warning = 4,    // Event indicating a warning condition.
-            Fatal = 5,      // Event indicating a fatal error or critical failure.
         }
         /// <summary>
         /// Provides data for application events, including identification, timing, classification, and descriptive messages.
@@ -112,8 +111,6 @@ namespace HR.Services
                     return "Информация";
                 case AppEventHelper.EventType.Warning:
                     return "Предупреждение";
-                case AppEventHelper.EventType.Fatal:
-                    return "Фатальная ошибка";
                 default:
                     return eventType.ToString();
             }

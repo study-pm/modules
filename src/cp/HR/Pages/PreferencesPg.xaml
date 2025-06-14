@@ -60,7 +60,11 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <CheckBox Style="{StaticResource GroupCheck}" Content="{Binding Title}" IsChecked="{Binding IsChecked, Mode=TwoWay}" />
+                                <CheckBox Style="{StaticResource GroupCheck}"
+                                          Content="{Binding Title}"
+                                          IsChecked="{Binding IsChecked, Mode=TwoWay}"
+                                          IsEnabled="{Binding DataContext.Dm.IsLogOn, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                          />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
@@ -75,7 +79,11 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <CheckBox Style="{StaticResource GroupCheck}" Content="{Binding Title}" IsChecked="{Binding IsChecked, Mode=TwoWay}" />
+                                <CheckBox Style="{StaticResource GroupCheck}"
+                                          Content="{Binding Title}"
+                                          IsChecked="{Binding IsChecked, Mode=TwoWay}"
+                                          IsEnabled="{Binding DataContext.Dm.IsLogOn, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                          />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
