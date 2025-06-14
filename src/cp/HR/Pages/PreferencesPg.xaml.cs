@@ -25,28 +25,6 @@ using static HR.Services.AppEventHelper;
 
 namespace HR.Pages
 {
-    public class CategoryItem : INotifyPropertyChanged
-    {
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string prop = null)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
-
-        public int Id { get; set; }
-        public string Title { get; set; }
-
-        private bool _isChecked;
-        public bool IsChecked
-        {
-            get => _isChecked;
-            set
-            {
-                if (_isChecked == value) return;
-                _isChecked = value;
-                OnPropertyChanged();
-            }
-        }
-    }
-
     [XmlRoot("Preferences")]
     public class PreferencesModel : INotifyPropertyChanged
     {
@@ -88,8 +66,8 @@ namespace HR.Pages
                 OnPropertyChanged();
             }
         }
-        private ObservableCollection<CategoryItem> _categories;
-        public ObservableCollection<CategoryItem> Categories
+        private ObservableCollection<CheckableItem> _categories;
+        public ObservableCollection<CheckableItem> Categories
         {
             get => _categories;
             set
@@ -116,10 +94,10 @@ namespace HR.Pages
         public PreferencesModel()
         {
             // Инициализируем Categories и подписываемся на события
-            Categories = new ObservableCollection<CategoryItem>(
+            Categories = new ObservableCollection<CheckableItem>(
                 Enum.GetValues(typeof(AppEventHelper.EventCategory))
                     .Cast<AppEventHelper.EventCategory>()
-                    .Select(c => new CategoryItem
+                    .Select(c => new CheckableItem
                     {
                         Id = (int)c,
                         Title = c.ToString(),
@@ -129,9 +107,9 @@ namespace HR.Pages
         }
         private void CategoryItem_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(CategoryItem.IsChecked))
+            if (e.PropertyName == nameof(CheckableItem.IsChecked))
             {
-                var item = sender as CategoryItem;
+                var item = sender as CheckableItem;
                 if (item == null) return;
 
                 if (item.IsChecked)
