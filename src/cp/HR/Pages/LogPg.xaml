@@ -26,7 +26,7 @@
                 Данный раздел содержит информацию о наиболее важных пользовательских событиях.
             </TextBlock>
             <TextBlock Style="{StaticResource NoData}" Visibility="{Binding Log, Converter={StaticResource ColToVisConv}, ConverterParameter=False}">
-            Информация отсутствует
+                Информация отсутствует
             </TextBlock>
             <StackPanel Visibility="{Binding Log, Converter={StaticResource BoolToVis}}">
                 <TextBlock>Группировка, поиск, фильтрация, редактирование, добавление, удаление</TextBlock>
