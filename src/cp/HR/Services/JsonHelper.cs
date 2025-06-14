@@ -105,6 +105,17 @@ namespace HR.Services
             string json = System.IO.File.ReadAllText(filePath);
             return JsonConvert.DeserializeObject<List<T>>(json, GetSettings()) ?? new List<T>();
         }
+        public static Task<List<T>> LoadCollectionAsync<T>(string filePath)
+        {
+            if (!System.IO.File.Exists(filePath))
+                return Task.FromResult(new List<T>());
+
+            return Task.Run(() =>
+            {
+                string json = System.IO.File.ReadAllText(filePath);
+                return JsonConvert.DeserializeObject<List<T>>(json, GetSettings()) ?? new List<T>();
+            });
+        }
         /// <summary>
         /// Saves a collection of items to a JSON file with indentation formatting.
         /// </summary>

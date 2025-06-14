@@ -31,7 +31,31 @@
             <StackPanel Visibility="{Binding Log, Converter={StaticResource BoolToVis}}">
                 <TextBlock>Группировка, поиск, фильтрация, редактирование, добавление, удаление</TextBlock>
             </StackPanel>
-            <Button Click="Button_Click">Raise App event</Button>
         </StackPanel>
+        <DataGrid   x:Name="dataGrid" Grid.Row="1" IsReadOnly="True"
+                    AutoGenerateColumns="False" ColumnWidth="*" AlternationCount="2"
+                    CanUserAddRows="False" CanUserDeleteRows="False"
+                    HeadersVisibility="Column" VerticalScrollBarVisibility="Auto"
+                    ItemsSource="{Binding Log}"
+                    Visibility="{Binding Log, Converter={StaticResource ColToVisConv}}"
+            >
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="" Width="40">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock HorizontalAlignment="Center"
+                                       Text="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=Header}"
+                                       />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Дата/время" Width="150"
+                                    ElementStyle="{StaticResource TextBlockWithEllipsisStyle}"
+                                    Binding="{Binding Timestamp, StringFormat={}{0:dd MMMM yyyy HH:mm:ss}}"
+                                    />
+                <DataGridTextColumn Header="Событие" Binding="{Binding Message}" Width="*"  ElementStyle="{StaticResource TextBlockWithEllipsisStyle}"/>
+                <DataGridTextColumn Header="Детали" Binding="{Binding Details}" Width="*"  ElementStyle="{StaticResource TextBlockWithEllipsisStyle}"/>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </Page>

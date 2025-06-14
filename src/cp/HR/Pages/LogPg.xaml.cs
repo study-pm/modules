@@ -1,7 +1,12 @@
-﻿using HR.Services;
+﻿using HR.Data.Models;
+using HR.Services;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,27 +25,45 @@ namespace HR.Pages
     /// <summary>
     /// Interaction logic for LogPg.xaml
     /// </summary>
-    public partial class LogPg : Page
+    public partial class LogPg : Page, INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string prop = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+
+        private bool _isProgress;
+        public bool IsProgress
+        {
+            get => _isProgress;
+            set
+            {
+                if (_isProgress == value) return;
+                _isProgress = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private ObservableCollection<AppEventArgs> _log;
+        public ObservableCollection<AppEventArgs> Log
+        {
+            get => _log;
+            set
+            {
+                if (_log == value) return;
+                _log = value;
+                OnPropertyChanged();
+            }
+        }
         public LogPg()
         {
             InitializeComponent();
-            AppEventHelper.AppEvent +=  (sender, args) =>
-            {
-                MessageBox.Show($"App evt: {args.Message}: {args.Details}");
-            };
+            DataContext = this;
+            Loaded += Page_Loaded;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            AppEventArgs evt = new AppEventArgs
-            {
-                Category = EventCategory.Service,
-                Type = EventType.Warning,
-                Message = "Тест генерации",
-                Details = "Детали генерации"
-            };
-            AppEventHelper.RaiseAppEvent(evt);
+            Log = new ObservableCollection<AppEventArgs>(await Request.GetLog(App.Current.CurrentUser.Id));
         }
     }
 }

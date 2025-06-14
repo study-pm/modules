@@ -5,12 +5,14 @@ using System.Configuration;
 using System.Data;
 using System.Data.Entity;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using HR.Data.Models;
@@ -47,6 +49,14 @@ namespace HR
         public App()
         {
             LogOutCommand = new RelayCommand(_ => LogOut());
+            // Culture setup
+            var culture = new CultureInfo("ru-RU");
+            CultureInfo.DefaultThreadCurrentCulture = culture;
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
+            FrameworkElement.LanguageProperty.OverrideMetadata(
+                typeof(FrameworkElement),
+                new FrameworkPropertyMetadata(
+                    XmlLanguage.GetLanguage(culture.IetfLanguageTag)));
         }
         public async void LogOut()
         {

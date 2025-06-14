@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Xml;
+using static HR.Services.AppEventHelper;
 
 namespace HR.Services
 {
@@ -20,6 +21,9 @@ namespace HR.Services
     {
         public static HREntities ctx = new HREntities();
         private static string basePath = "Data/Sources/";
+        private static string logsPath = "Logs";
+        public static string GetLocalDirPath(string dirName) => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, dirName);
+        public static string GetLocalFilePath(int uid, string dirName) => Path.Combine(GetLocalDirPath(dirName), $"{uid.ToString()}.json");
         public static async Task<List<ClassGuidance>> GetClassGuidance()
         {
             try
@@ -105,6 +109,33 @@ namespace HR.Services
                 Debug.WriteLine(exc.Message);
                 StatusInformer.ReportFailure($"Ошибка извлечения данных о сотрудниках: {exc.Message}");
                 return new List<Employee>();  // Возврат значения при ошибке
+            }
+        }
+
+        public static async Task<List<AppEventArgs>> GetLog(int uid)
+        {
+            var (cat, name, scope) = (EventCategory.Data, "Extraction", "Журнал пользователя");
+            try
+            {
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Scope = scope, Type = EventType.Progress, Message = "Загрузка данных"
+                });
+                List<AppEventArgs> events = await JsonHelper.LoadCollectionAsync<AppEventArgs>(GetLocalFilePath(uid, logsPath));
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Scope = scope, Type = EventType.Success, Message = "Данные успешно загружены"
+                });
+                return events;
+            }
+            catch (Exception exc)
+            {
+                Debug.WriteLine(exc.Message, name);
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Scope = scope, Type = EventType.Error, Message = "Ошибка загрузки данных", Details = exc.Message
+                });
+                return new List<AppEventArgs>();
             }
         }
         public static async Task<List<HR.Data.Models.User>> GetUsers(bool isNewCtx = false)
