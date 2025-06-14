@@ -73,7 +73,7 @@ namespace HR.Pages
             set
             {
                 if (_categories == value) return;
-                // Отписываемся от старых элементов, если нужно
+                // Unsubscribe from stale items, if any
                 if (_categories != null)
                 {
                     foreach (var item in _categories)
@@ -82,7 +82,7 @@ namespace HR.Pages
 
                 _categories = value;
 
-                // Подписываемся на новые элементы
+                // Subscribe to new items
                 if (_categories != null)
                 {
                     foreach (var item in _categories)
@@ -91,12 +91,60 @@ namespace HR.Pages
                 OnPropertyChanged();
             }
         }
+
+        private ObservableCollection<int> _logTypes;
+        public ObservableCollection<int> LogTypes
+        {
+            get => _logTypes;
+            set
+            {
+                if (_logTypes == value) return;
+                _logTypes = value;
+                OnPropertyChanged();
+            }
+        }
+        private ObservableCollection<CheckableItem> _types;
+        public ObservableCollection<CheckableItem> Types
+        {
+            get => _types;
+            set
+            {
+                if (_types == value) return;
+                // Unsubscribe from stale items, if any
+                if (_types != null)
+                {
+                    foreach (var item in _types)
+                        item.PropertyChanged -= TypeItem_PropertyChanged;
+                }
+
+                _types = value;
+
+                // Subscribe to new items
+                if (_types != null)
+                {
+                    foreach (var item in _types)
+                        item.PropertyChanged += TypeItem_PropertyChanged;
+                }
+                OnPropertyChanged();
+            }
+        }
         public PreferencesModel()
         {
-            // Инициализируем Categories и подписываемся на события
+            // Initialize Categories, add event subscribers
             Categories = new ObservableCollection<CheckableItem>(
                 Enum.GetValues(typeof(AppEventHelper.EventCategory))
                     .Cast<AppEventHelper.EventCategory>()
+                    .Select(c => new CheckableItem
+                    {
+                        Id = (int)c,
+                        Title = c.ToString(),
+                        IsChecked = false
+                    })
+            );
+            // Initialize Types, add event subscribers
+            Types = new ObservableCollection<CheckableItem>(
+                Enum.GetValues(typeof(AppEventHelper.EventType))
+                    .Cast<AppEventHelper.EventType>()
                     .Select(c => new CheckableItem
                     {
                         Id = (int)c,
@@ -136,6 +184,43 @@ namespace HR.Pages
                 categoryItem.IsChecked = selectedIds.Contains(categoryItem.Id);
             }
         }
+        public void SyncCheckedTypes()
+        {
+            if (Types == null || LogTypes == null)
+                return;
+
+            var selectedIds = LogTypes.ToHashSet();
+
+            foreach (var categoryItem in Types)
+            {
+                categoryItem.IsChecked = selectedIds.Contains(categoryItem.Id);
+            }
+        }
+        public void SyncCollections()
+        {
+            SyncCheckedCategories();
+            SyncCheckedTypes();
+        }
+
+        private void TypeItem_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(CheckableItem.IsChecked))
+            {
+                var item = sender as CheckableItem;
+                if (item == null) return;
+
+                if (item.IsChecked)
+                {
+                    if (!LogTypes.Contains(item.Id))
+                        LogTypes.Add(item.Id);
+                }
+                else
+                {
+                    if (LogTypes.Contains(item.Id))
+                        LogTypes.Remove(item.Id);
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -171,12 +256,12 @@ namespace HR.Pages
             prefsPath = System.IO.Path.Combine(prefsDir, uid.ToString() + ".xml");
             vm = new ItemViewModel<Preferences, PreferencesModel>(App.Current.Preferences);
             DataContext = vm;
-            vm.Dm.SyncCheckedCategories();
+            vm.Dm.SyncCollections();
 
             ResetCmd = new RelayCommand(
                 _ => {
                         vm.Reset();
-                        vm.Dm.SyncCheckedCategories();
+                        vm.Dm.SyncCollections();
                     },
                 _ => vm.IsEnabled
             );
