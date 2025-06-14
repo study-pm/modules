@@ -185,6 +185,7 @@
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Data\Models\User.partial.cs" />
+    <Compile Include="Models\CheckableItem.cs" />
     <Compile Include="Models\Employee.cs" />
     <Compile Include="Models\ItemViewModel.cs" />
     <Compile Include="Models\User.cs" />
