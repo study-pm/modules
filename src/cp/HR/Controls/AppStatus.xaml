@@ -37,7 +37,7 @@
                 <Viewbox ToolTip="Информация"
                          Visibility="{Binding Status, Converter={StaticResource StatusToVisibilityConverter}, ConverterParameter=Info}"
                          >
-                    <Path Fill="#21a0df" Data="{StaticResource InfoCircleSolidPath}"/>
+                    <Path Fill="{StaticResource InfoBrush}" Data="{StaticResource InfoCircleSolidPath}"/>
                 </Viewbox>
                 <Viewbox ToolTip="В процессе" Height="14" Width="10" x:Name="Prosess1" Visibility="Visible">
                     <Path Fill="{StaticResource AwaitingBrush}" Data="{StaticResource HourglassStartSolidPath}"/>
