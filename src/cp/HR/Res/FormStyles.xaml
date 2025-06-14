@@ -44,7 +44,7 @@
                         <!-- Content with TextBlock for trimming -->
                         <TextBlock Grid.Column="1"
                            VerticalAlignment="Center"
-                           Margin="7,0,0,0"
+                           Margin="3,0,0,0"
                            Text="{TemplateBinding Content}"
                            TextTrimming="CharacterEllipsis"
                            TextWrapping="NoWrap"
@@ -80,6 +80,14 @@
             </Trigger>
             <Trigger Property="IsChecked" Value="True">
                 <Setter Property="FontWeight" Value="Bold" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="GroupCheck" TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+        <Setter Property="Margin" Value="0 0 5 0" />
+        <Style.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="FontWeight" Value="Normal" />
             </Trigger>
         </Style.Triggers>
     </Style>
