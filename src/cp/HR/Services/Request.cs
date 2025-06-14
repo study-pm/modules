@@ -203,7 +203,17 @@ namespace HR.Services
             try
             {
                 StatusInformer.ReportProgress("Извлечение предпочтений пользователя");
-                return await Preferences.LoadAsync(uid);
+                Preferences prefs =  await Preferences.LoadAsync(uid);
+                if (!prefs.IsLogOn) return prefs;
+                if (prefs.LogCategories == null || prefs.LogCategories.Count == 0)
+                {
+                    prefs.LogCategories = new List<int> { 0, 1, 2, 3 };
+                }
+                if (prefs.LogTypes == null || prefs.LogTypes.Count == 0)
+                {
+                    prefs.LogTypes = new List<int> { 1, 2, 3, 4, 5 };
+                }
+                return prefs;
             }
             catch (Exception exc)
             {
