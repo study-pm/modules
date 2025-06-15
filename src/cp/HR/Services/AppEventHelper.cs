@@ -16,6 +16,26 @@ namespace HR.Services
     public static class AppEventHelper
     {
         /// <summary>
+        /// Represents application-level operations or states.
+        /// </summary>
+        public enum AppOp
+        {
+            Startup = 0,    // The application start up.
+            Shutdown = 1,    // The application shut down.
+            Login = 2,      // A user login operation.
+            Logout = 3,     // A user logout operation.
+        }
+        /// <summary>
+        /// Represents basic data operations
+        /// </summary>
+        public enum DataOp
+        {
+            Create = 0,     // Create operation.    // Blue
+            Read = 1,       // Read operation.      // Orange
+            Update = 2,     // Update operation.    // Green
+            Delete = 3      // Delete operation.    // Red
+        }
+        /// <summary>
         /// Defines categories for application events to classify their origin or purpose.
         /// </summary>
         public enum EventCategory
@@ -45,6 +65,7 @@ namespace HR.Services
             public DateTime Timestamp { get; set; } = DateTime.Now; // Gets or sets the timestamp when the event occurred.
             public EventCategory Category { get; set; }             // Gets or sets the category of the event.
             public EventType Type { get; set; }                     // Gets or sets the type of the event.
+            public int Op { get; set; }                             // Gets or sets the event operation code.
             public string Name { get; set; }                        // Gets or sets the name for the event.
             public string Scope { get; set; }                       // Gets or sets the scope for the event.
             public string Message { get; set; }                     // Gets or sets the main message or description of the event.
