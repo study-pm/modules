@@ -245,6 +245,8 @@ namespace HR.Pages
                 Category = EventCategory.Auth,
                 Type = EventType.Info,
                 Name = "Login",
+                Op = 2,
+                Scope = "Приложение",
                 Message = "Вход в систему",
                 Details = "Пользовательский режим (новый сеанс)"
             });

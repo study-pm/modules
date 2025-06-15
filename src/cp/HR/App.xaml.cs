@@ -62,27 +62,27 @@ namespace HR
         {
             CurrentUser = null;
             Preferences = null;
-            EventLogger?.Dispose();
-            EventLogger = null;
             var mainWindow = Application.Current.MainWindow as MainWindow;
             mainWindow.mainFrame.Navigate(new AuthPg());
 
-            var (cat, name, scope) = (EventCategory.Auth, "Logout", "Приложение");
+            var (cat, name, op, scope) = (EventCategory.Auth, "Logout", 3, "Приложение");
             try
             {
                 await Request.DeleteUidFileAsync(Data.Models.User.uidFilePath);
                 RaiseAppEvent(new AppEventArgs
                 {
-                    Category = cat, Name = name, Scope = scope, Type = EventType.Info,
+                    Category = cat, Name = name, Op = op, Scope = scope, Type = EventType.Info,
                     Message = "Завершение сеанса", Details = "Гостевой режим"
                 });
+                EventLogger?.Dispose();
+                EventLogger = null;
             }
             catch (Exception exc)
             {
                 Debug.WriteLine(exc.Message, name);
                 RaiseAppEvent(new AppEventArgs
                 {
-                    Category = cat, Name = name, Scope = scope, Type = EventType.Error,
+                    Category = cat, Name = name, Op = op, Scope = scope, Type = EventType.Error,
                     Message = "Ошибка завершениея сеанса", Details = exc.Message
                 });
             }
@@ -120,9 +120,22 @@ namespace HR
                 return null;
             }
         }
+        private void Application_Exit(object sender, ExitEventArgs e)
+        {
+            RaiseAppEvent(new AppEventArgs
+            {
+                Category = EventCategory.Auth,
+                Name = "Shutdown",
+                Op = 1,
+                Scope = "Приложение",
+                Type = EventType.Info,
+                Message = "Завершение работы",
+                Details = "Остановка приложения"
+            });
+        }
         private async void Application_Startup(object sender, StartupEventArgs e)
         {
-            var (cat, name, scope) = (EventCategory.Auth, "Startup", "Запуск приложения");
+            var (cat, name, op, scope) = (EventCategory.Auth, "Startup", 0, "Приложение");
             try
             {
                 //var splash = new SplashWindow(); // Custom splash window
@@ -145,7 +158,7 @@ namespace HR
 
                 RaiseAppEvent(new AppEventArgs
                 {
-                    Category = cat, Name = name, Scope = scope, Type = EventType.Info,
+                    Category = cat, Name = name, Op = op, Scope = scope, Type = EventType.Info,
                     Message = IsAuth ? "Возобновление сеанса" : "Новый сеанс",
                     Details = IsAuth ? "Пользовательский режим" : "Гостевой режим"
                 });
@@ -155,7 +168,7 @@ namespace HR
                 Debug.WriteLine(exc.Message, name);
                 RaiseAppEvent(new AppEventArgs
                 {
-                    Category = cat, Name = name, Scope = scope, Type = EventType.Error,
+                    Category = cat, Name = name, Op = op, Scope = scope, Type = EventType.Error,
                     Message = "Ошибка загрузки данных", Details = exc.Message
                 });
 

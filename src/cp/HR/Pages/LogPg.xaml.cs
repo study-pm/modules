@@ -126,6 +126,46 @@ namespace HR.Pages
             throw new NotImplementedException();
         }
     }
+    public class EventOperationToBrushConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (!(value is int op)) return Brushes.Gray;
+            string resourceKey;
+
+            switch (op)
+            {
+                case 0:
+                    resourceKey = "InfoBrush";
+                    break;
+                case 1:
+                    resourceKey = "WarningBrush";
+                    break;
+                case 2:
+                    resourceKey = "SuccessBrush";
+                    break;
+                case 3:
+                    resourceKey = "ErrorBrush";
+                    break;
+                default:
+                    resourceKey = "greyDarkBrush";
+                    break;
+            }
+
+            if (Application.Current.Resources.Contains(resourceKey))
+            {
+                return Application.Current.Resources[resourceKey] as Brush ?? Brushes.Gray;
+            }
+            else
+            {
+                return Brushes.Gray;
+            }
+        }
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
     public class EventTypeToPathConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
