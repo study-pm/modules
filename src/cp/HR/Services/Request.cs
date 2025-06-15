@@ -111,7 +111,34 @@ namespace HR.Services
                 return new List<Employee>();  // Возврат значения при ошибке
             }
         }
-
+        public static async Task ClearLog(int uid)
+        {
+            var (cat, name, op, scope) = (EventCategory.Data, "Deletion", 3, "Журнал пользователя");
+            try
+            {
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Op = op, Scope = scope, Type = EventType.Progress, Message = "Удаление данных"
+                });
+                await JsonHelper.ClearCollectionAsync<AppEventArgs>(GetLocalFilePath(uid, logsPath));
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Op = op, Scope = scope, Type = EventType.Success,
+                    Message = "Данные успешно удалены",
+                    Details = "Удалены все данные"
+                });
+            }
+            catch (Exception exc)
+            {
+                Debug.WriteLine(exc.Message, name);
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Op = op, Scope = scope, Type = EventType.Error,
+                    Message = "Ошибка удаления данных", Details = exc.Message
+                });
+                throw exc;
+            }
+        }
         public static async Task<int> DeleteLogItems(int uid, List<AppEventArgs> items)
         {
             var (cat, name, scope) = (EventCategory.Data, "Deletion", "Журнал пользователя");

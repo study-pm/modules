@@ -19,6 +19,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
@@ -253,6 +254,7 @@ namespace HR.Pages
         protected void OnPropertyChanged([CallerMemberName] string prop = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
 
+        public ICommand ClearCmd { get; }
         public ICommand DeleteCmd { get; }
         public ICommand ExportCmd { get; }
         public ICommand FilterCmd { get; }
@@ -440,6 +442,25 @@ namespace HR.Pages
             DataContext = this;
             Loaded += Page_Loaded;
 
+
+            ClearCmd = new RelayCommand(
+                _ =>
+                {
+                    var result = MessageBox.Show(
+                        "Вы действительно хотите очистить лог (все данные при этом будут удалены без возможности восстановления)?",
+                        "Подтверждение удаления",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Warning,
+                        MessageBoxResult.No
+                    );
+
+                    if (result != MessageBoxResult.Yes)
+                        return;
+
+                    ClearLog();
+                },
+                _ => !IsProgress && DataCollection?.Count > 0
+            );
             DeleteCmd = new RelayCommand(
                 execute: param =>
                 {
@@ -592,6 +613,28 @@ namespace HR.Pages
             );
         }
 
+        private async void ClearLog()
+        {
+            try
+            {
+                IsProgress = true;
+                await Request.ClearLog(App.Current.CurrentUser.Id);
+                // Remove collection in memory
+                DataCollection = null;
+                // Clear the collection in memory
+                // DataCollection.Clear(); // update numbering
+                // Refresh();              // update total count
+                MessageBox.Show($"Данные успешно удалены.", "Успешное удаление", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show($"Ошибка удаления данных: {exc.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsProgress = false;
+            }
+        }
         private async void DeleteItems(List<AppEventArgs> items)
         {
             try
@@ -601,8 +644,7 @@ namespace HR.Pages
                 // Delete from the collection in memory
                 foreach (var item in items)
                     DataCollection.Remove(item);
-                dataGrid.Items.Refresh();   // update numbering
-                Refresh();                  // update total count
+                Refresh();
                 MessageBox.Show($"Данные успешно удалены.", "Успешное удаление", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception exc) {
@@ -668,7 +710,6 @@ namespace HR.Pages
                 // Enum and other types: direct comparison
                 return val.Equals(filterVal); // return Equals(val, CollectionFilter.Value);
             };
-            CollectionView.Refresh();
             Refresh();
         }
         private SelectionFilter FindEnumSelection(List<SelectionFilter> values, object value)
@@ -705,7 +746,9 @@ namespace HR.Pages
         }
         private void Refresh()
         {
-            OnPropertyChanged(nameof(FilteredCount));
+            dataGrid.Items.Refresh();                   // update numbering
+            CollectionView.Refresh();                   // refresh collection view
+            OnPropertyChanged(nameof(FilteredCount));   // update total count
         }
         private void ResetFilter()
         {
@@ -714,7 +757,6 @@ namespace HR.Pages
             DateFrom = null;
             DateTo = null;
             CollectionView.Filter = null;
-            CollectionView.Refresh();
             Refresh();
         }
 
@@ -752,6 +794,14 @@ namespace HR.Pages
             var item = dg?.SelectedItem as AppEventArgs;
 
             if (e.Key == Key.Delete && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                if (ClearCmd.CanExecute(null))
+                {
+                    ClearCmd.Execute(null);
+                    e.Handled = true;
+                }
+            }
+            else if (e.Key == Key.Delete)
             {
                 if (dg?.SelectedItems != null && dg.SelectedItems.Count > 0)
                 {

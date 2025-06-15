@@ -121,6 +121,17 @@ namespace HR.Services
             SaveCollection(filePath, emptyList);
         }
         /// <summary>
+        /// Asynchronously clears the collection stored in the specified file by saving an empty list.
+        /// </summary>
+        /// <typeparam name="T">The type of items in the collection.</typeparam>
+        /// <param name="filePath">The path to the file where the collection is stored.</param>
+        /// <returns>A task that represents the asynchronous operation.</returns>
+        public static async Task ClearCollectionAsync<T>(string filePath)
+        {
+            var emptyList = new List<T>();
+            await SaveCollectionAsync(filePath, emptyList);
+        }
+        /// <summary>
         /// Loads a collection of items from a JSON file.
         /// </summary>
         /// <typeparam name="T">The type of the items in the collection.</typeparam>
