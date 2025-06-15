@@ -1,6 +1,7 @@
 ﻿using HR.Data.Models;
 using HR.Services;
 using HR.Utilities;
+using Microsoft.Win32;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -148,6 +150,9 @@ namespace HR.Pages
                 case 3:
                     resourceKey = "ErrorBrush";
                     break;
+                case 4:
+                    resourceKey = "OrangeRegularBrush";
+                    break;
                 default:
                     resourceKey = "greyDarkBrush";
                     break;
@@ -207,7 +212,7 @@ namespace HR.Pages
         {
             if (value is AppEventHelper.EventType eventType)
             {
-                return eventType.ToTitle(); // Вызов вашего метода расширения
+                return eventType.ToTitle(); // Extension method call
             }
             return string.Empty;
         }
@@ -367,13 +372,13 @@ namespace HR.Pages
 
                 if (SelectedFilter.Name == "Timestamp")
                 {
-                    // Если пришёл диапазон (Tuple<DateTime, DateTime>)
+                    // Handle date range (Tuple<DateTime, DateTime>)
                     if (CollectionFilter.Value is Tuple<DateTime, DateTime> range)
                     {
                         DateFrom = range.Item1;
                         DateTo = range.Item2;
                     }
-                    // Если пришла одна дата
+                    // Handle single date
                     else if (CollectionFilter.Value is DateTime dt)
                     {
                         DateFrom = dt;
@@ -502,14 +507,34 @@ namespace HR.Pages
             ExportCmd = new RelayCommand(
                 execute: param =>
                 {
-                    switch (param)
+
+                    int index = 1;
+                    if (param is int i) index = i;
+                    else if (param is string s && int.TryParse(s, out int parsed)) index = parsed;
+
+                    var sfd = new SaveFileDialog
                     {
-                        case "CSV":
+                        FileName = "log_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"),
+                        DefaultExt = ".csv",
+                        Filter = "Таблица CSV (разделители - запятые) (*.csv)|*.csv|Таблица Excel (*.xlsx)|*.xlsx|Документ PDF (*.pdf)|*.pdf",
+                        FilterIndex = index
+                    };
+                    bool? result = sfd.ShowDialog();
+                    if (result != true) return;
+
+                    string filePath = sfd.FileName;
+                    index = sfd.FilterIndex;
+                    switch (index)
+                    {
+                        case 1:
                         default:
-                            ExportCSV();
+                            ExportCsv(filePath);
                             break;
-                        case "PDF":
-                            ExportPDF();
+                        case 2:
+                            ExportExcel(filePath);
+                            break;
+                        case 3:
+                            ExportPdf(filePath);
                             break;
                     }
                 },
@@ -655,11 +680,92 @@ namespace HR.Pages
                 IsProgress = false;
             }
         }
-        private void ExportCSV()
+        private async void ExportCsv(string filePath)
         {
-            MessageBox.Show("Export CSV");
+            var (cat, name, op, scope) = (EventCategory.Service, "Export", 4, "Журнал пользователя");
+            try
+            {
+                IsProgress = true;
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Op = op, Scope = scope, Type = EventType.Progress, Message = "Экспорт данных"
+                });
+
+                /*** Custom handling ***/
+                var sb = new StringBuilder();
+                // CSV Headers
+                sb.AppendLine("Номер,Дата/время,Тип,Категория,Контекст,Событие,Подробности");
+
+                int n = 1;
+                foreach (AppEventArgs item in CollectionView)
+                {
+                    // Form string with special characters escape with special treatment for several columns
+                    var line = string.Join(",",
+                        CsvHelper.EscapeCsv(n.ToString()),
+                        CsvHelper.EscapeCsv(item.Timestamp.ToString("dd MMMM yyyy HH:mm:ss")),
+                        CsvHelper.EscapeCsv(item.Type.ToTitle()),
+                        CsvHelper.EscapeCsv(item.Category.ToTitle()),
+                        CsvHelper.EscapeCsv(item.Scope ?? ""),
+                        CsvHelper.EscapeCsv(item.Message ?? ""),
+                        CsvHelper.EscapeCsv(item.Details ?? "")
+                    );
+
+                    sb.AppendLine(line);
+                    n++;
+                }
+                string csvStr = sb.ToString();
+
+                /*** Unified handling ***/
+                var skip = new[] { "Id", "Op", "Name" };
+
+                var converters = new Dictionary<string, Func<object, string>>
+                {
+                    ["Category"] = val => val == null ? "" : ((EventCategory)val).ToTitle(),
+                    ["Type"] = val => val == null ? "" : ((EventType)val).ToTitle(),
+                    ["Timestamp"] = val => val == null ? "" : ((DateTime)val).ToString("dd MMMM yyyy HH:mm:ss")
+                };
+
+                var headers = new Dictionary<string, string>
+                {
+                    ["Timestamp"] = "Дата/время",
+                    ["Type"] = "Тип",
+                    ["Category"] = "Категория",
+                    ["Scope"] = "Контекст",
+                    ["Message"] = "Событие",
+                    ["Details"] = "Подробности"
+                };
+
+                csvStr = CsvHelper.ExportCollectionViewToCsv(CollectionView, "log.csv", skip, converters, headers);
+
+                await CsvHelper.SaveCsvAsync(filePath, csvStr);
+
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Op = op, Scope = scope, Type = EventType.Success,
+                    Message = "Данные успешно экспортированы", Details = "Файл сформирован"
+                });
+                MessageBox.Show($"Файл успешно сохранен", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception exc)
+            {
+                Debug.WriteLine(exc, "LogPg: Data export");
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Op = op, Scope = scope, Type = EventType.Error,
+                    Message = "Ошибка экспорта данных", Details = exc.Message
+                });
+                MessageBox.Show($"Ошибка сохранения файла: {exc.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsProgress = false;
+            }
         }
-        private void ExportPDF()
+        private void ExportExcel(string filePath)
+        {
+            MessageBox.Show("Export Excel");
+        }
+        private void ExportPdf(string filePath)
         {
             MessageBox.Show("Export PDF");
         }
@@ -833,17 +939,17 @@ namespace HR.Pages
             }
             if (e.Key == Key.P && Keyboard.Modifiers == ModifierKeys.Control)
             {
-                if (item != null && ExportCmd.CanExecute(null))
+                if (item != null && ExportCmd.CanExecute(3))
                 {
-                    ExportCmd.Execute("PDF");
+                    ExportCmd.Execute(3);
                     e.Handled = true;
                 }
             }
             if (e.Key == Key.S && Keyboard.Modifiers == ModifierKeys.Control)
             {
-                if (item != null && ExportCmd.CanExecute(null))
+                if (item != null && ExportCmd.CanExecute(1))
                 {
-                    ExportCmd.Execute("CSV");
+                    ExportCmd.Execute(1);
                     e.Handled = true;
                 }
             }
