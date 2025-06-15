@@ -1,9 +1,11 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace HR.Services
 {
@@ -79,6 +81,33 @@ namespace HR.Services
             }
             return removedCount;
         }
+        /// <summary>
+        /// Asynchronously removes items from a collection stored in a file that match the specified predicate.
+        /// </summary>
+        /// <typeparam name="T">The type of items in the collection.</typeparam>
+        /// <param name="filePath">The path to the file containing the collection.</param>
+        /// <param name="predicate">A function to test each item for a condition. Items matching this predicate will be removed.</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation. The task result contains the number of items removed.
+        /// </returns>
+        public static async Task<int> RemoveItemsAsync<T>(string filePath, Func<T, bool> predicate)
+        {
+            // Load collection async
+            var items = await LoadCollectionAsync<T>(filePath);
+            int initialCount = items.Count;
+
+            // Filter collection
+            items = items.Where(item => !predicate(item)).ToList();
+            int removedCount = initialCount - items.Count;
+
+            // Save collection async if there are removed items
+            if (removedCount > 0)
+            {
+                await SaveCollectionAsync(filePath, items);
+            }
+
+            return removedCount;
+        }
 
         /* Handle Collection */
         /// <summary>
@@ -126,6 +155,22 @@ namespace HR.Services
         {
             string json = JsonConvert.SerializeObject(items, GetSettings(true));
             System.IO.File.WriteAllText(filePath, json);
+        }
+        /// <summary>
+        /// Asynchronously saves a collection of items to a file in JSON format.
+        /// </summary>
+        /// <typeparam name="T">The type of items in the collection.</typeparam>
+        /// <param name="filePath">The path to the file where the collection will be saved.</param>
+        /// <param name="items">The list of items to save.</param>
+        /// <returns>A task that represents the asynchronous save operation.</returns>
+        public static async Task SaveCollectionAsync<T>(string filePath, List<T> items)
+        {
+            string json = JsonConvert.SerializeObject(items, GetSettings(true));
+            // Write file async
+            using (var writer = new StreamWriter(filePath, false, Encoding.UTF8))
+            {
+                await writer.WriteAsync(json);
+            }
         }
     }
 }
