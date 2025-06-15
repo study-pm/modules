@@ -112,6 +112,33 @@ namespace HR.Services
             }
         }
 
+        public static async Task<int> DeleteLogItems(int uid, List<AppEventArgs> items)
+        {
+            var (cat, name, scope) = (EventCategory.Data, "Deletion", "Журнал пользователя");
+            try
+            {
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Scope = scope, Type = EventType.Progress, Message = "Удаление данных"
+                });
+                int removedCount = await JsonHelper.RemoveItemsAsync<AppEventArgs>(GetLocalFilePath(uid, logsPath), x => items.Any(del => del.Id == x.Id));
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Scope = scope, Type = EventType.Success,
+                    Message = "Данные успешно удалены", Details = $"Удалено записей: {removedCount}"
+                });
+                return removedCount;
+            }
+            catch (Exception exc)
+            {
+                Debug.WriteLine(exc.Message, name);
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Scope = scope, Type = EventType.Error, Message = "Ошибка удаления данных", Details = exc.Message
+                });
+                throw exc;
+            }
+        }
         public static async Task<List<AppEventArgs>> GetLog(int uid)
         {
             var (cat, name, scope) = (EventCategory.Data, "Extraction", "Журнал пользователя");
