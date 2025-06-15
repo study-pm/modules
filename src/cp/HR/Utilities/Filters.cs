@@ -15,7 +15,8 @@ namespace HR.Utilities
     {
         public string Name { get; set; }
         public object Value { get; set; }
-        public FilterParam(string name, object value)
+        public object ValueTo { get; set; }
+        public FilterParam(string name, object value, object valueTo = null)
         {
             Name = name;
             Value = value;

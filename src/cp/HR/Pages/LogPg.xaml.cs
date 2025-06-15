@@ -232,6 +232,19 @@ namespace HR.Pages
                 OnPropertyChanged();
             }
         }
+        private DateTime? _dateFrom;
+        public DateTime? DateFrom
+        {
+            get => _dateFrom;
+            set { _dateFrom = value; OnPropertyChanged(); }
+        }
+
+        private DateTime? _dateTo;
+        public DateTime? DateTo
+        {
+            get => _dateTo;
+            set { _dateTo = value; OnPropertyChanged(); }
+        }
         public List<EnumFilterInfo> EnumFilters { get; set; } = new List<EnumFilterInfo>
         {
             new EnumFilterInfo
@@ -309,7 +322,28 @@ namespace HR.Pages
                 SearchText = CollectionFilter.Value?.ToString();
                 OnPropertyChanged(nameof(SelectedFilter));
 
-                if (EnumFilters == null) return;
+                if (SelectedFilter.Name == "Timestamp")
+                {
+                    // Если пришёл диапазон (Tuple<DateTime, DateTime>)
+                    if (CollectionFilter.Value is Tuple<DateTime, DateTime> range)
+                    {
+                        DateFrom = range.Item1;
+                        DateTo = range.Item2;
+                    }
+                    // Если пришла одна дата
+                    else if (CollectionFilter.Value is DateTime dt)
+                    {
+                        DateFrom = dt;
+                        DateTo = null;
+                    }
+                    else
+                    {
+                        DateFrom = null;
+                        DateTo = null;
+                    }
+                }
+
+                else if (EnumFilters == null) return;
                 // Universal sync for all EnumFilterInfo
                 foreach (var enumFilter in EnumFilters)
                 {
@@ -344,7 +378,9 @@ namespace HR.Pages
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(IsResetFilter));
                 OnPropertyChanged(nameof(IsSelectedCategory));
+                OnPropertyChanged(nameof(IsSelectedTimestamp));
                 OnPropertyChanged(nameof(IsSelectedType));
+                OnPropertyChanged(nameof(IsTextSearch));
 
                 // Reset all selected values in enum-filters on filter change
                 foreach (var ef in EnumFilters)
@@ -352,8 +388,10 @@ namespace HR.Pages
                         ef.Selected = null;
             }
         }
+        public bool IsSelectedTimestamp => SelectedFilter?.Name == "Timestamp";
         public bool IsSelectedType => SelectedFilter?.Name == "Type";
         public bool IsSelectedCategory => SelectedFilter?.Name == "Category";
+        public bool IsTextSearch => !IsSelectedCategory && !IsSelectedTimestamp && !IsSelectedType;
 
         public LogPg()
         {
@@ -410,7 +448,7 @@ namespace HR.Pages
                     DataGrid dg = param as DataGrid ?? dataGrid;
                     DataGridCellInfo? cellInfo = null;
 
-                    // 0. Если param == null, значит вызов с кнопки "Найти"
+                    // Search button click
                     if (param == null)
                     {
                         if (SelectedFilter == null)
@@ -430,12 +468,12 @@ namespace HR.Pages
                         return;
                     }
 
-                    // 1. Если был клик правой кнопкой мыши — используем _lastRightClickedCell
+                    // Right mouse button click
                     if (_lastRightClickedCell != null)
                     {
                         cellInfo = _lastRightClickedCell;
                     }
-                    // 2. Если команда вызвана через горячую клавишу — используем CurrentCell
+                    // Keyboard shortcut activation
                     else if (dg != null && dg.CurrentCell != null && dg.CurrentCell.Column is DataGridBoundColumn)
                     {
                         cellInfo = dg.CurrentCell;
@@ -527,10 +565,31 @@ namespace HR.Pages
                 var filterVal = CollectionFilter.Value;
                 if (val == null || filterVal == null) return false;
 
+                if (CollectionFilter.Name == "Timestamp" && val is DateTime itemDate)
+                {
+                    // Date range
+                    if (filterVal is Tuple<DateTime, DateTime> range)
+                    {
+                        var from = range.Item1.Date;
+                        var to = range.Item2.Date;
+                        return itemDate.Date >= from && itemDate.Date <= to;
+                    }
+                    // Single date
+                    if (filterVal is DateTime dt)
+                    {
+                        return itemDate.Date == dt.Date;
+                    }
+                    // Datestring
+                    if (filterVal is string s && DateTime.TryParse(s, out var parsed))
+                    {
+                        return itemDate.Date == parsed.Date;
+                    }
+                }
+
                 // Strings: search substring case-insensitive
                 if (val is string s1)
                 {
-                    // Приводим фильтр к строке, если это не строка (например, object)
+                    // Convert filter object value to string
                     string filterStr = CollectionFilter.Value?.ToString() ?? string.Empty;
                     return s1.IndexOf(filterStr, StringComparison.OrdinalIgnoreCase) >= 0;
                 }
@@ -554,12 +613,31 @@ namespace HR.Pages
             {
                 return Enum.Parse(enumFilter.EnumType, enumFilter.Selected.Name);
             }
+            // Single date/date range filter
+            if (SelectedFilter?.Name == "Timestamp")
+            {
+                if (DateFrom.HasValue && DateTo.HasValue)
+                {
+                    var from = DateFrom.Value.Date;
+                    var to = DateTo.Value.Date;
+                    // Swap dates if order is invalid
+                    if (from > to) (to, from) = (from, to);
+                    return new Tuple<DateTime, DateTime>(from, to);
+                }
+                if (DateFrom.HasValue)
+                    return DateFrom.Value.Date;
+                if (DateTo.HasValue)
+                    return DateTo.Value.Date;
+                return null;
+            }
             return SearchText;
         }
         private void ResetFilter()
         {
             SearchText = null;
             SelectedFilter = null;
+            DateFrom = null;
+            DateTo = null;
             CollectionView.Filter = null;
             CollectionView.Refresh();
             OnPropertyChanged(nameof(FilteredCount));
