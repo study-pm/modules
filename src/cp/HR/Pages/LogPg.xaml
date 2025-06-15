@@ -10,7 +10,7 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="LogPg">
     <Page.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <BooleanToVisibilityConverter x:Key="BoolToVisConv"/>
         <local:EventCategoryToPathConverter x:Key="CatToPathConv"/>
         <local:EventCategoryToTitleConverter x:Key="CatToTitleConv"/>
         <local:EventTypeToBrushConverter x:Key="TypeToBrushConv"/>
@@ -35,7 +35,7 @@
             <TextBlock Style="{StaticResource NoData}" Visibility="{Binding Log, Converter={StaticResource ColToVisConv}, ConverterParameter=False}">
                 Информация отсутствует
             </TextBlock>
-            <StackPanel Visibility="{Binding DataCollection, Converter={StaticResource BoolToVis}}">
+            <StackPanel Visibility="{Binding DataCollection, Converter={StaticResource BoolToVisConv}}">
                 <TextBlock>Группировка, поиск, фильтрация, редактирование, добавление, удаление</TextBlock>
             </StackPanel>
         </StackPanel>
@@ -69,6 +69,18 @@
                             Style="{StaticResource ButtonMini}" Background="{StaticResource BlueBrush}"
                             Command="{Binding FilterCmd}"
                             />
+                    <Button ToolTip="Сбросить фильтр" HorizontalAlignment="Right" Margin="5 0 0 0"
+                            Style="{StaticResource IconButtonMagenta}"
+                            Command="{Binding ResetFilterCmd}"
+                            Visibility="{Binding IsResetFilter, Converter={StaticResource BoolToVisConv}}"
+                            >
+                        <StackPanel>
+                            <Viewbox Stretch="Fill" Width="14" Height="16">
+                                <Path Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                      Data="{StaticResource XmarkSolidPath}"/>
+                            </Viewbox>
+                        </StackPanel>
+                    </Button>
                 </WrapPanel>
             </DockPanel>
         </StackPanel>

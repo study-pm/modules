@@ -217,8 +217,11 @@ namespace HR.Pages
                 if (_searchText == value) return;
                 _searchText = value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(IsResetFilter));
             }
         }
+
+        public bool IsResetFilter => !string.IsNullOrWhiteSpace(SearchText);
 
         private ICollectionView CollectionView;
         private ObservableCollection<AppEventArgs> _dataCol;
