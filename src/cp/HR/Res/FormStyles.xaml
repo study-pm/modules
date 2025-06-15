@@ -634,11 +634,20 @@
             </Setter.Value>
         </Setter>
     </Style>
+    <Style x:Key="IconButtonCsv" TargetType="Button" BasedOn="{StaticResource IconButton}">
+        <Setter Property="Foreground" Value="{StaticResource CsvBrush}" />
+    </Style>
     <Style x:Key="IconButtonCyan" TargetType="Button" BasedOn="{StaticResource IconButton}">
         <Setter Property="Foreground" Value="{StaticResource cyanDarkBrush}" />
     </Style>
     <Style x:Key="IconButtonMagenta" TargetType="Button" BasedOn="{StaticResource IconButton}">
         <Setter Property="Foreground" Value="{StaticResource magentaDarkBrush}" />
+    </Style>
+    <Style x:Key="IconButtonOrange" TargetType="Button" BasedOn="{StaticResource IconButton}">
+        <Setter Property="Foreground" Value="{StaticResource OrangeRegularBrush}" />
+    </Style>
+    <Style x:Key="IconButtonPdf" TargetType="Button" BasedOn="{StaticResource IconButton}">
+        <Setter Property="Foreground" Value="{StaticResource PdfBrush}" />
     </Style>
     <Style x:Key="IconButtonRed" TargetType="Button" BasedOn="{StaticResource IconButton}">
         <Setter Property="Foreground" Value="{StaticResource ErrorBrush}" />
