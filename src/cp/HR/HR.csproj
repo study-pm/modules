@@ -225,6 +225,7 @@
     <Compile Include="Services\AppEventHelper.cs" />
     <Compile Include="Services\CommandHelper.cs" />
     <Compile Include="Services\Crypto.cs" />
+    <Compile Include="Services\CsvHelper.cs" />
     <Compile Include="Services\Fs.cs" />
     <Compile Include="Services\JsonHelper.cs" />
     <Compile Include="Services\Request.cs" />
