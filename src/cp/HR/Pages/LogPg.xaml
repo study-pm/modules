@@ -204,7 +204,7 @@
                     </MenuItem>
                     <MenuItem Header="Удалить" InputGestureText="Ctrl+Del"
                               Command="{Binding DeleteCmd}"
-                              CommandParameter="{Binding PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                              CommandParameter="{Binding PlacementTarget.SelectedItems, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                               >
                         <MenuItem.Icon>
                             <Viewbox Height="14" Width="14">

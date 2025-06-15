@@ -2,6 +2,7 @@
 using HR.Services;
 using HR.Utilities;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -402,24 +403,35 @@ namespace HR.Pages
             DeleteCmd = new RelayCommand(
                 execute: param =>
                 {
-                    if (param is AppEventArgs item)
-                    {
-                        var result = MessageBox.Show(
-                            $"Вы действительно хотите удалить запись \"{item.Message}\"?",
-                            "Подтверждение удаления",
-                            MessageBoxButton.YesNo,
-                            MessageBoxImage.Warning,
-                            MessageBoxResult.No
-                        );
+                    // Get list for deletion
+                    List<AppEventArgs> itemsToDelete = null;
 
-                        if (result == MessageBoxResult.Yes)
-                        {
-                            DataCollection.Remove(item);
-                            dataGrid.Items.Refresh(); // refresh auto numbering
-                            // @TODO: Delete from DB
-                            // await Services.Request.DeleteUser(userToDelete.Id);
-                        }
-                    }
+                    if (param is AppEventArgs singleItem)
+                        itemsToDelete = new List<AppEventArgs> { singleItem };
+                    else if (param is IEnumerable<AppEventArgs> manyItems)
+                        itemsToDelete = manyItems.ToList();
+                    else if (param is IList list && list.Count > 0 && list[0] is AppEventArgs)
+                        itemsToDelete = list.Cast<AppEventArgs>().ToList();
+
+                    if (itemsToDelete == null || itemsToDelete.Count == 0)
+                        return;
+
+                    // Confirmation
+                    string msg = itemsToDelete.Count == 1
+                        ? $"Вы действительно хотите удалить запись \"{itemsToDelete[0].Message}\"?"
+                        : $"Вы действительно хотите удалить выбранные записи ({itemsToDelete.Count})?";
+                    var result = MessageBox.Show(
+                        msg,
+                        "Подтверждение удаления",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Warning,
+                        MessageBoxResult.No
+                    );
+
+                    if (result != MessageBoxResult.Yes)
+                        return;
+
+                    DeleteItems(itemsToDelete);
                 },
                 canExecute: param =>
                 {
@@ -532,9 +544,7 @@ namespace HR.Pages
             );
             ResetFilterCmd = new RelayCommand(
                 execute: param => ResetFilter(),
-                _ => !IsProgress && (
-                        !string.IsNullOrWhiteSpace(SearchText) || !IsSelectedCategory || !IsSelectedType || CollectionView?.Filter != null
-                    )
+                _ => !IsProgress && IsResetFilter
             );
             ResetSearchCmd = new RelayCommand(
                 _ => SearchText = null,
@@ -542,6 +552,27 @@ namespace HR.Pages
             );
         }
 
+        private async void DeleteItems(List<AppEventArgs> items)
+        {
+            try
+            {
+                IsProgress = true;
+                int removedCount = await Request.DeleteLogItems(App.Current.CurrentUser.Id, items);
+                // Delete from the collection in memory
+                foreach (var item in items)
+                    DataCollection.Remove(item);
+                dataGrid.Items.Refresh();   // update numbering
+                Refresh();                  // update total count
+                MessageBox.Show($"Данные успешно удалены.", "Успешное удаление", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception exc) {
+                MessageBox.Show($"Ошибка удаления данных: {exc.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsProgress = false;
+            }
+        }
         private void ExportCSV()
         {
             MessageBox.Show("Export CSV");
@@ -598,7 +629,7 @@ namespace HR.Pages
                 return val.Equals(filterVal); // return Equals(val, CollectionFilter.Value);
             };
             CollectionView.Refresh();
-            OnPropertyChanged(nameof(FilteredCount));
+            Refresh();
         }
         private SelectionFilter FindEnumSelection(List<SelectionFilter> values, object value)
         {
@@ -632,6 +663,10 @@ namespace HR.Pages
             }
             return SearchText;
         }
+        private void Refresh()
+        {
+            OnPropertyChanged(nameof(FilteredCount));
+        }
         private void ResetFilter()
         {
             SearchText = null;
@@ -640,7 +675,7 @@ namespace HR.Pages
             DateTo = null;
             CollectionView.Filter = null;
             CollectionView.Refresh();
-            OnPropertyChanged(nameof(FilteredCount));
+            Refresh();
         }
 
         private void DataGridColumnHeader_ContextMenuOpening(object sender, ContextMenuEventArgs e)
@@ -678,10 +713,15 @@ namespace HR.Pages
 
             if (e.Key == Key.Delete && Keyboard.Modifiers == ModifierKeys.Control)
             {
-                if (item != null && DeleteCmd.CanExecute(item))
+                if (dg?.SelectedItems != null && dg.SelectedItems.Count > 0)
                 {
-                    DeleteCmd.Execute(item);
-                    e.Handled = true;
+                    // Convert to AppEventArgs (or IList)
+                    var items = dg.SelectedItems.Cast<AppEventArgs>().ToList();
+                    if (DeleteCmd.CanExecute(items))
+                    {
+                        DeleteCmd.Execute(items);
+                        e.Handled = true;
+                    }
                 }
             }
             if (e.Key == Key.Escape)
@@ -761,7 +801,7 @@ namespace HR.Pages
             IsProgress = true;
             DataCollection = new ObservableCollection<AppEventArgs>(await Request.GetLog(App.Current.CurrentUser.Id));
             CollectionView = CollectionViewSource.GetDefaultView(DataCollection);
-            OnPropertyChanged(nameof(FilteredCount));
+            Refresh();
             IsProgress = false;
         }
     }
