@@ -187,7 +187,7 @@
                             </Viewbox>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem   Header="Сбросить фильтр" InputGestureText="Esc"
+                    <MenuItem   Header="Сбросить" InputGestureText="Esc"
                                 Command="{Binding ResetFilterCmd}"
                                 CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                 >
@@ -197,6 +197,21 @@
                                     <Path Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource FilterCircleXmarkSolidPath}">
                                         <Path.RenderTransform>
                                             <TranslateTransform X="0" Y="0"/>
+                                        </Path.RenderTransform>
+                                    </Path>
+                                </Canvas>
+                            </Viewbox>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <Separator/>
+                    <MenuItem Header="Копировать" InputGestureText="Ctrl+C"
+                              Command="ApplicationCommands.Copy">
+                        <MenuItem.Icon>
+                            <Viewbox Height="14" Width="14">
+                                <Canvas Height="496" Width="512">
+                                    <Path Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource CopySolidPath}">
+                                        <Path.RenderTransform>
+                                            <TranslateTransform X="30" Y="0"/>
                                         </Path.RenderTransform>
                                     </Path>
                                 </Canvas>
@@ -220,7 +235,7 @@
                         </MenuItem.Icon>
                     </MenuItem>
                     <Separator/>
-                    <MenuItem Header="Экспорт списка">
+                    <MenuItem Header="Экспортировать">
                         <MenuItem.Icon>
                             <Viewbox Height="14" Width="14">
                                 <Canvas Height="496" Width="512">
