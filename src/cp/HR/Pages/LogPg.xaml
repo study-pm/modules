@@ -58,7 +58,19 @@
                         <Button Style="{StaticResource ClearBtn}" IsCancel="True"
                                 Visibility="{Binding SearchText, Converter={StaticResource StrToVisConv}}"
                                 Command="{Binding ResetSearchCmd}"
-                    />
+                                />
+                        <ComboBox Width="200" VerticalContentAlignment="Center"
+                                  ItemsSource="{Binding CategoryValues}"
+                                  SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
+                                  DisplayMemberPath="Title"
+                                  Visibility="{Binding IsSelectedCategory, Converter={StaticResource BoolToVisConv}}"
+                                  />
+                        <ComboBox Width="200" VerticalContentAlignment="Center"
+                                  ItemsSource="{Binding TypeValues}"
+                                  SelectedItem="{Binding SelectedType, Mode=TwoWay}"
+                                  DisplayMemberPath="Title"
+                                  Visibility="{Binding IsSelectedType, Converter={StaticResource BoolToVisConv}}"
+                                  />
                     </Grid>
                     <ComboBox Width="105" VerticalContentAlignment="Center" Margin="2 0"
                               ItemsSource="{Binding FilterValues}"

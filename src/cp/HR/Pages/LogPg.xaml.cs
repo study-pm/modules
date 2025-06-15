@@ -10,6 +10,7 @@ using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -176,6 +177,7 @@ namespace HR.Pages
     }
     public class SelectionFilter
     {
+        public int id{ get; set; }
         public string Name { get; set; }
         public string Title { get; set; }
     }
@@ -221,7 +223,7 @@ namespace HR.Pages
             }
         }
 
-        public bool IsResetFilter => !string.IsNullOrWhiteSpace(SearchText);
+        public bool IsResetFilter => !string.IsNullOrWhiteSpace(SearchText) || SelectedFilter != null;
 
         private ICollectionView CollectionView;
         private ObservableCollection<AppEventArgs> _dataCol;
@@ -245,17 +247,25 @@ namespace HR.Pages
                 if (_collectionFilter == value) return;
                 _collectionFilter = value;
                 OnPropertyChanged();
-                // Синхронизируем SelectedFilter
-                if (CollectionFilter != null && FilterValues != null)
+                // Sync SelectedFilter
+                if (CollectionFilter == null || FilterValues == null) return;
+                var match = FilterValues.FirstOrDefault(f => f.Name == CollectionFilter.Name);
+                if (match == null || match == SelectedFilter) return;
+                SelectedFilter = match;
+                SearchText = CollectionFilter.Value?.ToString();
+                OnPropertyChanged(nameof(SelectedFilter));
+                // Sync ComboBoxes
+                if (SelectedFilter.Name == "Category")
                 {
-                    var match = FilterValues.FirstOrDefault(f => f.Name == CollectionFilter.Name);
-                    if (match != null && match != SelectedFilter)
-                    {
-                        _selectedFilter = match;
-                        SearchText = CollectionFilter.Value?.ToString();
-                        OnPropertyChanged(nameof(SelectedFilter));
-                    }
+                    var matchType = CategoryValues.FirstOrDefault(t => t.Name == CollectionFilter?.Value?.ToString());
+                    if (matchType != null) SelectedCategory = matchType;
                 }
+                if (SelectedFilter.Name == "Type")
+                {
+                    var matchType = TypeValues.FirstOrDefault(t => t.Name == CollectionFilter?.Value?.ToString());
+                    if (matchType != null) SelectedType = matchType;
+                }
+                MessageBox.Show($"SelectedVilter set to: {SelectedFilter.Name}");
             }
         }
         public int FilteredCount => CollectionView?.Cast<object>().Count() ?? 0;
@@ -276,9 +286,57 @@ namespace HR.Pages
                 if (_selectedFilter == value) return;
                 _selectedFilter = value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(IsResetFilter));
+                OnPropertyChanged(nameof(IsSelectedCategory));
+                OnPropertyChanged(nameof(IsSelectedType));
             }
         }
+        public List<SelectionFilter> TypeValues { get; set; } = Enum.GetValues(typeof(EventType))
+            .Cast<EventType>()
+            .Select(e => new SelectionFilter
+            {
+                id = (int)e,
+                Name = e.ToString(),
+                Title = e.ToTitle()  // Используем метод расширения для получения русского названия
+            })
+            .ToList();
 
+        public bool IsSelectedType => SelectedFilter?.Name == "Type";
+        private SelectionFilter _selectedType;
+        public SelectionFilter SelectedType
+        {
+            get => _selectedType;
+            set
+            {
+                if (_selectedType == value) return;
+                _selectedType = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsResetFilter));
+            }
+        }
+        public List<SelectionFilter> CategoryValues { get; set; } = Enum.GetValues(typeof(EventCategory))
+            .Cast<EventCategory>()
+            .Select(e => new SelectionFilter
+            {
+                id = (int)e,
+                Name = e.ToString(),
+                Title = e.ToTitle()  // Используем метод расширения для получения русского названия
+            })
+            .ToList();
+
+        public bool IsSelectedCategory => SelectedFilter?.Name == "Category";
+        private SelectionFilter _selectedCategory;
+        public SelectionFilter SelectedCategory
+        {
+            get => _selectedCategory;
+            set
+            {
+                if (_selectedCategory == value) return;
+                _selectedCategory = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsResetFilter));
+            }
+        }
         public LogPg()
         {
             InitializeComponent();
@@ -342,7 +400,27 @@ namespace HR.Pages
                             MessageBox.Show("Выберите критерий поиска!");
                             return;
                         }
-                        CollectionFilter = new FilterParam(SelectedFilter.Name, SearchText);
+                        object searchValue;
+                        switch (SelectedFilter.Name)
+                        {
+                            case "Type":
+                                // Передаем enum EventType, а не строку
+                                searchValue = SelectedType != null
+                                    ? (EventType)Enum.Parse(typeof(EventType), SelectedType.Name)
+                                    : (EventType?)null;
+                                break;
+
+                            case "Category":
+                                // Аналогично, если у вас есть enum CategoryType
+                                searchValue = SelectedCategory != null
+                                    ? (EventCategory)Enum.Parse(typeof(EventCategory), SelectedCategory.Name)
+                                    : (EventCategory?)null;
+                                break;
+                            default:
+                                searchValue = SearchText;
+                                break;
+                        }
+                        CollectionFilter = new FilterParam(SelectedFilter.Name, searchValue);
                         // Проверяем выбранный фильтр и значение
                         string valueStr = CollectionFilter.Value?.ToString();
                         if (SelectedFilter != null && !string.IsNullOrWhiteSpace(valueStr))
@@ -419,7 +497,9 @@ namespace HR.Pages
             );
             ResetFilterCmd = new RelayCommand(
                 execute: param => ResetFilter(),
-                _ => !IsProgress && (!string.IsNullOrWhiteSpace(SearchText) || CollectionView?.Filter != null)
+                _ => !IsProgress && (
+                        !string.IsNullOrWhiteSpace(SearchText) || !IsSelectedCategory || !IsSelectedType || CollectionView?.Filter != null
+                    )
             );
             ResetSearchCmd = new RelayCommand(
                 _ => SearchText = null,
@@ -447,7 +527,22 @@ namespace HR.Pages
                 var prop = item.GetType().GetProperty(CollectionFilter.Name);
                 if (prop == null) return false;
                 var val = prop.GetValue(item, null);
+                var filterVal = CollectionFilter.Value;
 
+                // Специальная обработка для поля "Type"
+                /*
+                if (CollectionFilter.Name == "Type")
+                {
+                    // val — скорее всего enum EventType
+                    // filterVal — строка с именем типа, например "Progress"
+
+                    string valStr = val.ToString();
+                    string filterStr = filterVal.ToString();
+
+                    // Сравниваем по имени enum без учета регистра
+                    return string.Equals(valStr, filterStr, StringComparison.OrdinalIgnoreCase);
+                }
+                */
                 // Для строк — сравниваем как строки (без учёта регистра)
                 /*
                 if (val is string s1 && CollectionFilter.Value is string s2)
