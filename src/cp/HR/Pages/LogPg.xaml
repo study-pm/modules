@@ -60,17 +60,15 @@
                                 Command="{Binding ResetSearchCmd}"
                                 />
                         <ComboBox Width="200" VerticalContentAlignment="Center"
-                                  ItemsSource="{Binding CategoryValues}"
-                                  SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
+                                  ItemsSource="{Binding EnumFilters[1].Values}"
+                                  SelectedItem="{Binding EnumFilters[1].Selected, Mode=TwoWay}"
                                   DisplayMemberPath="Title"
-                                  Visibility="{Binding IsSelectedCategory, Converter={StaticResource BoolToVisConv}}"
-                                  />
+                                  Visibility="{Binding IsSelectedCategory, Converter={StaticResource BoolToVisConv}}" />
                         <ComboBox Width="200" VerticalContentAlignment="Center"
-                                  ItemsSource="{Binding TypeValues}"
-                                  SelectedItem="{Binding SelectedType, Mode=TwoWay}"
+                                  ItemsSource="{Binding EnumFilters[0].Values}"
+                                  SelectedItem="{Binding EnumFilters[0].Selected, Mode=TwoWay}"
                                   DisplayMemberPath="Title"
-                                  Visibility="{Binding IsSelectedType, Converter={StaticResource BoolToVisConv}}"
-                                  />
+                                  Visibility="{Binding IsSelectedType, Converter={StaticResource BoolToVisConv}}" />
                     </Grid>
                     <ComboBox Width="105" VerticalContentAlignment="Center" Margin="2 0"
                               ItemsSource="{Binding FilterValues}"
