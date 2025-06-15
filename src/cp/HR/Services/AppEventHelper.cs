@@ -33,7 +33,8 @@ namespace HR.Services
             Create = 0,     // Create operation.    // Blue
             Read = 1,       // Read operation.      // Orange
             Update = 2,     // Update operation.    // Green
-            Delete = 3      // Delete operation.    // Red
+            Delete = 3,     // Delete operation.    // Red
+            Export = 4      // Export operation.
         }
         /// <summary>
         /// Defines categories for application events to classify their origin or purpose.
