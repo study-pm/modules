@@ -10,13 +10,21 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="LogPg">
     <Page.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <BooleanToVisibilityConverter x:Key="BoolToVisConv"/>
+        <local:EventCategoryToPathConverter x:Key="CatToPathConv"/>
+        <local:EventCategoryToTitleConverter x:Key="CatToTitleConv"/>
+        <local:EventOperationToBrushConverter x:Key="OpToBrushConv"/>
+        <local:EventTypeToBrushConverter x:Key="TypeToBrushConv"/>
+        <local:EventTypeToPathConverter x:Key="TypeToPathConv"/>
+        <local:EventTypeToTitleConverter x:Key="TypeToTitleConv"/>
         <utils:CollectionToVisibilityConverter x:Key="ColToVisConv"/>
-        <utils:InverseBoolToVisibilityConverter x:Key="InvBoolConv"/>
+        <utils:InverseBooleanConverter x:Key="InvBoolConv"/>
         <utils:NotNullToBoolConverter  x:Key="NotNullToBoolConverter"/>
+        <utils:StringToVisibilityConverter  x:Key="StrToVisConv"/>
     </Page.Resources>
     <Grid Margin="30">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
@@ -25,13 +33,350 @@
             <TextBlock Style="{StaticResource Paragraph}">
                 Данный раздел содержит информацию о наиболее важных пользовательских событиях.
             </TextBlock>
-            <TextBlock Style="{StaticResource NoData}" Visibility="{Binding Log, Converter={StaticResource ColToVisConv}, ConverterParameter=False}">
-            Информация отсутствует
+            <TextBlock Style="{StaticResource NoData}"
+                       Visibility="{Binding DataCollection, Converter={StaticResource ColToVisConv}, ConverterParameter=False}">
+                Информация отсутствует
             </TextBlock>
-            <StackPanel Visibility="{Binding Log, Converter={StaticResource BoolToVis}}">
+            <StackPanel Visibility="{Binding DataCollection, Converter={StaticResource BoolToVisConv}}">
                 <TextBlock>Группировка, поиск, фильтрация, редактирование, добавление, удаление</TextBlock>
             </StackPanel>
-            <Button Click="Button_Click">Raise App event</Button>
         </StackPanel>
+        <StackPanel Grid.Row="1"
+                    Visibility="{Binding DataCollection, Converter={StaticResource ColToVisConv}}"
+                    >
+            <DockPanel Margin="0 10" VerticalAlignment="Center">
+                <WrapPanel DockPanel.Dock="Right" VerticalAlignment="Center">
+                    <TextBlock VerticalAlignment="Center" Margin="5 0" FontFamily="{StaticResource Roboto}">
+                            <Run>Найдено записей:</Run>
+                            <Bold><Run Text="{Binding FilteredCount, Mode=OneWay}"></Run></Bold>
+                    </TextBlock>
+                    <Button ToolTip="Очистить журнал" HorizontalAlignment="Right" Margin="5 0 0 0" VerticalAlignment="Center"
+                            Style="{StaticResource IconButtonRed}"
+                            Command="{Binding ClearCmd}"
+                            >
+                        <StackPanel>
+                            <Viewbox Stretch="Fill" Width="14" Height="16">
+                                <Path Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                      Data="{StaticResource TrashAltSolidPath}">
+                                    <Path.RenderTransform>
+                                        <TranslateTransform X="0" Y="-50"/>
+                                    </Path.RenderTransform>
+                                </Path>
+                            </Viewbox>
+                        </StackPanel>
+                    </Button>
+                    <Button ToolTip="Печатать документ" HorizontalAlignment="Right" Margin="2 0 0 0" VerticalAlignment="Center"
+                            Style="{StaticResource IconButtonOrange}"
+                            Command="{Binding PrintCmd}"
+                            >
+                        <StackPanel>
+                            <Viewbox Stretch="Fill" Width="14" Height="16">
+                                <Path Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                      Data="{StaticResource PrintSolidPath}">
+                                    <Path.RenderTransform>
+                                        <TranslateTransform X="0" Y="-50"/>
+                                    </Path.RenderTransform>
+                                </Path>
+                            </Viewbox>
+                        </StackPanel>
+                    </Button>
+                    <Button ToolTip="Сохранить как документ" HorizontalAlignment="Right" Margin="2 0 0 0" VerticalAlignment="Center"
+                            Style="{StaticResource IconButtonPdf}"
+                            Command="{Binding ExportCmd}"
+                            CommandParameter="3"
+                            >
+                        <StackPanel>
+                            <Viewbox Stretch="Fill" Width="14" Height="16">
+                                <Path Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                      Data="{StaticResource FilePdfSolidPath}">
+                                    <Path.RenderTransform>
+                                        <TranslateTransform X="0" Y="-50"/>
+                                    </Path.RenderTransform>
+                                </Path>
+                            </Viewbox>
+                        </StackPanel>
+                    </Button>
+                    <Button ToolTip="Сохранить как таблицу" HorizontalAlignment="Right" Margin="2 0 0 0" VerticalAlignment="Center"
+                            Style="{StaticResource IconButtonCsv}"
+                            Command="{Binding ExportCmd}"
+                            CommandParameter="1"
+                            >
+                        <StackPanel>
+                            <Viewbox Stretch="Fill" Width="14" Height="16">
+                                <Path Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                      Data="{StaticResource FileCsvSolidPath}">
+                                    <Path.RenderTransform>
+                                        <TranslateTransform X="0" Y="-50"/>
+                                    </Path.RenderTransform>
+                                </Path>
+                            </Viewbox>
+                        </StackPanel>
+                    </Button>
+                </WrapPanel>
+                <WrapPanel VerticalAlignment="Center">
+                    <Grid>
+                        <TextBox Width="200" Padding="5,0,25,0"
+                                 Style="{StaticResource TextBoxMini}"
+                                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                                 Visibility="{Binding IsTextSearch, Converter={StaticResource BoolToVisConv}}"
+                                 />
+                        <Button Style="{StaticResource ClearBtn}" IsCancel="True"
+                                Visibility="{Binding SearchText, Converter={StaticResource StrToVisConv}}"
+                                Command="{Binding ResetSearchCmd}"
+                                />
+                        <ComboBox Width="200" VerticalContentAlignment="Center"
+                                  ItemsSource="{Binding EnumFilters[1].Values}"
+                                  SelectedItem="{Binding EnumFilters[1].Selected, Mode=TwoWay}"
+                                  DisplayMemberPath="Title"
+                                  Visibility="{Binding IsSelectedCategory, Converter={StaticResource BoolToVisConv}}" />
+                        <ComboBox Width="200" VerticalContentAlignment="Center"
+                                  ItemsSource="{Binding EnumFilters[0].Values}"
+                                  SelectedItem="{Binding EnumFilters[0].Selected, Mode=TwoWay}"
+                                  DisplayMemberPath="Title"
+                                  Visibility="{Binding IsSelectedType, Converter={StaticResource BoolToVisConv}}" />
+                        <StackPanel Orientation="Horizontal"
+                                    Visibility="{Binding IsSelectedTimestamp, Converter={StaticResource BoolToVisConv}}">
+                            <DatePicker SelectedDate="{Binding DateFrom, Mode=TwoWay}" Height="30" Width="100" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+                            <DatePicker SelectedDate="{Binding DateTo, Mode=TwoWay}" Height="30" Width="100" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+                        </StackPanel>
+                    </Grid>
+                    <ComboBox Width="105" VerticalContentAlignment="Center" Margin="2 0"
+                              ItemsSource="{Binding FilterValues}"
+                              SelectedItem="{Binding SelectedFilter, Mode=TwoWay}"
+                              DisplayMemberPath="Title"
+                              />
+                    <Button Margin="0" Content="Найти" IsDefault="True" ToolTip="Поиск"
+                            Style="{StaticResource ButtonMini}" Background="{StaticResource BlueBrush}"
+                            Command="{Binding FilterCmd}"
+                            />
+                    <Button ToolTip="Сбросить фильтр" HorizontalAlignment="Right" Margin="5 0 0 0"
+                            Style="{StaticResource IconButtonMagenta}"
+                            Command="{Binding ResetFilterCmd}"
+                            Visibility="{Binding IsResetFilter, Converter={StaticResource BoolToVisConv}}"
+                            >
+                        <StackPanel>
+                            <Viewbox Stretch="Fill" Width="14" Height="16">
+                                <Path Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                      Data="{StaticResource XmarkSolidPath}">
+                                    <Path.RenderTransform>
+                                        <TranslateTransform X="0" Y="-50"/>
+                                    </Path.RenderTransform>
+                                </Path>
+                            </Viewbox>
+                        </StackPanel>
+                    </Button>
+                </WrapPanel>
+            </DockPanel>
+        </StackPanel>
+        <DataGrid   x:Name="dataGrid" Grid.Row="2" IsReadOnly="True"
+                    AutoGenerateColumns="False" ColumnWidth="*" AlternationCount="2"
+                    CanUserAddRows="False" CanUserDeleteRows="False"
+                    HeadersVisibility="Column" VerticalScrollBarVisibility="Auto"
+                    ItemsSource="{Binding DataCollection}"
+                    Visibility="{Binding DataCollection, Converter={StaticResource ColToVisConv}}"
+                    IsEnabled="{Binding IsProgress, Converter={StaticResource InvBoolConv}}"
+                    LoadingRow="DataGrid_LoadingRow"
+                    PreviewKeyDown="DataGrid_PreviewKeyDown"
+                    PreviewMouseLeftButtonDown="DataGrid_PreviewMouseLeftButtonDown"
+                    PreviewMouseRightButtonDown="DataGrid_PreviewMouseRightButtonDown"
+                    >
+            <DataGrid.Resources>
+                <ContextMenu x:Key="ColumnHeaderContextMenu">
+                    <MenuItem Header="Номер" IsCheckable="True" Click="DataGridColumnHeaderMenuItem_Click" Tag="0"/>
+                    <MenuItem Header="Тип" IsCheckable="True" Click="DataGridColumnHeaderMenuItem_Click" Tag="1"/>
+                    <MenuItem Header="Дата/время" IsCheckable="True" Click="DataGridColumnHeaderMenuItem_Click" Tag="2"/>
+                    <MenuItem Header="Контекст" IsCheckable="True" Click="DataGridColumnHeaderMenuItem_Click" Tag="3"/>
+                    <MenuItem Header="Событие" IsCheckable="True" Click="DataGridColumnHeaderMenuItem_Click" Tag="4"/>
+                    <MenuItem Header="Подробности" IsCheckable="True" Click="DataGridColumnHeaderMenuItem_Click" Tag="5"/>
+                    <MenuItem Header="Категория" IsCheckable="True" Click="DataGridColumnHeaderMenuItem_Click" Tag="6"/>
+                </ContextMenu>
+                <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                    <Setter Property="ContextMenu" Value="{StaticResource ColumnHeaderContextMenu}"/>
+                    <EventSetter Event="ContextMenuOpening" Handler="DataGridColumnHeader_ContextMenuOpening"/>
+                </Style>
+            </DataGrid.Resources>
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="" Width="Auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock HorizontalAlignment="Center"
+                                       Text="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=Header}"
+                                       />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="" Width="30">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Viewbox Stretch="Fill" Width="15" Height="14" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5 2 0 0">
+                                <Path Data="{Binding Type, Converter={StaticResource TypeToPathConv}}"
+                                      Fill="{Binding Type, Converter={StaticResource TypeToBrushConv}}"
+                                      ToolTip="{Binding Type, Converter={StaticResource TypeToTitleConv}}"
+                                />
+                            </Viewbox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Дата/время" Width="Auto"
+                                    ElementStyle="{StaticResource TextBlockWithEllipsisStyle}"
+                                    Binding="{Binding Timestamp, StringFormat={}{0:dd MMMM yyyy HH:mm:ss}}"
+                                    />
+                <DataGridTextColumn Header="Контекст" Binding="{Binding Scope}" Width="Auto"  ElementStyle="{StaticResource TextBlockWithEllipsisStyle}"/>
+                <DataGridTextColumn Header="Событие" Binding="{Binding Message}" Width="*"  ElementStyle="{StaticResource TextBlockWithEllipsisStyle}"/>
+                <DataGridTextColumn Header="Подробности" Binding="{Binding Details}" Width="*"  ElementStyle="{StaticResource TextBlockWithEllipsisStyle}"/>
+                <DataGridTemplateColumn Header="" Width="30">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Viewbox Stretch="Fill" Width="12" Height="12" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5 2 0 0">
+                                <Path Data="{Binding Category, Converter={StaticResource CatToPathConv}}"
+                                      Fill="{Binding Op, Converter={StaticResource OpToBrushConv}}"
+                                      ToolTip="{Binding Category, Converter={StaticResource CatToTitleConv}}"
+                                      />
+                            </Viewbox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+            <DataGrid.ContextMenu>
+                <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                    <MenuItem   Header="Фильтровать" InputGestureText="Ctrl+F"
+                                Command="{Binding FilterCmd}"
+                                CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                >
+                        <MenuItem.Icon>
+                            <Viewbox Height="14" Width="14">
+                                <Canvas Height="496" Width="512">
+                                    <Path Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource FilterSolidV6Path}">
+                                        <Path.RenderTransform>
+                                            <TranslateTransform X="0" Y="0"/>
+                                        </Path.RenderTransform>
+                                    </Path>
+                                </Canvas>
+                            </Viewbox>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem   Header="Сбросить" InputGestureText="Esc"
+                                Command="{Binding ResetFilterCmd}"
+                                CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                >
+                        <MenuItem.Icon>
+                            <Viewbox Height="14" Width="14">
+                                <Canvas Height="496" Width="512">
+                                    <Path Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource FilterCircleXmarkSolidPath}">
+                                        <Path.RenderTransform>
+                                            <TranslateTransform X="0" Y="0"/>
+                                        </Path.RenderTransform>
+                                    </Path>
+                                </Canvas>
+                            </Viewbox>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <Separator/>
+                    <MenuItem Header="Копировать" InputGestureText="Ctrl+C"
+                              Command="ApplicationCommands.Copy">
+                        <MenuItem.Icon>
+                            <Viewbox Height="14" Width="14">
+                                <Canvas Height="496" Width="512">
+                                    <Path Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource CopySolidPath}">
+                                        <Path.RenderTransform>
+                                            <TranslateTransform X="30" Y="0"/>
+                                        </Path.RenderTransform>
+                                    </Path>
+                                </Canvas>
+                            </Viewbox>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Печать" InputGestureText="Ctrl+P"
+                              Command="ApplicationCommands.Copy">
+                        <MenuItem.Icon>
+                            <Viewbox Height="14" Width="14">
+                                <Canvas Height="496" Width="512">
+                                    <Path Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource PrintSolidPath}">
+                                        <Path.RenderTransform>
+                                            <TranslateTransform X="0" Y="0"/>
+                                        </Path.RenderTransform>
+                                    </Path>
+                                </Canvas>
+                            </Viewbox>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Сохранить">
+                        <MenuItem.Icon>
+                            <Viewbox Height="14" Width="14">
+                                <Canvas Height="496" Width="512">
+                                    <Path Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource FileExportSolidPath}">
+                                        <Path.RenderTransform>
+                                            <TranslateTransform X="60" Y="0"/>
+                                        </Path.RenderTransform>
+                                    </Path>
+                                </Canvas>
+                            </Viewbox>
+                        </MenuItem.Icon>
+                        <MenuItem Header="Документ" InputGestureText="Ctrl+D"
+                                  Command="{Binding ExportCmd}" CommandParameter="2"
+                                  >
+                            <MenuItem.Icon>
+                                <Viewbox Height="14" Width="14">
+                                    <Canvas Height="496" Width="512">
+                                        <Path Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource FilePdfSolidPath}">
+                                            <Path.RenderTransform>
+                                                <TranslateTransform X="0" Y="0"/>
+                                            </Path.RenderTransform>
+                                        </Path>
+                                    </Canvas>
+                                </Viewbox>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Таблица" InputGestureText="Ctrl+S"
+                                  Command="{Binding ExportCmd}" CommandParameter="1"
+                                  >
+                            <MenuItem.Icon>
+                                <Viewbox Height="14" Width="14">
+                                    <Canvas Height="496" Width="512">
+                                        <Path Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource FileCsvSolidPath}">
+                                            <Path.RenderTransform>
+                                                <TranslateTransform X="0" Y="0"/>
+                                            </Path.RenderTransform>
+                                        </Path>
+                                    </Canvas>
+                                </Viewbox>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </MenuItem>
+                    <MenuItem Header="Очистить" InputGestureText="Ctrl+Del"
+                              Command="{Binding ClearCmd}"
+                              CommandParameter="{Binding PlacementTarget.SelectedItems, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                              >
+                        <MenuItem.Icon>
+                            <Viewbox Height="14" Width="14">
+                                <Canvas Height="496" Width="512">
+                                    <Path Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource TrashAltSolidPath}">
+                                        <Path.RenderTransform>
+                                            <TranslateTransform X="30" Y="0"/>
+                                        </Path.RenderTransform>
+                                    </Path>
+                                </Canvas>
+                            </Viewbox>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Удалить" InputGestureText="Del"
+                              Command="{Binding DeleteCmd}"
+                              CommandParameter="{Binding PlacementTarget.SelectedItems, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                              >
+                        <MenuItem.Icon>
+                            <Viewbox Height="14" Width="14">
+                                <Canvas Height="496" Width="512">
+                                    <Path Fill="{StaticResource BaseDarkBrush}" Data="{StaticResource TrashSolidPath}">
+                                        <Path.RenderTransform>
+                                            <TranslateTransform X="30" Y="0"/>
+                                        </Path.RenderTransform>
+                                    </Path>
+                                </Canvas>
+                            </Viewbox>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+        </DataGrid>
     </Grid>
 </Page>

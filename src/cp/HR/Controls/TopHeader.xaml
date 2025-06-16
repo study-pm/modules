@@ -136,7 +136,7 @@
                     <MenuItem Header="_Пользователь"
                               IsChecked="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl},
                                                   Converter={StaticResource CheckedConverter},
-                                                  ConverterParameter='AuthPg, RegisterPg, PreferencesPg, ProfilePg, SettingsPg, UsersPg'}"
+                                                  ConverterParameter='AuthPg, LogPg, PreferencesPg, ProfilePg, RegisterPg, SettingsPg, UsersPg'}"
                               >
                         <MenuItem Header="В_ход"
                                   Style="{StaticResource SubMenuItemStyle}"

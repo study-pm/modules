@@ -1,5 +1,6 @@
 ﻿using HR.Controls;
 using HR.Data.Models;
+using HR.Models;
 using HR.Services;
 using HR.Utilities;
 using System;
@@ -19,27 +20,27 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml.Serialization;
+using static HR.Services.AppEventHelper;
 
 namespace HR.Pages
 {
-    public class PreferencesViewModel : INotifyPropertyChanged
+    [XmlRoot("Preferences")]
+    public class PreferencesModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string prop = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
-        internal Preferences dm;
-        public bool IsChanged => dm.IsStayLoggedIn != IsStayLoggedIn;
-        public bool IsEnabled => IsChanged && !IsInProgress;
-        private bool _isInProgress;
-        public bool IsInProgress
+
+        private bool _isLogOn;
+        public bool IsLogOn
         {
-            get => _isInProgress;
+            get => _isLogOn;
             set
             {
-                if (_isInProgress == value) return;
-                _isInProgress = value;
+                if (_isLogOn == value) return;
+                _isLogOn = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(IsEnabled));
             }
         }
         private bool _isStayLoggedIn;
@@ -51,30 +52,179 @@ namespace HR.Pages
                 if (_isStayLoggedIn == value) return;
                 _isStayLoggedIn = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(IsChanged));
-                OnPropertyChanged(nameof(IsEnabled));
             }
         }
-        public PreferencesViewModel()
+
+        private ObservableCollection<int> _logCategories;
+        public ObservableCollection<int> LogCategories
         {
-            IsStayLoggedIn = false;
+            get => _logCategories;
+            set
+            {
+                if (_logCategories == value) return;
+                _logCategories = value;
+                OnPropertyChanged();
+            }
         }
-        public PreferencesViewModel(Preferences dataModel)
+        private ObservableCollection<CheckableItem> _categories;
+        public ObservableCollection<CheckableItem> Categories
         {
-            dm = dataModel;
-            IsStayLoggedIn = dm.IsStayLoggedIn;
+            get => _categories;
+            set
+            {
+                if (_categories == value) return;
+                // Unsubscribe from stale items, if any
+                if (_categories != null)
+                {
+                    foreach (var item in _categories)
+                        item.PropertyChanged -= CategoryItem_PropertyChanged;
+                }
+
+                _categories = value;
+
+                // Subscribe to new items
+                if (_categories != null)
+                {
+                    foreach (var item in _categories)
+                        item.PropertyChanged += CategoryItem_PropertyChanged;
+                }
+                OnPropertyChanged();
+            }
         }
-        public void Reset()
+
+        private ObservableCollection<int> _logTypes;
+        public ObservableCollection<int> LogTypes
         {
-            IsStayLoggedIn = dm.IsStayLoggedIn;
+            get => _logTypes;
+            set
+            {
+                if (_logTypes == value) return;
+                _logTypes = value;
+                OnPropertyChanged();
+            }
         }
-        public void Set()
+        private ObservableCollection<CheckableItem> _types;
+        public ObservableCollection<CheckableItem> Types
         {
-            dm.IsStayLoggedIn = IsStayLoggedIn;
-            OnPropertyChanged(nameof(IsChanged));
-            OnPropertyChanged(nameof(IsEnabled));
+            get => _types;
+            set
+            {
+                if (_types == value) return;
+                // Unsubscribe from stale items, if any
+                if (_types != null)
+                {
+                    foreach (var item in _types)
+                        item.PropertyChanged -= TypeItem_PropertyChanged;
+                }
+
+                _types = value;
+
+                // Subscribe to new items
+                if (_types != null)
+                {
+                    foreach (var item in _types)
+                        item.PropertyChanged += TypeItem_PropertyChanged;
+                }
+                OnPropertyChanged();
+            }
+        }
+        public PreferencesModel()
+        {
+            // Initialize Categories, add event subscribers
+            Categories = new ObservableCollection<CheckableItem>(
+                Enum.GetValues(typeof(AppEventHelper.EventCategory))
+                    .Cast<AppEventHelper.EventCategory>()
+                    .Select(c => new CheckableItem
+                    {
+                        Id = (int)c,
+                        Name = c.ToString(),
+                        Title = c.ToTitle(),
+                        IsChecked = false
+                    })
+            );
+            // Initialize Types, add event subscribers
+            Types = new ObservableCollection<CheckableItem>(
+                Enum.GetValues(typeof(AppEventHelper.EventType))
+                    .Cast<AppEventHelper.EventType>()
+                    .Select(c => new CheckableItem
+                    {
+                        Id = (int)c,
+                        Name = c.ToString(),
+                        Title = c.ToTitle(),
+                        IsChecked = false
+                    })
+            );
+        }
+        private void CategoryItem_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(CheckableItem.IsChecked))
+            {
+                var item = sender as CheckableItem;
+                if (item == null) return;
+
+                if (item.IsChecked)
+                {
+                    if (!LogCategories.Contains(item.Id))
+                        LogCategories.Add(item.Id);
+                }
+                else
+                {
+                    if (LogCategories.Contains(item.Id))
+                        LogCategories.Remove(item.Id);
+                }
+            }
+        }
+        public void SyncCheckedCategories()
+        {
+            if (Categories == null || LogCategories == null)
+                return;
+
+            var selectedIds = LogCategories.ToHashSet();
+
+            foreach (var categoryItem in Categories)
+            {
+                categoryItem.IsChecked = selectedIds.Contains(categoryItem.Id);
+            }
+        }
+        public void SyncCheckedTypes()
+        {
+            if (Types == null || LogTypes == null)
+                return;
+
+            var selectedIds = LogTypes.ToHashSet();
+
+            foreach (var categoryItem in Types)
+            {
+                categoryItem.IsChecked = selectedIds.Contains(categoryItem.Id);
+            }
+        }
+        public void SyncCollections()
+        {
+            SyncCheckedCategories();
+            SyncCheckedTypes();
+        }
+
+        private void TypeItem_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(CheckableItem.IsChecked))
+            {
+                var item = sender as CheckableItem;
+                if (item == null) return;
+
+                if (item.IsChecked)
+                {
+                    if (!LogTypes.Contains(item.Id))
+                        LogTypes.Add(item.Id);
+                }
+                else
+                {
+                    if (LogTypes.Contains(item.Id))
+                        LogTypes.Remove(item.Id);
+                }
+            }
         }
     }
+
     /// <summary>
     /// Interaction logic for PreferencesPg.xaml
     /// </summary>
@@ -83,9 +233,17 @@ namespace HR.Pages
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string prop = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+
         private int uid = ((App)(Application.Current)).CurrentUser.Id;
-        private PreferencesViewModel _vM;
-        public PreferencesViewModel vm
+
+        private string prefsDir = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Preferences");
+        private string prefsPath;
+
+        public RelayCommand ResetCmd { get; }
+        public RelayCommand SubmitCmd { get; }
+
+        private ItemViewModel<Preferences, PreferencesModel> _vM;
+        public ItemViewModel<Preferences, PreferencesModel> vm
         {
             get => _vM;
             set
@@ -97,65 +255,45 @@ namespace HR.Pages
         public PreferencesPg()
         {
             InitializeComponent();
-            vm = new PreferencesViewModel();
+            prefsPath = System.IO.Path.Combine(prefsDir, uid.ToString() + ".xml");
+            vm = new ItemViewModel<Preferences, PreferencesModel>(App.Current.Preferences);
             DataContext = vm;
+            vm.Dm.SyncCollections();
+
+            ResetCmd = new RelayCommand(
+                _ => {
+                        vm.Reset();
+                        vm.Dm.SyncCollections();
+                    },
+                _ => vm.IsEnabled
+            );
+
+            SubmitCmd = new RelayCommand(
+                _ => Save(),
+                _ => vm.IsEnabled
+            );
         }
-        private async Task<PreferencesViewModel> GetPreferences()
+        private async void Save()
         {
             try
             {
-                vm.IsInProgress = true;
-                return new PreferencesViewModel(await Services.Request.GetPreferences(uid));
+                vm.IsProgress = true;
+                RaiseAppEvent(new AppEventArgs { Category = EventCategory.Data, Type = EventType.Progress, Message = "Сохранение предпочтений пользователя" });
+                await XmlHelper.SaveAsync(vm.Preset(), prefsPath);
+                vm.Set();
+                RaiseAppEvent(new AppEventArgs { Category = EventCategory.Data, Type = EventType.Success, Message = "Предпочтения пользователя успешно сохранены" });
+                // Handle user authentication state file
+                if (vm.Dm.IsStayLoggedIn) await Services.Request.SaveUidToFileAsync(uid, Data.Models.User.uidFilePath);
+                else await Request.DeleteUidFileAsync(Data.Models.User.uidFilePath);
             }
             catch (Exception exc)
             {
-                StatusInformer.ReportFailure($"Ошибка извлечения предпочтений пользователя: ${exc.Message}");
-                return null;
+                RaiseAppEvent(new AppEventArgs { Category = EventCategory.Data, Type = EventType.Error, Message = "Ошибка сохранения предпочтений пользователя", Details = exc.Message });
             }
             finally
             {
-                vm.IsInProgress = false;
-                StatusInformer.ReportSuccess("Предпочтения пользователя успешно извлечены");
+                vm.IsProgress = false;
             }
-        }
-        private async Task SetPreferences()
-        {
-            try
-            {
-                vm.IsInProgress = true;
-                StatusInformer.ReportProgress("Сохранение предпочтений пользователя");
-                await vm.dm.SaveAsync();
-                StatusInformer.ReportSuccess("Предпочтения пользователя успешно сохранены");
-            }
-            catch (Exception exc)
-            {
-                StatusInformer.ReportFailure($"Ошибка сохранения предпочтений пользователя: ${exc.Message}");
-            }
-            finally
-            {
-                // Restore persisted data model
-                vm.dm = (await GetPreferences()).dm;
-                vm.IsInProgress = false;
-            }
-        }
-        private async void Page_Loaded(object sender, RoutedEventArgs e)
-        {
-            vm = await GetPreferences();
-            DataContext = vm;
-        }
-
-        private void ResetBtn_Click(object sender, RoutedEventArgs e)
-        {
-            vm.Reset();
-        }
-
-        private async void SubmitBtn_Click(object sender, RoutedEventArgs e)
-        {
-            vm.Set();
-            await SetPreferences();
-            // Handle user authentication state file
-            if (vm.IsStayLoggedIn) await Services.Request.SaveUidToFileAsync(uid, Data.Models.User.uidFilePath);
-            else await Request.DeleteUidFileAsync(Data.Models.User.uidFilePath);
         }
     }
 }

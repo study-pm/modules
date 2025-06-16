@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Xml;
+using static HR.Services.AppEventHelper;
 
 namespace HR.Services
 {
@@ -20,6 +21,9 @@ namespace HR.Services
     {
         public static HREntities ctx = new HREntities();
         private static string basePath = "Data/Sources/";
+        private static string logsPath = "Logs";
+        public static string GetLocalDirPath(string dirName) => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, dirName);
+        public static string GetLocalFilePath(int uid, string dirName) => Path.Combine(GetLocalDirPath(dirName), $"{uid.ToString()}.json");
         public static async Task<List<ClassGuidance>> GetClassGuidance()
         {
             try
@@ -105,6 +109,87 @@ namespace HR.Services
                 Debug.WriteLine(exc.Message);
                 StatusInformer.ReportFailure($"Ошибка извлечения данных о сотрудниках: {exc.Message}");
                 return new List<Employee>();  // Возврат значения при ошибке
+            }
+        }
+        public static async Task ClearLog(int uid)
+        {
+            var (cat, name, op, scope) = (EventCategory.Data, "Deletion", 3, "Журнал пользователя");
+            try
+            {
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Op = op, Scope = scope, Type = EventType.Progress, Message = "Удаление данных"
+                });
+                await JsonHelper.ClearCollectionAsync<AppEventArgs>(GetLocalFilePath(uid, logsPath));
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Op = op, Scope = scope, Type = EventType.Success,
+                    Message = "Данные успешно удалены",
+                    Details = "Удалены все данные"
+                });
+            }
+            catch (Exception exc)
+            {
+                Debug.WriteLine(exc.Message, name);
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Op = op, Scope = scope, Type = EventType.Error,
+                    Message = "Ошибка удаления данных", Details = exc.Message
+                });
+                throw exc;
+            }
+        }
+        public static async Task<int> DeleteLogItems(int uid, List<AppEventArgs> items)
+        {
+            var (cat, name, scope) = (EventCategory.Data, "Deletion", "Журнал пользователя");
+            try
+            {
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Scope = scope, Type = EventType.Progress, Message = "Удаление данных"
+                });
+                int removedCount = await JsonHelper.RemoveItemsAsync<AppEventArgs>(GetLocalFilePath(uid, logsPath), x => items.Any(del => del.Id == x.Id));
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Scope = scope, Type = EventType.Success,
+                    Message = "Данные успешно удалены", Details = $"Удалено записей: {removedCount}"
+                });
+                return removedCount;
+            }
+            catch (Exception exc)
+            {
+                Debug.WriteLine(exc.Message, name);
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Scope = scope, Type = EventType.Error, Message = "Ошибка удаления данных", Details = exc.Message
+                });
+                throw exc;
+            }
+        }
+        public static async Task<List<AppEventArgs>> GetLog(int uid)
+        {
+            var (cat, name, scope) = (EventCategory.Data, "Extraction", "Журнал пользователя");
+            try
+            {
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Scope = scope, Type = EventType.Progress, Message = "Загрузка данных"
+                });
+                List<AppEventArgs> events = await JsonHelper.LoadCollectionAsync<AppEventArgs>(GetLocalFilePath(uid, logsPath));
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Scope = scope, Type = EventType.Success, Message = "Данные успешно загружены"
+                });
+                return events;
+            }
+            catch (Exception exc)
+            {
+                Debug.WriteLine(exc.Message, name);
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Scope = scope, Type = EventType.Error, Message = "Ошибка загрузки данных", Details = exc.Message
+                });
+                return new List<AppEventArgs>();
             }
         }
         public static async Task<List<HR.Data.Models.User>> GetUsers(bool isNewCtx = false)
@@ -203,7 +288,17 @@ namespace HR.Services
             try
             {
                 StatusInformer.ReportProgress("Извлечение предпочтений пользователя");
-                return await Preferences.LoadAsync(uid);
+                Preferences prefs =  await Preferences.LoadAsync(uid);
+                if (!prefs.IsLogOn) return prefs;
+                if (prefs.LogCategories == null || prefs.LogCategories.Count == 0)
+                {
+                    prefs.LogCategories = new List<int> { 0, 1, 2, 3 };
+                }
+                if (prefs.LogTypes == null || prefs.LogTypes.Count == 0)
+                {
+                    prefs.LogTypes = new List<int> { 1, 2, 3, 4 };
+                }
+                return prefs;
             }
             catch (Exception exc)
             {

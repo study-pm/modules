@@ -27,11 +27,11 @@ namespace HR.Utilities
         /// <summary>
         /// List of event categories that this logger processes.
         /// </summary>
-        public List<EventCategory> categories;
+        public IEnumerable<int> categories;
         /// <summary>
         /// List of event types that this logger processes.
         /// </summary>
-        public List<EventType> types;
+        public IEnumerable<int> types;
 
         private bool _disposed = false; // Flag to prevent multiple calls to Dispose
         /// <summary>
@@ -41,7 +41,7 @@ namespace HR.Utilities
         /// <param name="uid">The unique user identifier used as the log file name.</param>
         /// <param name="categories">The event categories to filter.</param>
         /// <param name="types">The event types to filter.</param>
-        public Logger(int uid, List<EventCategory> categories, List<EventType> types)
+        public Logger(int uid, IEnumerable<int> categories, IEnumerable<int> types)
         {
             filePath = System.IO.Path.Combine(logsDir, uid + ".json");
             string logDirectory = System.IO.Path.GetDirectoryName(filePath);
@@ -109,7 +109,7 @@ namespace HR.Utilities
         {
             try
             {
-                if (categories.Any(x => x == evt.Category) && types.Any(x => x == evt.Type))
+                if (categories.Contains((int)evt.Category) && types.Contains((int)evt.Type))
                 {
                     JsonHelper.AddItem(filePath, evt);
                 }

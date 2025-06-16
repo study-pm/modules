@@ -37,7 +37,7 @@
                 <Viewbox ToolTip="Информация"
                          Visibility="{Binding Status, Converter={StaticResource StatusToVisibilityConverter}, ConverterParameter=Info}"
                          >
-                    <Path Fill="#21a0df" Data="{StaticResource InfoCircleSolidPath}"/>
+                    <Path Fill="{StaticResource InfoBrush}" Data="{StaticResource InfoCircleSolidPath}"/>
                 </Viewbox>
                 <Viewbox ToolTip="В процессе" Height="14" Width="10" x:Name="Prosess1" Visibility="Visible">
                     <Path Fill="{StaticResource AwaitingBrush}" Data="{StaticResource HourglassStartSolidPath}"/>
@@ -58,8 +58,14 @@
                          >
                     <Path Fill="{StaticResource ErrorBrush}" Data="{StaticResource ExclamationCircleSolidPath}"/>
                 </Viewbox>
+                <Viewbox ToolTip="Отмена"
+                         Visibility="{Binding Status, Converter={StaticResource StatusToVisibilityConverter}, ConverterParameter=Cancel}"
+                         >
+                    <Path Fill="{StaticResource CancelBrush}" Data="{StaticResource MinusCircleSolidPath}"/>
+                </Viewbox>
                 </StackPanel>
                 <TextBlock Text="{Binding Timestamp, StringFormat=yyyy-MM-dd HH:mm:ss}" FontWeight="Light" />
+                <TextBlock Text="{Binding Scope}" FontWeight="DemiBold" Margin="5 0 0 0" />
                 <TextBlock Text="{Binding Message}" Margin="5 0 0 0" />
                 <TextBlock x:Name="DotsTextBlock" Text="" Margin="0"
                            Visibility="{Binding Status, Converter={StaticResource StatusToVisibilityConverter}, ConverterParameter=Progress}"
@@ -79,6 +85,7 @@
                         </EventTrigger>
                     </TextBlock.Triggers>
                 </TextBlock>
+                <TextBlock Text="{Binding Details}" FontWeight="Light" FontStretch="Condensed" Margin="5 0 0 0" />
             </WrapPanel>
         </StatusBar>
     </DockPanel>

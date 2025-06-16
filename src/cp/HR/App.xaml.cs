@@ -5,18 +5,21 @@ using System.Configuration;
 using System.Data;
 using System.Data.Entity;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using HR.Data.Models;
 using HR.Pages;
 using HR.Services;
 using HR.Utilities;
+using static HR.Services.AppEventHelper;
 
 namespace HR
 {
@@ -46,16 +49,43 @@ namespace HR
         public App()
         {
             LogOutCommand = new RelayCommand(_ => LogOut());
+            // Culture setup
+            var culture = new CultureInfo("ru-RU");
+            CultureInfo.DefaultThreadCurrentCulture = culture;
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
+            FrameworkElement.LanguageProperty.OverrideMetadata(
+                typeof(FrameworkElement),
+                new FrameworkPropertyMetadata(
+                    XmlLanguage.GetLanguage(culture.IetfLanguageTag)));
         }
         public async void LogOut()
         {
             CurrentUser = null;
             Preferences = null;
-            EventLogger = null;
             var mainWindow = Application.Current.MainWindow as MainWindow;
             mainWindow.mainFrame.Navigate(new AuthPg());
-            await Request.DeleteUidFileAsync(Data.Models.User.uidFilePath);
-            StatusInformer.ReportInfo("Гостевой режим");
+
+            var (cat, name, op, scope) = (EventCategory.Auth, "Logout", 3, "Приложение");
+            try
+            {
+                await Request.DeleteUidFileAsync(Data.Models.User.uidFilePath);
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Op = op, Scope = scope, Type = EventType.Info,
+                    Message = "Завершение сеанса", Details = "Гостевой режим"
+                });
+                EventLogger?.Dispose();
+                EventLogger = null;
+            }
+            catch (Exception exc)
+            {
+                Debug.WriteLine(exc.Message, name);
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Op = op, Scope = scope, Type = EventType.Error,
+                    Message = "Ошибка завершениея сеанса", Details = exc.Message
+                });
+            }
         }
 
         protected override void OnStartup(StartupEventArgs e)
@@ -75,24 +105,37 @@ namespace HR
             }
             try
             {
-                StatusInformer.ReportProgress("Проверка файла пользователя");
                 int uid = int.Parse(File.ReadAllText(Data.Models.User.uidFilePath));
                 // Check for user with provided login existence
                 return await Request.ctx.Users.FirstAsync(x => x.Id == uid);
             }
             catch (FormatException exc)
             {
-                StatusInformer.ReportFailure($"Неверный формат данных файла пользователя: {exc.Message}");
+                Debug.WriteLine($"Invalid user file data format: {exc.Message}");
                 return null;
             }
             catch (Exception exc)
             {
-                StatusInformer.ReportFailure($"Отсутствует пользователь из файла пользователя: {exc.Message}");
+                Debug.WriteLine($"File data points to missing or invalid user: {exc.Message}");
                 return null;
             }
         }
+        private void Application_Exit(object sender, ExitEventArgs e)
+        {
+            RaiseAppEvent(new AppEventArgs
+            {
+                Category = EventCategory.Auth,
+                Name = "Shutdown",
+                Op = 1,
+                Scope = "Приложение",
+                Type = EventType.Info,
+                Message = "Завершение работы",
+                Details = "Остановка приложения"
+            });
+        }
         private async void Application_Startup(object sender, StartupEventArgs e)
         {
+            var (cat, name, op, scope) = (EventCategory.Auth, "Startup", 0, "Приложение");
             try
             {
                 //var splash = new SplashWindow(); // Custom splash window
@@ -101,24 +144,10 @@ namespace HR
                 splash.Show(false); // show splash screen without auto closing (true to auto-close)
 
                 CurrentUser = await GetCurrentUser();
+                // Handle preferences
                 if (IsAuth)
                 {
                     Preferences = await Request.GetPreferences(user.Id);
-                    List<AppEventHelper.EventCategory> categories = new List<AppEventHelper.EventCategory> {
-                        AppEventHelper.EventCategory.Auth,
-                        AppEventHelper.EventCategory.Data,
-                        AppEventHelper.EventCategory.Navigation,
-                        AppEventHelper.EventCategory.Service
-                    };
-                    List<AppEventHelper.EventType> types = new List<AppEventHelper.EventType> {
-                        AppEventHelper.EventType.Fatal,
-                        AppEventHelper.EventType.Error,
-                        AppEventHelper.EventType.Warning,
-                        AppEventHelper.EventType.Success
-                    };
-                    Preferences.IsLogOn = true;
-                    Preferences.LogCategories = categories;
-                    Preferences.LogTypes = types;
                     if (Preferences.IsLogOn) EventLogger = new Logger(CurrentUser.Id, Preferences.LogCategories, Preferences.LogTypes);
                 }
                 var mainWindow = new MainWindow();
@@ -126,13 +155,23 @@ namespace HR
                 mainWindow.Show();
 
                 splash.Close(TimeSpan.FromMilliseconds(200));
-                if (IsAuth) StatusInformer.ReportSuccess("Пользовательский режим");
-                else StatusInformer.ReportInfo("Гостевой режим");
-                // StatusInformer.ReportProgress("Загрузка данных...");
+
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Op = op, Scope = scope, Type = EventType.Info,
+                    Message = IsAuth ? "Возобновление сеанса" : "Новый сеанс",
+                    Details = IsAuth ? "Пользовательский режим" : "Гостевой режим"
+                });
             }
-            catch (Exception ex)
+            catch (Exception exc)
             {
-                Debug.WriteLine(ex.ToString());
+                Debug.WriteLine(exc.Message, name);
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Op = op, Scope = scope, Type = EventType.Error,
+                    Message = "Ошибка загрузки данных", Details = exc.Message
+                });
+
                 Environment.Exit(1);
             }
         }

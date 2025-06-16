@@ -44,7 +44,7 @@
                         <!-- Content with TextBlock for trimming -->
                         <TextBlock Grid.Column="1"
                            VerticalAlignment="Center"
-                           Margin="7,0,0,0"
+                           Margin="3,0,0,0"
                            Text="{TemplateBinding Content}"
                            TextTrimming="CharacterEllipsis"
                            TextWrapping="NoWrap"
@@ -80,6 +80,14 @@
             </Trigger>
             <Trigger Property="IsChecked" Value="True">
                 <Setter Property="FontWeight" Value="Bold" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="GroupCheck" TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+        <Setter Property="Margin" Value="5 0 5 5" />
+        <Style.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="FontWeight" Value="Normal" />
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -555,25 +563,54 @@
                             Padding="5"
                             SnapsToDevicePixels="True"
                             RenderTransformOrigin="0.5,0.5">
-                        <ContentPresenter x:Name="contentPresenter"
+                        <Grid x:Name="rootGrid" RenderTransformOrigin="0.5,0.5">
+                            <Grid.RenderTransform>
+                                <ScaleTransform x:Name="scaleTransform" ScaleX="1" ScaleY="1" />
+                            </Grid.RenderTransform>
+                            <ContentPresenter x:Name="contentPresenter"
                                       Content="{TemplateBinding Content}"
                                       HorizontalAlignment="Center"
                                       VerticalAlignment="Center"
                                       RenderTransformOrigin="0.5,0.5">
-                            <ContentPresenter.RenderTransform>
-                                <ScaleTransform ScaleX="1" ScaleY="1" />
-                            </ContentPresenter.RenderTransform>
-                        </ContentPresenter>
+                                <ContentPresenter.RenderTransform>
+                                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                                </ContentPresenter.RenderTransform>
+                            </ContentPresenter>
+                        </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="scaleTransform"
+                                                     Storyboard.TargetProperty="ScaleX"
+                                                     To="1.1" Duration="0:0:0.2" />
+                                        <DoubleAnimation Storyboard.TargetName="scaleTransform"
+                                                     Storyboard.TargetProperty="ScaleY"
+                                                     To="1.1" Duration="0:0:0.2" />
+                                        <DoubleAnimation Storyboard.TargetName="contentPresenter"
+                                                     Storyboard.TargetProperty="Opacity"
+                                                     To="0.75" Duration="0:0:0.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="scaleTransform"
+                                                     Storyboard.TargetProperty="ScaleX"
+                                                     To="1" Duration="0:0:0.2" />
+                                        <DoubleAnimation Storyboard.TargetName="scaleTransform"
+                                                     Storyboard.TargetProperty="ScaleY"
+                                                     To="1" Duration="0:0:0.2" />
+                                        <DoubleAnimation Storyboard.TargetName="contentPresenter"
+                                                     Storyboard.TargetProperty="Opacity"
+                                                     To="1" Duration="0:0:0.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
                             <Setter Property="Cursor" Value="Hand" />
-                            <Setter TargetName="contentPresenter" Property="Opacity" Value="0.75" />
-                            <Setter TargetName="contentPresenter" Property="RenderTransform">
-                                <Setter.Value>
-                                    <ScaleTransform ScaleX="1.05" ScaleY="1.05" />
-                                </Setter.Value>
-                            </Setter>
                         </Trigger>
                         <Trigger Property="IsFocused" Value="True">
                             <Setter TargetName="border" Property="Background" Value="Transparent" />
@@ -587,10 +624,33 @@
                         <Trigger Property="IsPressed" Value="True">
                             <Setter TargetName="contentPresenter" Property="Opacity" Value="0.5" />
                         </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="Gray" />
+                            <Setter Property="Cursor" Value="Arrow" />
+                            <Setter Property="Opacity" Value="0.5" />
+                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+    <Style x:Key="IconButtonCsv" TargetType="Button" BasedOn="{StaticResource IconButton}">
+        <Setter Property="Foreground" Value="{StaticResource CsvBrush}" />
+    </Style>
+    <Style x:Key="IconButtonCyan" TargetType="Button" BasedOn="{StaticResource IconButton}">
+        <Setter Property="Foreground" Value="{StaticResource cyanDarkBrush}" />
+    </Style>
+    <Style x:Key="IconButtonMagenta" TargetType="Button" BasedOn="{StaticResource IconButton}">
+        <Setter Property="Foreground" Value="{StaticResource magentaDarkBrush}" />
+    </Style>
+    <Style x:Key="IconButtonOrange" TargetType="Button" BasedOn="{StaticResource IconButton}">
+        <Setter Property="Foreground" Value="{StaticResource OrangeRegularBrush}" />
+    </Style>
+    <Style x:Key="IconButtonPdf" TargetType="Button" BasedOn="{StaticResource IconButton}">
+        <Setter Property="Foreground" Value="{StaticResource PdfBrush}" />
+    </Style>
+    <Style x:Key="IconButtonRed" TargetType="Button" BasedOn="{StaticResource IconButton}">
+        <Setter Property="Foreground" Value="{StaticResource ErrorBrush}" />
     </Style>
     <Style x:Key="IconToggleButtonPathStyle" TargetType="ToggleButton">
         <Setter Property="Width" Value="50" />

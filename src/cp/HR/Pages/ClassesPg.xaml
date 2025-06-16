@@ -11,6 +11,7 @@
       Title="ClassesPg" Loaded="Page_Loaded" Unloaded="Page_Unloaded">
     <Page.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <utils:CollectionToVisibilityConverter x:Key="ColToVisConv"/>
         <utils:InverseBoolToVisibilityConverter x:Key="InvBoolConv"/>
         <utils:NotNullToBoolConverter  x:Key="NotNullToBoolConverter"/>
     </Page.Resources>
@@ -24,7 +25,7 @@
             <TextBlock Style="{StaticResource Paragraph}">
                 Данный раздел содержит информацию о классном руководстве.
             </TextBlock>
-            <TextBlock Style="{StaticResource NoData}" Visibility="{Binding IsListEmpty, Converter={StaticResource BoolToVis}}">
+            <TextBlock Style="{StaticResource NoData}" Visibility="{Binding Classes, Converter={StaticResource ColToVisConv}, ConverterParameter=False}">
                 Информация отсутствует
             </TextBlock>
             <StackPanel Visibility="{Binding IsListNotEmpty, Converter={StaticResource BoolToVis}}">

@@ -16,20 +16,22 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using HR.Services;
 using HR.Utilities;
+using static HR.Services.AppEventHelper;
 
 namespace HR.Controls
 {
     public class StatusToVisibilityConverter : IValueConverter
     {
-        public StatusType TargetStatus { get; set; } = StatusType.Success;
+        public EventType TargetStatus { get; set; } = EventType.Success;
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is StatusType status)
+            if (value is EventType status)
             {
-                StatusType target = TargetStatus;
-                if (parameter != null && Enum.TryParse(parameter.ToString(), out StatusType paramStatus))
+                EventType target = TargetStatus;
+                if (parameter != null && Enum.TryParse(parameter.ToString(), out EventType paramStatus))
                     target = paramStatus;
                 return status == target ? Visibility.Visible : Visibility.Collapsed;
             }
@@ -47,6 +49,27 @@ namespace HR.Controls
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string propertyName) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        private string _details;
+        public string Details
+        {
+            get => _details;
+            set
+            {
+                _details = value;
+                OnPropertyChanged(nameof(Details));
+            }
+        }
+        public string _scope;
+        public string Scope
+        {
+            get => _scope;
+            set
+            {
+                _scope = value;
+                OnPropertyChanged(nameof(Scope));
+            }
+        }
         public string _message;
         public string Message
         {
@@ -57,18 +80,26 @@ namespace HR.Controls
                 OnPropertyChanged(nameof(Message));
             }
         }
-        public DateTime Timestamp { get; set; }
-        public StatusType _status;
-        public StatusType Status
+        private DateTime _timestamp;
+        public DateTime Timestamp
+        {
+            get => _timestamp;
+            set
+            {
+                _timestamp = value;
+                OnPropertyChanged(nameof(Timestamp));
+            }
+        }
+        public EventType _status;
+        public EventType Status
         {
             get => _status;
             set
             {
                 _status = value;
                 OnPropertyChanged(nameof(Status));
-                Timestamp = DateTime.Now;
                 OnPropertyChanged(nameof(Timestamp));
-                if (value == StatusType.Progress) StartAnimation();
+                if (value == EventType.Progress) StartAnimation();
                 else StopAnimation();
             }
         }
@@ -76,10 +107,13 @@ namespace HR.Controls
         {
             InitializeComponent();
             this.DataContext = this;
-            StatusInformer.StatusChanged += (sender, args) =>
+            AppEventHelper.AppEvent += (sender, args) =>
             {
+                Details = args.Details;
                 Message = args.Message;
+                Scope = args.Scope;
                 Status = args.Type;
+                Timestamp = args.Timestamp;
             };
         }
         private DispatcherTimer _animTimer;
