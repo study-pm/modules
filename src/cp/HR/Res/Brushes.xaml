@@ -7,6 +7,7 @@
     <SolidColorBrush x:Key="BaseDarkBrush" Color="#33404d" />
     <SolidColorBrush x:Key="BaseLightBrush" Color="#dde0e2" />
     <SolidColorBrush x:Key="BlueBrush" Color="#21a0df" />
+    <SolidColorBrush x:Key="CancelBrush" Color="#ae3649" />
     <SolidColorBrush x:Key="CsvBrush" Color="#088409" />
     <SolidColorBrush x:Key="CyanNormalBrush" Color="#46b8bc" />
     <SolidColorBrush x:Key="DisabledForegroundBrush" Color="Gray" />
