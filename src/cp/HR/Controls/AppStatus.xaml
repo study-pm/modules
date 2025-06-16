@@ -58,6 +58,11 @@
                          >
                     <Path Fill="{StaticResource ErrorBrush}" Data="{StaticResource ExclamationCircleSolidPath}"/>
                 </Viewbox>
+                <Viewbox ToolTip="Отмена"
+                         Visibility="{Binding Status, Converter={StaticResource StatusToVisibilityConverter}, ConverterParameter=Cancel}"
+                         >
+                    <Path Fill="{StaticResource CancelBrush}" Data="{StaticResource MinusCircleSolidPath}"/>
+                </Viewbox>
                 </StackPanel>
                 <TextBlock Text="{Binding Timestamp, StringFormat=yyyy-MM-dd HH:mm:ss}" FontWeight="Light" />
                 <TextBlock Text="{Binding Scope}" FontWeight="DemiBold" Margin="5 0 0 0" />
