@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.IO.Packaging;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -263,6 +264,7 @@ namespace HR.Pages
         public ICommand DeleteCmd { get; }
         public ICommand ExportCmd { get; }
         public ICommand FilterCmd { get; }
+        public ICommand PrintCmd { get; }
         public ICommand ResetFilterCmd { get; }
         public ICommand ResetSearchCmd { get; }
 
@@ -742,19 +744,19 @@ namespace HR.Pages
                 RaiseAppEvent(new AppEventArgs
                 {
                     Category = cat, Name = name, Op = op, Scope = scope, Type = EventType.Success,
-                    Message = "Данные успешно экспортированы", Details = "Файл сформирован"
+                    Message = "Данные успешно экспортированы", Details = "Экспорт в CSV"
                 });
-                MessageBox.Show($"Файл успешно сохранен", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show($"Журнал событий сохранен в файле CSV.", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception exc)
             {
-                Debug.WriteLine(exc, "LogPg: Data export");
+                Debug.WriteLine(exc, "LogPg: CSV data export");
                 RaiseAppEvent(new AppEventArgs
                 {
                     Category = cat, Name = name, Op = op, Scope = scope, Type = EventType.Error,
                     Message = "Ошибка экспорта данных", Details = exc.Message
                 });
-                MessageBox.Show($"Ошибка сохранения файла: {exc.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Ошибка сохранения файла CSV: {exc.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -767,7 +769,62 @@ namespace HR.Pages
         }
         private void ExportPdf(string filePath)
         {
-            MessageBox.Show("Export PDF");
+            var (cat, name, op, scope) = (EventCategory.Service, "Export", 4, "Журнал пользователя");
+            try
+            {
+                var skip = new[] { "Id", "Op", "Name" };
+                var headers = new Dictionary<string, string>
+                {
+                    ["Timestamp"] = "Дата/время",
+                    ["Type"] = "Тип",
+                    ["Category"] = "Категория",
+                    ["Scope"] = "Контекст",
+                    ["Message"] = "Событие",
+                    ["Details"] = "Подробности"
+                };
+                var converters = new Dictionary<string, Func<object, string>>
+                {
+                    ["Category"] = val => val == null ? "" : ((EventCategory)val).ToTitle(),
+                    ["Type"] = val => val == null ? "" : ((EventType)val).ToTitle(),
+                    ["Timestamp"] = val => val == null ? "" : ((DateTime)val).ToString("dd MMMM yyyy HH:mm:ss")
+                };
+                var columnWidths = new Dictionary<string, double>
+                {
+                    { "Timestamp", 2.5 },
+                    { "Type", 2.5 },
+                    { "Category", 3 },
+                    { "Scope", 3 },
+                };
+                var document = PdfHelper.CreateDocumentFromCollectionView(
+                    CollectionView,
+                    documentTitle: $"Журнал событий на {DateTime.Now}",
+                    skipProperties: skip,
+                    customHeaders: headers,
+                    customConverters: converters,
+                    columnWidths: columnWidths,
+                    addRowNumbers: true,
+                    isLandscape: true
+                    );
+
+                PdfHelper.SaveDocumentToPdf(document, filePath);
+
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Op = op, Scope = scope, Type = EventType.Success,
+                    Message = "Данные успешно экспортированы", Details = "Экспорт в PDF"
+                });
+                MessageBox.Show($"Журнал событий сохранен в файле PDF.", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch(Exception exc)
+            {
+                Debug.WriteLine(exc, "LogPg: PDF data export");
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,Name = name, Op = op, Scope = scope, Type = EventType.Error,
+                    Message = "Ошибка экспорта данных", Details = exc.Message
+                });
+                MessageBox.Show($"Ошибка сохранения файла PDF: {exc.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
         private void FilterByCellValue()
         {
@@ -928,6 +985,14 @@ namespace HR.Pages
                     e.Handled = true;
                 }
             }
+            if (e.Key == Key.D && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                if (item != null && ExportCmd.CanExecute(3))
+                {
+                    ExportCmd.Execute(3);
+                    e.Handled = true;
+                }
+            }
             if (e.Key == Key.F && Keyboard.Modifiers == ModifierKeys.Control)
             {
                 if (item != null && FilterCmd.CanExecute(item))
@@ -939,9 +1004,9 @@ namespace HR.Pages
             }
             if (e.Key == Key.P && Keyboard.Modifiers == ModifierKeys.Control)
             {
-                if (item != null && ExportCmd.CanExecute(3))
+                if (item != null && PrintCmd.CanExecute(null))
                 {
-                    ExportCmd.Execute(3);
+                    PrintCmd.Execute(null);
                     e.Handled = true;
                 }
             }
