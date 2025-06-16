@@ -56,6 +56,7 @@ namespace HR.Services
             Error = 2,      // Event indicating an error occurred.
             Info = 3,       // Informational event.
             Warning = 4,    // Event indicating a warning condition.
+            Cancel = 5,     // A cancelled operation.
         }
         /// <summary>
         /// Provides data for application events, including identification, timing, classification, and descriptive messages.
@@ -134,6 +135,8 @@ namespace HR.Services
                     return "Информация";
                 case AppEventHelper.EventType.Warning:
                     return "Предупреждение";
+                case AppEventHelper.EventType.Cancel:
+                    return "Отмена";
                 default:
                     return eventType.ToString();
             }
