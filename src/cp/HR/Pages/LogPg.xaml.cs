@@ -111,6 +111,9 @@ namespace HR.Pages
                 case EventType.Warning:
                     resourceKey = "WarningBrush";
                     break;
+                case EventType.Cancel:
+                    resourceKey = "CancelBrush";
+                    break;
                 default:
                     resourceKey = "greyDarkBrush";
                     break;
@@ -198,6 +201,8 @@ namespace HR.Pages
                     return Application.Current.TryFindResource("InfoCircleSolidPath") as Geometry;
                 case EventType.Warning:
                     return Application.Current.TryFindResource("ExclamationTriangleSolidPath") as Geometry;
+                case EventType.Cancel:
+                    return Application.Current.TryFindResource("MinusCircleSolidPath") as Geometry;
                 default:
                     return null;
             }
@@ -497,7 +502,14 @@ namespace HR.Pages
                     );
 
                     if (result != MessageBoxResult.Yes)
+                    {
+                        RaiseAppEvent(new AppEventArgs
+                        {
+                            Category = EventCategory.Data, Name = "Delete", Op = 3, Scope = "Журнал событий", Type = EventType.Cancel,
+                            Message = "Удаление отменено", Details = "Отменено пользователем"
+                        });
                         return;
+                    }
 
                     DeleteItems(itemsToDelete);
                 },
@@ -522,7 +534,15 @@ namespace HR.Pages
                         FilterIndex = index
                     };
                     bool? result = sfd.ShowDialog();
-                    if (result != true) return;
+                    if (result != true)
+                    {
+                        RaiseAppEvent(new AppEventArgs
+                        {
+                            Category = EventCategory.Service, Name = "Export", Op = 4, Scope = "Журнал событий", Type = EventType.Cancel,
+                            Message = "Экспорт данных отменен", Details = "Отменено пользователем"
+                        });
+                        return;
+                    }
 
                     string filePath = sfd.FileName;
                     index = sfd.FilterIndex;
@@ -629,6 +649,10 @@ namespace HR.Pages
                     }
                 },
                 _ => !IsProgress
+            );
+            PrintCmd = new RelayCommand(
+                _ => Print(),
+                _ => !IsProgress && DataCollection?.Count > 0
             );
             ResetFilterCmd = new RelayCommand(
                 execute: param => ResetFilter(),
@@ -906,6 +930,79 @@ namespace HR.Pages
                 return null;
             }
             return SearchText;
+        }
+        private void Print()
+        {
+            var (cat, name, op, scope) = (EventCategory.Service, "Export", 4, "Журнал пользователя");
+            try
+            {
+                IsProgress = true;
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Op = op, Scope = scope, Type = EventType.Progress, Message = "Подготовка печати"
+                });
+                var converters = new Dictionary<string, Func<object, string>>
+                {
+                    ["Category"] = val => val == null ? "" : ((EventCategory)val).ToTitle(),
+                    ["Type"] = val => val == null ? "" : ((EventType)val).ToTitle(),
+                    ["Timestamp"] = val => val == null ? "" : ((DateTime)val).ToString("dd MMMM yyyy HH:mm:ss")
+                };
+                var columnWidths = new Dictionary<string, double>
+                {
+                    { "Timestamp", 100 },
+                    { "Type", 100 },
+                    { "Category", 100 },
+                    { "Scope", 100 },
+                };
+                bool res = PrintHelper.PrintCollectionView(
+                    CollectionView,
+                    printDescription: $"Журнал событий на {DateTime.Now}",
+                    propertiesToPrint: new[] { "Timestamp", "Type", "Category", "Scope", "Message", "Details" },
+                    customHeaders: new Dictionary<string, string>
+                    {
+                        { "Timestamp", "Дата/время" },
+                        { "Type", "Тип" },
+                        { "Category", "Категория" },
+                        { "Scope", "Контекст" },
+                        { "Message", "Событие" },
+                        { "Details", "Подробности" },
+                    },
+                    converters: converters,
+                    columnWidths: columnWidths,
+                    addRowNumbers: true
+                );
+                if (res)
+                {
+                    RaiseAppEvent(new AppEventArgs
+                    {
+                        Category = cat, Name = name, Op = op, Scope = scope, Type = EventType.Success,
+                        Message = "Печать в файл успешно завершена", Details = "Печать в PDF"
+                    });
+                    MessageBox.Show($"Журнал событий сохранен в файле PDF.", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    RaiseAppEvent(new AppEventArgs
+                    {
+                        Category = cat, Name = name, Op = op, Scope = scope, Type = EventType.Cancel,
+                        Message = "Печать в файл отменена", Details = "Отменено пользователем"
+                    });
+                }
+            }
+            catch(Exception exc)
+            {
+                Debug.WriteLine(exc, "LogPg: print in PDF");
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Op = op, Scope = scope, Type = EventType.Error,
+                    Message = "Ошибка печати данных", Details = exc.Message
+                });
+                MessageBox.Show($"Ошибка печати в PDF: {exc.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsProgress = false;
+            }
         }
         private void Refresh()
         {
