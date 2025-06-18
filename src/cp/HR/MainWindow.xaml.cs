@@ -1,4 +1,5 @@
 ﻿using HR.Controls;
+using HR.Data.Models;
 using HR.Pages;
 using HR.Utilities;
 using System;
@@ -48,13 +49,13 @@ namespace HR
                 Title = "Сотрудники",
                 Page = "StaffPg",
                 PageUri = "Pages/StaffPg.xaml",
-                Values = new ObservableCollection<FilterValue>
-                {
-                    new FilterValue { Id = 1, Title = "Администрация" },
-                    new FilterValue { Id = 2, Title = "Учителя" },
-                    new FilterValue { Id = 3, Title = "Преподаватели" },
-                    new FilterValue { Id = 4, Title = "Воспитатели" },
-                }
+                Values = new ObservableCollection<FilterValue>(
+                    ActivityHelper.GetAllActivities().Select(a => new FilterValue
+                    {
+                        Id = a.Id,
+                        Title = a.Title
+                    })
+                )
             },
             new MenuFilter()
             {
