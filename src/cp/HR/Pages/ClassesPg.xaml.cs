@@ -655,7 +655,7 @@ namespace HR.Pages
         }
         private async Task<bool> SaveData(ClassGuidance item)
         {
-            var (cat, name, op, scope) = (EventCategory.Data, item.Id == 0 ? "Create" : "Update", item.Id == 0 ? 1 : 2, "Классное руководство");
+            var (cat, name, op, scope) = (EventCategory.Data, item.Id == 0 ? "Create" : "Update", item.Id == 0 ? 0 : 2, "Классное руководство");
             try
             {
                 IsProgress = true;
@@ -698,6 +698,69 @@ namespace HR.Pages
                 IsProgress = false;
             }
         }
+        private async Task SetData()
+        {
+            var (cat, name, op, scope) = (EventCategory.Data, "Read", 2, "Классное руководство");
+            try
+            {
+                IsProgress = true;
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Progress,
+                    Message = "Загрузка данных"
+                });
+                // Run tasks in parallel
+                var classGuidanceTask = Request.GetClassGuidance();
+                var employeesTask = Request.LoadEmployees();
+                var gradesTask = Request.LoadGrades();
+
+                await Task.WhenAll(classGuidanceTask, employeesTask, gradesTask);
+
+                // Update UI via Dispatcher
+                await Dispatcher.InvokeAsync(() =>
+                {
+                    DataCollection = new ObservableCollection<ClassGuidance>(classGuidanceTask.Result);
+                    CollectionView = CollectionViewSource.GetDefaultView(DataCollection);
+                    Employees = employeesTask.Result;
+                    Grades = gradesTask.Result;
+
+                    CollectionView.Filter = obj => FilterHelper.FilterByValue(obj, CollectionFilter);
+                    CollectionView.Refresh();
+                });
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Success,
+                    Message = "Данные успешно загружены"
+                });
+            }
+            catch (Exception exc)
+            {
+                Debug.WriteLine(exc, "ClassesPg");
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Error,
+                    Message = $"Ошибка извлечения данных",
+                    Details = exc.Message
+                });
+                MessageBox.Show($"Ошибка извлечения данных: {exc.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsProgress = false;
+            }
+        }
         private void SyncMenuFilters()
         {
             var items = CollectionView?.Cast<ClassGuidance>().ToList();
@@ -729,7 +792,7 @@ namespace HR.Pages
                 }
                 else if (CollectionFilter.Value is IEnumerable<int> employeeIds)
                 {
-                    // Если значение — список Id, можно взять первый или объединить имена
+                    // If value is Id list then may take frist or join the names
                     var firstId = employeeIds.FirstOrDefault();
                     SearchText = Employees.FirstOrDefault(x => x.Id == firstId)?.FullName ?? string.Empty;
                 }
@@ -987,47 +1050,9 @@ namespace HR.Pages
         }
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            IsProgress = true;
-
-            // Запускаем три независимых асинхронных запроса параллельно
-            var classGuidanceTask = Request.GetClassGuidance();
-            var employeesTask = Task.Run(async () =>
-            {
-                using (var db = new HREntities())
-                {
-                    return await db.Employees
-                        .OrderBy(emp => emp.Surname)
-                        .ToListAsync();
-                }
-            });
-
-            var gradesTask = Task.Run(async () =>
-            {
-                using (var db = new HREntities())
-                {
-                    return await db.Grades
-                        .OrderBy(g => g.Id)
-                        .ToListAsync();
-                }
-            });
-
-            // Дожидаемся завершения всех трёх задач
-            await Task.WhenAll(classGuidanceTask, employeesTask, gradesTask);
-
-            // Получаем результаты
-            var data = classGuidanceTask.Result;
-            DataCollection = new ObservableCollection<ClassGuidance>(data);
-            CollectionView = CollectionViewSource.GetDefaultView(DataCollection);
-            // Assign filter
-            CollectionView.Filter = obj => FilterHelper.FilterByValue(obj, CollectionFilter);
-            Refresh();
-            if (DataCollection == null) return;
-
-            Employees = employeesTask.Result;
-            Grades = gradesTask.Result;
-
-            IsProgress = false;
+            await SetData();
         }
+
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             if (_navigationService != null)
