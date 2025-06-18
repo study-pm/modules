@@ -14,6 +14,8 @@ using System.Collections.ObjectModel;
 using System.Windows.Media;
 using System.Data.Entity;
 using HR.Pages;
+using System.Globalization;
+using System.Windows.Data;
 
 namespace HR.Controls
 {
@@ -36,6 +38,31 @@ namespace HR.Controls
         }
 
         public string Name { get; set; }
+    }
+    public class NavigationDataConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            Console.WriteLine($"NavigationDataConverter {value.GetType().Name}");
+            var filter = value as MenuFilter;
+            if (filter == null)
+                return null;
+            else
+            {
+                Console.WriteLine(filter.Title);
+            }
+
+            return new NavigationData
+            {
+                Uri = filter.PageUri,
+                Parameter = value,
+            };
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
     }
     public abstract class NavCtl : UserControl, INotifyPropertyChanged
     {
