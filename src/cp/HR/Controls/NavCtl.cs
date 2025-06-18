@@ -117,13 +117,6 @@ namespace HR.Controls
             get => (string)GetValue(CurrentPageProperty);
             set => SetValue(CurrentPageProperty, value);
         }
-        public static readonly DependencyProperty CurrentPageParamProperty =
-            DependencyProperty.Register(nameof(CurrentPageParam), typeof(string), typeof(NavCtl), new PropertyMetadata(null));
-        public string CurrentPageParam
-        {
-            get => (string)GetValue(CurrentPageParamProperty);
-            set => SetValue(CurrentPageParamProperty, value);
-        }
 
         public static readonly DependencyProperty PageParamProperty =
             DependencyProperty.Register(nameof(PageParam), typeof(string), typeof(NavCtl), new PropertyMetadata(null));
@@ -173,7 +166,11 @@ namespace HR.Controls
             }
             else if (navigationParameter is MenuFilter filter)
             {
-                CurrentPageParam = filter.Title;
+                // Handle MuneFilter value
+            }
+            else
+            {
+                // Handle other value
             }
         }
     }
