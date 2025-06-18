@@ -244,26 +244,23 @@ namespace HR.Utilities
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
             => throw new NotImplementedException();
     }
-    public class NavigationDataConverter : IMultiValueConverter
+    public class NavigationDataMultiConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values.Length < 2)
                 return null;
 
-            var filterValues = values[0] as IEnumerable<FilterValue>;
-            var uri = values[1] as string;
+            var filterValues = values[0] as FilterValue;
+            var menuFilter = values[1] as MenuFilter;
 
-            if (filterValues == null || string.IsNullOrEmpty(uri))
+            if (filterValues == null || menuFilter == null)
                 return null;
-
-            // Можно скопировать коллекцию или передать как есть
-            var selectedValues = filterValues.Where(fv => fv.IsChecked).ToList();
 
             return new NavigationData
             {
-                Uri = uri,
-                Parameter = selectedValues
+                Uri = menuFilter.PageUri,
+                Parameter = menuFilter
             };
         }
 
