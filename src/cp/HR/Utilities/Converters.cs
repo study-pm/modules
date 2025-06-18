@@ -287,7 +287,7 @@ namespace HR.Utilities
             string pagesParam = parameter as string;
 
             if (string.IsNullOrEmpty(currentPage) || string.IsNullOrEmpty(pagesParam))
-                return true;
+                return false;
 
             var pages = pagesParam.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                                   .Select(p => p.Trim());
