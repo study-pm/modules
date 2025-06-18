@@ -64,6 +64,29 @@ namespace HR.Controls
             throw new NotImplementedException();
         }
     }
+    public class NavigationDataMultiConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (values.Length < 2)
+                return null;
+
+            var filterValues = values[0] as FilterValue;
+            var menuFilter = values[1] as MenuFilter;
+
+            if (filterValues == null || menuFilter == null)
+                return null;
+
+            return new NavigationData
+            {
+                Uri = menuFilter.PageUri,
+                Parameter = menuFilter
+            };
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+            => throw new NotImplementedException();
+    }
     public abstract class NavCtl : UserControl, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
