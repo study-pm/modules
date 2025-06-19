@@ -380,6 +380,10 @@ namespace HR.Pages
                 },
                 canExecute: param => !IsProgress && (param is Employee || param is NavigationData)
             );
+            PrintCmd = new RelayCommand(
+                _ => Print(),
+                _ => !IsProgress && DataCollection?.Count > 0
+            );
             ResetFilterCmd = new RelayCommand(
                 _ => ResetFilter(),
                 _ => !IsProgress && IsResetFilter
@@ -635,6 +639,105 @@ namespace HR.Pages
                 MessageBox.Show($"Ошибка сохранения файла PDF: {exc.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+        private void Print()
+        {
+            var (cat, name, op, scope) = (EventCategory.Service, "Export", 4, "Классное руководство");
+            try
+            {
+                IsProgress = true;
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Progress,
+                    Message = "Подготовка печати"
+                });
+
+                var props = new HashSet<string>(new[] { "Employee", "Title" }, StringComparer.OrdinalIgnoreCase);
+
+                var hiddenColumns = dataGrid.Columns
+                    .Where(c => c.Visibility != Visibility.Visible)
+                    .Select(c => c.SortMemberPath ?? c.Header?.ToString())
+                    .Where(n => !string.IsNullOrEmpty(n))
+                    .ToList();
+
+                foreach (var colName in hiddenColumns)
+                {
+                    props.Remove(colName);
+                }
+                var converters = new Dictionary<string, Func<object, string>>
+                {
+                    ["Employee"] = val => val == null ? "" : ((Employee)val).FullName
+                };
+
+                var headers = new Dictionary<string, string>
+                {
+                    ["Title"] = "Класс",
+                    ["Employee"] = "Классный руководитель"
+                };
+                var columnWidths = new Dictionary<string, double>
+                {
+                    { "Title", 50 },
+                };
+                bool res = PrintHelper.PrintCollectionView(
+                    CollectionView,
+                    printDescription: $"Классное руководство на {DateTime.Now}",
+                    propertiesToPrint: props,
+                    customHeaders: headers,
+                    converters: converters,
+                    columnWidths: columnWidths,
+                    addRowNumbers: true
+                );
+                if (res)
+                {
+                    RaiseAppEvent(new AppEventArgs
+                    {
+                        Category = cat,
+                        Name = name,
+                        Op = op,
+                        Scope = scope,
+                        Type = EventType.Success,
+                        Message = "Печать в файл успешно завершена",
+                        Details = "Печать в PDF"
+                    });
+                    MessageBox.Show($"Данные сохранены в файле PDF.", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    RaiseAppEvent(new AppEventArgs
+                    {
+                        Category = cat,
+                        Name = name,
+                        Op = op,
+                        Scope = scope,
+                        Type = EventType.Cancel,
+                        Message = "Печать в файл отменена",
+                        Details = "Отменено пользователем"
+                    });
+                }
+            }
+            catch (Exception exc)
+            {
+                Debug.WriteLine(exc, "LogPg: print in PDF");
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Error,
+                    Message = "Ошибка печати данных",
+                    Details = exc.Message
+                });
+                MessageBox.Show($"Ошибка печати в PDF: {exc.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsProgress = false;
+            }
+        }
         private void Refresh()
         {
             dataGrid?.Items.Refresh();                  // update numbering
@@ -797,7 +900,6 @@ namespace HR.Pages
             }
             else if (CollectionFilter.Name == "GradeId")
             {
-                MessageBox.Show("GradeId");
                 SelectedFilter = FilterValues.FirstOrDefault(f => f.Name == "GradeId");
                 if (CollectionFilter.Value is int singleGradeId)
                     SelectedGrade = Grades?.FirstOrDefault(a => a.Id == singleGradeId);
@@ -1055,6 +1157,7 @@ namespace HR.Pages
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             await SetData();
+            SyncSearchFilters();
         }
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
