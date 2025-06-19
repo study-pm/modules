@@ -235,6 +235,7 @@
     <Compile Include="Data\Models\Position.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Data\Models\Position.partial.cs" />
     <Compile Include="Data\Models\Preferences.cs" />
     <Compile Include="Data\Models\Qualification.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
