@@ -1,7 +1,9 @@
 ﻿using HR.Data.Models;
+using HR.Models;
 using HR.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -28,7 +30,10 @@ namespace HR.Pages
         private Employee dm;
         public bool IsChanged => GivenName  != dm.GivenName ||
                                  Patronymic != dm.Patronymic ||
-                                 Surname    != dm.Surname;
+                                 Surname    != dm.Surname ||
+                    (SelectedYear.HasValue
+                        ? (!dm.CareerStart.HasValue || SelectedYear.Value != dm.CareerStart.Value.Year)
+                        : dm.CareerStart.HasValue);
         public bool IsEnabled => IsChanged && !IsProgress;
         private bool _isProgress;
         public bool IsProgress
@@ -82,10 +87,37 @@ namespace HR.Pages
                 OnPropertyChanged(nameof(IsEnabled));
             }
         }
+        public ObservableCollection<int> Years { get; }
 
+        private int? selectedYear;
+        public int? SelectedYear
+        {
+            get => selectedYear;
+            set
+            {
+                if (selectedYear == value) return;
+                {
+                    selectedYear = value;
+                    OnPropertyChanged(nameof(SelectedYear));
+                }
+            }
+        }
         public EmployeeViewModel(Employee dataModel = null)
         {
+            int minAge = 18;
+            int maxAge = 120;
+            int currentYear = DateTime.Now.Year;
+            int maxYear = currentYear - minAge;
+            int minYear = currentYear - maxAge;
+
+            Years = new ObservableCollection<int>();
+            for (int year = minYear; year <= maxYear; year++)
+            {
+                Years.Add(year);
+            }
+
             dm = dataModel ?? new Employee();
+
             Reset();
         }
         public void Reset()
@@ -93,6 +125,11 @@ namespace HR.Pages
             GivenName = dm.GivenName;
             Patronymic = dm.Patronymic;
             Surname = dm.Surname;
+
+            if (dm.CareerStart.HasValue)
+            {
+                SelectedYear = dm.CareerStart.Value.Year;
+            }
             OnPropertyChanged(nameof(IsChanged));
             OnPropertyChanged(nameof(IsEnabled));
         }
