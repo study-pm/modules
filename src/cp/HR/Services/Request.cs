@@ -255,7 +255,7 @@ namespace HR.Services
         {
             using (var db = new HREntities())
             {
-                return await db.Employees.Include("Staffs.Position").Include("Staffs.Assignments")
+                return await db.Employees.Include("Staffs.Position").Include("Staffs.Assignments").Include("Staffs.Department")
                     .OrderBy(emp => emp.Surname)
                     .ToListAsync()
                     .ConfigureAwait(false);
