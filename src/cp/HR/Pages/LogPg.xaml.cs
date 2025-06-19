@@ -228,12 +228,6 @@ namespace HR.Pages
             throw new NotImplementedException();
         }
     }
-    public class SelectionFilter
-    {
-        public int id{ get; set; }
-        public string Name { get; set; }
-        public string Title { get; set; }
-    }
     public class EnumFilterInfo : INotifyPropertyChanged
     {
         public string Name { get; set; }
@@ -310,7 +304,7 @@ namespace HR.Pages
                     .Cast<EventType>()
                     .Select(e => new SelectionFilter
                     {
-                        id = (int)e,
+                        Id = (int)e,
                         Name = e.ToString(),
                         Title = e.ToTitle()
                     })
@@ -324,7 +318,7 @@ namespace HR.Pages
                     .Cast<EventCategory>()
                     .Select(e => new SelectionFilter
                     {
-                        id = (int)e,
+                        Id = (int)e,
                         Name = e.ToString(),
                         Title = e.ToTitle()
                     })
@@ -521,7 +515,6 @@ namespace HR.Pages
             ExportCmd = new RelayCommand(
                 execute: param =>
                 {
-
                     int index = 1;
                     if (param is int i) index = i;
                     else if (param is string s && int.TryParse(s, out int parsed)) index = parsed;
@@ -688,17 +681,32 @@ namespace HR.Pages
         }
         private async void DeleteItems(List<AppEventArgs> items)
         {
+            var (cat, name, op, scope) = (EventCategory.Data, "Delete", 3, "Журнал событий");
             try
             {
                 IsProgress = true;
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Op = op,Scope = scope, Type = EventType.Progress, Message = "Удаление данных"
+                });
                 int removedCount = await Request.DeleteLogItems(App.Current.CurrentUser.Id, items);
                 // Delete from the collection in memory
                 foreach (var item in items)
                     DataCollection.Remove(item);
                 Refresh();
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Op = op, Scope = scope, Type = EventType.Success, Message = "Данные успешно удалены"
+                });
                 MessageBox.Show($"Данные успешно удалены.", "Успешное удаление", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception exc) {
+                Debug.WriteLine(exc, "LogPg");
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat, Name = name, Op = op, Scope = scope, Type = EventType.Error,
+                    Message = "Ошибка удаления данных", Details = exc.Message
+                });
                 MessageBox.Show($"Ошибка удаления данных: {exc.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
@@ -761,7 +769,7 @@ namespace HR.Pages
                     ["Details"] = "Подробности"
                 };
 
-                csvStr = CsvHelper.ExportCollectionViewToCsv(CollectionView, "log.csv", skip, converters, headers);
+                csvStr = CsvHelper.ExportCollectionViewToCsv(CollectionView, filePath, skip, converters, headers);
 
                 await CsvHelper.SaveCsvAsync(filePath, csvStr);
 
