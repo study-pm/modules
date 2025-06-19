@@ -1,9 +1,11 @@
-﻿using HR.Utilities;
+﻿using HR.Data.Models;
+using HR.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace HR.Services
 {
@@ -36,6 +38,68 @@ namespace HR.Services
                 return true;
 
             if (obj == null) return false;
+
+            if (obj is Employee emp)
+            {
+                if (filterParam.Name == "ActivityId")
+                {
+                    // Поддержка коллекции значений
+                    if (filterParam.Value is IEnumerable<int> filterValues)
+                    {
+                        return emp.Staffs != null && emp.Staffs.Any(staff =>
+                            staff.Position != null && filterValues.Contains(staff.Position.ActivityId));
+                    }
+
+                    // Поддержка одиночного значения
+                    if (filterParam.Value is int singleValue)
+                    {
+                        return emp.Staffs != null && emp.Staffs.Any(staff =>
+                            staff.Position != null && staff.Position.ActivityId == singleValue);
+                    }
+
+                    return false; // Значение не поддерживается
+                }
+                if (filterParam.Name == "DepartmentId")
+                {
+                    if (filterParam.Value is IEnumerable<int> filterValues)
+                    {
+                        return emp.Staffs != null && emp.Staffs.Any(staff =>
+                            filterValues.Contains(staff.DepartmentId));
+                    }
+
+                    if (filterParam.Value is int singleValue)
+                    {
+                        return emp.Staffs != null && emp.Staffs.Any(staff =>
+                            staff.DepartmentId == singleValue);
+                    }
+
+                    return false;
+                }
+
+                if (filterParam.Name == "SubjectId")
+                {
+                    // Поддержка коллекции значений
+                    if (filterParam.Value is IEnumerable<int> filterValues)
+                    {
+                        return emp.Staffs != null && emp.Staffs.Any(staff =>
+                            staff.Assignments != null &&
+                            staff.Assignments.Any(assignment =>
+                                filterValues.Contains(assignment.SubjectId)));
+                    }
+
+                    // Поддержка одиночного значения
+                    if (filterParam.Value is int singleValue)
+                    {
+                        //MessageBox.Show($"SubjectId {singleValue}");
+                        return emp.Staffs != null && emp.Staffs.Any(staff =>
+                            staff.Assignments != null &&
+                            staff.Assignments.Any(assignment =>
+                                assignment.SubjectId == singleValue));
+                    }
+
+                    return false; // Значение не поддерживается
+                }
+            }
 
             var itemType = obj.GetType();
             var prop = itemType.GetProperty(filterParam.Name);

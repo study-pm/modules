@@ -209,7 +209,6 @@ namespace HR.Services
                 return new List<Data.Models.User>();  // Возврат значения при ошибке
             }
         }
-
         public static async Task<List<Role>> GetRoles()
         {
             try
@@ -240,6 +239,46 @@ namespace HR.Services
             catch (Exception ex)
             {
                 StatusInformer.ReportFailure($"Ошибка удаления файла пользователя: {ex.Message}");
+            }
+        }
+        public static async Task<List<Department>> LoadDepartments()
+        {
+            using (var db = new HREntities())
+            {
+                return await db.Departments
+                    .OrderBy(dep => dep.Id)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+            }
+        }
+        public static async Task<List<Employee>> LoadEmployees()
+        {
+            using (var db = new HREntities())
+            {
+                return await db.Employees.Include("Staffs.Position").Include("Staffs.Assignments")
+                    .OrderBy(emp => emp.Surname)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+            }
+        }
+        public static async Task<List<Grade>> LoadGrades()
+        {
+            using (var db = new HREntities())
+            {
+                return await db.Grades
+                    .OrderBy(g => g.Id)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+            }
+        }
+        public static async Task<List<Subject>> LoadSubjects()
+        {
+            using (var db = new HREntities())
+            {
+                return await db.Subjects
+                    .OrderBy(s => s.Title)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
             }
         }
         /// <summary>
