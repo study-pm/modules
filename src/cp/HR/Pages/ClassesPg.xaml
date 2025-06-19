@@ -83,18 +83,19 @@
                 </WrapPanel>
                 <WrapPanel DockPanel.Dock="Right" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0 3 0 0">
                     <TextBlock VerticalAlignment="Center" Margin="5 0" FontFamily="{StaticResource Roboto}">
-                <Run>Найдено записей:</Run>
-                <Bold><Run Text="{Binding FilteredCount, Mode=OneWay}"></Run></Bold>
+                        <Run>Найдено записей:</Run>
+                        <Bold><Run Text="{Binding FilteredCount, Mode=OneWay}"></Run></Bold>
                     </TextBlock>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <Button ToolTip="Печатать документ" HorizontalAlignment="Right" Margin="2 0 0 0" VerticalAlignment="Center"
-Style="{StaticResource IconButtonOrange}"
-Command="{Binding PrintCmd}"
->
+                                Style="{StaticResource IconButtonOrange}"
+                                Command="{Binding PrintCmd}"
+                                >
                             <StackPanel>
                                 <Viewbox Stretch="Fill" Width="14" Height="16">
                                     <Path Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
-          Data="{StaticResource PrintSolidPath}">
+                                          Data="{StaticResource PrintSolidPath}"
+                                          >
                                         <Path.RenderTransform>
                                             <TranslateTransform X="0" Y="0"/>
                                         </Path.RenderTransform>
@@ -217,14 +218,13 @@ Command="{Binding PrintCmd}"
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
-
             </DataGrid.Columns>
             <DataGrid.ContextMenu>
                 <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
                     <MenuItem   Header="Фильтровать" InputGestureText="Ctrl+F"
                                 Command="{Binding FilterCmd}"
                                 CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                    >
+                                >
                         <MenuItem.Icon>
                             <Viewbox Height="14" Width="14">
                                 <Canvas Height="496" Width="512">

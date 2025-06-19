@@ -105,18 +105,13 @@ namespace HR.Pages
                 _collectionFilter = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(IsResetFilter));
-                // Обновляем фильтр после изменения параметра
-                //CollectionView?.Refresh();
-                // MessageBox.Show("CollectionFilter");
                 Refresh();
                 SyncMenuFilters();
                 SyncSearchFilters();
             }
         }
         public int FilteredCount => CollectionView?.Cast<object>().Count() ?? 0;
-        //public bool IsResetFilter => !string.IsNullOrWhiteSpace(SearchText) || SelectedFilter != null;
         public bool IsResetFilter => !string.IsNullOrWhiteSpace(SearchText) || SelectedFilter != null || CollectionFilter != null;
-        //public bool IsTextSearch => !IsSelectedCategory && !IsSelectedTimestamp && !IsSelectedType;
         public bool IsTextSearch => !IsSelectedGrade;
         public bool IsSelectedGrade => SelectedFilter?.Name == "GradeId";
         public List<SelectionFilter> FilterValues { get; set; } = new List<SelectionFilter> {
@@ -136,16 +131,9 @@ namespace HR.Pages
                 OnPropertyChanged(nameof(IsResetFilter));
                 OnPropertyChanged(nameof(IsSelectedGrade));
                 OnPropertyChanged(nameof(IsTextSearch));
-
-                // Reset all selected values in enum-filters on filter change
-                /*
-                foreach (var ef in EnumFilters)
-                    if (ef.Name != value?.Name)
-                        ef.Selected = null;
-                */
             }
         }
-        // Списки для ComboBox
+        // ComboBox lists
         private List<Employee> _employees;
         public List<Employee> Employees
         {
@@ -184,7 +172,7 @@ namespace HR.Pages
                 {
                     ResetFilter();
                     var newItem = new ClassGuidance();
-                    DataCollection.Add(newItem); // Добавляем в ObservableCollection, связанной с DataGrid
+                    DataCollection.Add(newItem); // Add to ObservableCollection, bound to DataGrid
                     dataGrid.Focus();
                     dataGrid.SelectedItem = newItem;
                     dataGrid.CurrentCell = new DataGridCellInfo(newItem, dataGrid.Columns[1]);
@@ -459,14 +447,14 @@ namespace HR.Pages
             switch (SelectedFilter.Name)
             {
                 case "EmployeeId":
-                    // Возвращаем выбранного сотрудника или его Id
+                    // Return selected employee or their id
                     if (string.IsNullOrWhiteSpace(SearchText))
                     {
-                        // Если текст пустой — возвращаем null, чтобы не фильтровать по сотруднику
+                        // If text string is empty then return null to unfilter by an employee
                         return null;
                     }
 
-                    // Поиск сотрудников по FullName, игнорируя регистр
+                    // Search employees by FullName ignoring case
                     var matchingIds = Employees?
                         .Where(e => !string.IsNullOrEmpty(e.FullName) &&
                                     e.FullName.IndexOf(SearchText, StringComparison.OrdinalIgnoreCase) >= 0)
@@ -476,11 +464,11 @@ namespace HR.Pages
                     return matchingIds != null && matchingIds.Count > 0 ? matchingIds : null;
 
                 case "GradeId":
-                    // Возвращаем выбранный класс или его Id
+                    // Return selected class or its Id
                     return SelectedGrade != null ? (int?)SelectedGrade.Id : null;
 
                 default:
-                    // Для остальных фильтров возвращаем текст поиска
+                    // Return search text for other filters
                     return SearchText;
             }
         }
@@ -501,21 +489,21 @@ namespace HR.Pages
                 });
                 var skipList = new List<string> { "Id", "EmployeeId", "Grade", "GradeId" };
 
-                // Получаем имена скрытых колонок (используем SortMemberPath, если он есть, иначе Header)
+                //  Get hidden columns names (using SortMemberPath if any, Header otherwise)
                 var hiddenColumns = dataGrid.Columns
                     .Where(c => c.Visibility != Visibility.Visible)
                     .Select(c => !string.IsNullOrEmpty(c.SortMemberPath) ? c.SortMemberPath : c.Header?.ToString())
                     .Where(n => !string.IsNullOrEmpty(n))
                     .ToList();
 
-                // Добавляем скрытые колонки, избегая дубликатов
+                // Add hidden columns avoiding duplication
                 foreach (var colName in hiddenColumns)
                 {
                     if (!skipList.Contains(colName, StringComparer.OrdinalIgnoreCase))
                         skipList.Add(colName);
                 }
 
-                // Теперь skipList содержит все колонки, которые нужно пропустить
+                // Now skipList contains all columns to skip
                 var skip = skipList.ToArray();
 
                 var converters = new Dictionary<string, Func<object, string>>
@@ -647,6 +635,12 @@ namespace HR.Pages
                 MessageBox.Show($"Ошибка сохранения файла PDF: {exc.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+        private void Refresh()
+        {
+            dataGrid?.Items.Refresh();                  // update numbering
+            CollectionView?.Refresh();                  // refresh collection view
+            OnPropertyChanged(nameof(FilteredCount));   // update total count
+        }
         private void ResetFilter()
         {
             SearchText = null;
@@ -680,7 +674,7 @@ namespace HR.Pages
                 }
                 if (item.Id == 0)
                 {
-                    // Удаляем объект из коллекции, чтобы не показывать в UI
+                    // Remove object from collection to stop displaying it in UI
                     DataCollection.Remove(item);
                 }
                 Debug.WriteLine(exc, "ClassesPg");
@@ -801,6 +795,17 @@ namespace HR.Pages
                     SearchText = string.Empty;
                 }
             }
+            else if (CollectionFilter.Name == "GradeId")
+            {
+                MessageBox.Show("GradeId");
+                SelectedFilter = FilterValues.FirstOrDefault(f => f.Name == "GradeId");
+                if (CollectionFilter.Value is int singleGradeId)
+                    SelectedGrade = Grades?.FirstOrDefault(a => a.Id == singleGradeId);
+                else if (CollectionFilter.Value is IEnumerable<int> gradeIds && gradeIds.Any())
+                    SelectedGrade = Grades?.FirstOrDefault(a => a.Id == gradeIds.First());
+                else
+                    SelectedGrade = null;
+            }
         }
 
         private void DataGrid_LoadingRow(object sender, DataGridRowEventArgs e)
@@ -894,7 +899,7 @@ namespace HR.Pages
         private void DataGrid_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             var depObj = (DependencyObject)e.OriginalSource;
-            // Обход вверх по дереву, учитывая, что Run не является Visual
+            // Iterating tree ascending, regarding the fact that Run is not a Visual
             while (depObj != null && !(depObj is DataGridCell))
             {
                 if (depObj is Run)
@@ -921,7 +926,7 @@ namespace HR.Pages
             if (e.EditAction == DataGridEditAction.Commit)
             {
                 Dispatcher.BeginInvoke(
-                    (Action)(async () =>  // Явное указание типа делегата Action
+                    (Action)(async () =>  // Explicit Action delegate type declaration
                     {
                         if (string.IsNullOrWhiteSpace(item.Title))
                         {
@@ -929,7 +934,7 @@ namespace HR.Pages
                             // Возвращаем фокус и редактирование
                             dataGrid.Focus();
                             dataGrid.SelectedItem = item;
-                            dataGrid.CurrentCell = new DataGridCellInfo(item, dataGrid.Columns[1]); // например, первая колонка
+                            dataGrid.CurrentCell = new DataGridCellInfo(item, dataGrid.Columns[1]); // e.g. first (second) column
                             dataGrid.BeginEdit();
                             return;
                         }
@@ -1044,7 +1049,6 @@ namespace HR.Pages
             if (navigationParameter == null) return;
             if (!(navigationParameter is MenuFilter filter)) return;
 
-            // CollectionFilter = new FilterParam("GradeId", 2);
             List<int> classes = filter.Values.Where(fv => fv.IsChecked).Select(item => item.Id).ToList();
             CollectionFilter = new FilterParam("GradeId", classes);
         }
@@ -1052,7 +1056,6 @@ namespace HR.Pages
         {
             await SetData();
         }
-
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             if (_navigationService != null)
@@ -1060,12 +1063,6 @@ namespace HR.Pages
                 _navigationService.Navigated -= NavigationService_Navigated;
                 _navigationService = null;
             }
-        }
-        private void Refresh()
-        {
-            dataGrid?.Items.Refresh();                   // update numbering
-            CollectionView?.Refresh();                   // refresh collection view
-            OnPropertyChanged(nameof(FilteredCount));   // update total count
         }
     }
 }
