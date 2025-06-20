@@ -13,6 +13,8 @@
       Title="StaffPg" Loaded="Page_Loaded" Unloaded="Page_Unloaded">
     <Page.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <local:DepartmentToPathConverter x:Key="DepToPathConv"/>
+        <local:ActivityToBrushConverter x:Key="ActToBrushConv"/>
         <utils:AddOneConverter x:Key="AddOneConv"/>
         <utils:CollectionToVisibilityConverter x:Key="ColToVisConv"/>
         <utils:InverseBooleanConverter x:Key="InvBoolConv"/>
@@ -66,6 +68,12 @@
                                   SelectedItem="{Binding SelectedDepartment, Mode=TwoWay}"
                                   DisplayMemberPath="Title"
                                   Visibility="{Binding IsSelectedDepartment, Converter={StaticResource BoolToVis}}"
+                                  />
+                        <ComboBox Width="200" VerticalContentAlignment="Center" MinHeight="30"
+                                  ItemsSource="{Binding Positions}"
+                                  SelectedItem="{Binding SelectedPosition, Mode=TwoWay}"
+                                  DisplayMemberPath="Title"
+                                  Visibility="{Binding IsSelectedPosition, Converter={StaticResource BoolToVis}}"
                                   />
                         <ComboBox Width="200" VerticalContentAlignment="Center" MinHeight="30"
                                   ItemsSource="{Binding Subjects}"
@@ -196,6 +204,7 @@ Command="{Binding PrintCmd}"
                     <MenuItem Header="Имя" IsCheckable="True" Click="DataGridColumnHeaderMenuItem_Click" Tag="2"/>
                     <MenuItem Header="Отчество" IsCheckable="True" Click="DataGridColumnHeaderMenuItem_Click" Tag="3"/>
                     <MenuItem Header="Стаж" IsCheckable="True" Click="DataGridColumnHeaderMenuItem_Click" Tag="4"/>
+                    <MenuItem Header="Должность" IsCheckable="True" Click="DataGridColumnHeaderMenuItem_Click" Tag="5"/>
                 </ContextMenu>
                 <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
                     <Setter Property="ContextMenu" Value="{StaticResource ColumnHeaderContextMenu}"/>
@@ -215,10 +224,59 @@ Command="{Binding PrintCmd}"
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Фамилия" Binding="{Binding Surname}" Width="*" ElementStyle="{StaticResource TextBlockWithEllipsisStyle}"/>
-                <DataGridTextColumn Header="Имя" Binding="{Binding GivenName}" Width="*" ElementStyle="{StaticResource TextBlockWithEllipsisStyle}"/>
-                <DataGridTextColumn Header="Отчество" Binding="{Binding Patronymic}" Width="*" ElementStyle="{StaticResource TextBlockWithEllipsisStyle}"/>
-                <DataGridTextColumn Header="Стаж" Binding="{Binding Experience}" IsReadOnly="True" Width="Auto" CellStyle="{StaticResource RightAlignedCellStyle}" />               
+                <DataGridTextColumn Header="Фамилия" Width="*"
+                                    ElementStyle="{StaticResource TextBlockWithEllipsisStyle}"
+                                    Binding="{Binding Surname}"/>
+                <DataGridTextColumn Header="Имя" Width="*"
+                                    Binding="{Binding GivenName}"
+                                    ElementStyle="{StaticResource TextBlockWithEllipsisStyle}"/>
+                <DataGridTextColumn Header="Отчество" Width="*"
+                                    Binding="{Binding Patronymic}"
+                                    ElementStyle="{StaticResource TextBlockWithEllipsisStyle}"/>
+                <DataGridTextColumn Header="Стаж" IsReadOnly="True" Width="Auto"
+                                    Binding="{Binding Experience}"
+                                    CellStyle="{StaticResource RightAlignedCellStyle}" />
+                <DataGridTemplateColumn Header="Должность" SortMemberPath="MainPositionTitle" Width="2*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ItemsControl ItemsSource="{Binding Staffs}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Viewbox Stretch="Fill" Width="12" Height="12" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5 0">
+                                                <Path Data="{Binding Department, Converter={StaticResource DepToPathConv}}"
+                                                      Fill="{Binding Position, Converter={StaticResource ActToBrushConv}}"
+                                                      ToolTip="{Binding Department.Title}"
+                                                      />
+                                            </Viewbox>
+                                            <TextBlock Style="{StaticResource TextBlockWithEllipsisStyle}" Text="{Binding Position.Title}"></TextBlock>
+                                        </StackPanel>
+                                        
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <ListBox ItemsSource="{Binding Staffs}" SelectionMode="Single" x:Name="positionsList">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" Margin="0,2,0,2">
+                                                <ComboBox Width="150"
+                                          ItemsSource="{Binding DataContext.AllPositions, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                          SelectedItem="{Binding Position, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                          DisplayMemberPath="Title"
+                                          />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
 
             </DataGrid.Columns>
             <DataGrid.ContextMenu>

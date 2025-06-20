@@ -36,6 +36,31 @@
                                 ToolTip="Сохраняет состояние аутентификации между запусками приложения (автоматический вход)"
                                 />
                 </StackPanel>
+                <TextBlock>Стартовая страница</TextBlock>
+            </StackPanel>
+
+            <StackPanel Margin="0 10 0 0">
+                <StackPanel  Margin="0 10">
+                    <Label Foreground="{StaticResource magentaDarkBrush}" FontSize="16">Внешний вид</Label>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox Content="Панель фильтрации"
+                              IsEnabled="{Binding IsProgress, Converter={StaticResource InvBoolConv}}"
+                              IsChecked="{Binding Dm.IsStayLoggedIn}"
+                              />
+                    <uc:Details Type="Question"
+                                ToolTip="Сохраняет состояние аутентификации между запусками приложения (автоматический вход)"
+                                />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox Content="Пользовательская панель"
+                              IsEnabled="{Binding IsProgress, Converter={StaticResource InvBoolConv}}"
+                              IsChecked="{Binding Dm.IsStayLoggedIn}"
+                              />
+                    <uc:Details Type="Question"
+                                ToolTip="Сохраняет состояние аутентификации между запусками приложения (автоматический вход)"
+                                />
+                </StackPanel>
             </StackPanel>
             <StackPanel Margin="0 10 0 0">
                 <StackPanel  Margin="0 10">

@@ -11,8 +11,11 @@
       Title="EmployeePg">
     <Page.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <local:GenderToBoolConverter x:Key="GenderToBoolConverter" />
+        <utils:ImagePathMultiConverter x:Key="ImgPathMultiConv" />
         <utils:InverseBoolToVisibilityConverter x:Key="InvBoolToVis"/>
         <utils:InverseBooleanConverter x:Key="InvBoolConv"/>
+        <utils:StringToBoolConverter x:Key="StrToBoolConv"/>
     </Page.Resources>
     <ScrollViewer Style="{StaticResource MainView}">
         <StackPanel>
@@ -26,9 +29,12 @@
                     <ColumnDefinition Width="200" />
                 </Grid.ColumnDefinitions>
                 <StackPanel>
+                    <StackPanel>
+                        <Label Foreground="{StaticResource magentaDarkBrush}" FontSize="16" Margin="0 10 0 0">Основные сведения</Label>
+                    </StackPanel>
                     <StackPanel Style="{StaticResource FormElement}">
-                        <Label>Фамилия</Label>
-                        <TextBox x:Name="SurnameTxb"
+                        <Label Style="{StaticResource FormLabel}">Фамилия</Label>
+                        <TextBox x:Name="SurnameTxb" Style="{StaticResource FormTextBox}"
                                  IsEnabled="{Binding IsProgress, Converter={StaticResource InvBoolConv}}"
                                  utils:ValidationHelper.AutoErrorVisibility="True"
                                  utils:ValidationHelper.EnableTouchedTracking="True"
@@ -47,8 +53,8 @@
                         </TextBox>
                     </StackPanel>
                     <StackPanel Style="{StaticResource FormElement}">
-                        <Label>Имя</Label>
-                        <TextBox x:Name="GivenNameTxb"
+                        <Label Style="{StaticResource FormLabel}">Имя</Label>
+                        <TextBox x:Name="GivenNameTxb" Style="{StaticResource FormTextBox}"
                                  IsEnabled="{Binding IsProgress, Converter={StaticResource InvBoolConv}}"
                                  utils:ValidationHelper.AutoErrorVisibility="True"
                                  utils:ValidationHelper.EnableTouchedTracking="True"
@@ -67,8 +73,8 @@
                         </TextBox>
                     </StackPanel>
                     <StackPanel Style="{StaticResource FormElement}">
-                        <Label>Отчество</Label>
-                        <TextBox x:Name="PatronymicTxb"
+                        <Label Style="{StaticResource FormLabel}">Отчество</Label>
+                        <TextBox x:Name="PatronymicTxb" Style="{StaticResource FormTextBox}"
                                  IsEnabled="{Binding IsProgress, Converter={StaticResource InvBoolConv}}"
                                  utils:ValidationHelper.AutoErrorVisibility="True"
                                  utils:ValidationHelper.EnableTouchedTracking="True"
@@ -80,41 +86,170 @@
                                          >
                                     <Binding.ValidationRules>
                                         <utils:MaxLengthValidationRule MaxLength="50"/>
-                                        <utils:NotEmptyValidationRule/>
                                     </Binding.ValidationRules>
                                 </Binding>
                             </TextBox.Text>
                         </TextBox>
                     </StackPanel>
-                    <StackPanel Style="{StaticResource FormElement}">
-                        <Label>Начало стажа</Label>
-                        <ComboBox x:Name="CareerStartCmb" Style="{StaticResource FormComboBox}"
-                                  IsTextSearchEnabled="True"
-                                  IsEnabled="{Binding IsProgress, Converter={StaticResource InvBoolConv}}"
-                                  utils:ValidationHelper.AutoErrorVisibility="True"
-                                  utils:ValidationHelper.EnableTouchedTracking="True"
-                                  ItemsSource="{Binding Years}"
-                                  >
-                            <ComboBox.SelectedValue>
-                                <Binding Path="SelectedYear" UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True" NotifyOnValidationError="True">
-                                    <Binding.ValidationRules>
-                                        <utils:NotEmptyValidationRule/>
-                                    </Binding.ValidationRules>
-                                </Binding>
-                            </ComboBox.SelectedValue>
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding}"
-                                               TextTrimming="CharacterEllipsis"
-                                               TextWrapping="NoWrap"
-                                               VerticalAlignment="Center"/>
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                        </ComboBox>
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Style="{StaticResource FormElement}" Margin="2">
+                            <Label Style="{StaticResource FormLabel}">Начало стажа</Label>
+                            <ComboBox   x:Name="CareerStartCmb" Style="{StaticResource FormComboBox}"
+                                        IsTextSearchEnabled="True"
+                                        IsEnabled="{Binding IsProgress, Converter={StaticResource InvBoolConv}}"
+                                        utils:ValidationHelper.AutoErrorVisibility="True"
+                                        utils:ValidationHelper.EnableTouchedTracking="True"
+                                        ItemsSource="{Binding Years}"
+                                        >
+                                <ComboBox.SelectedValue>
+                                    <Binding Path="SelectedYear" UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True" NotifyOnValidationError="True">
+                                        <Binding.ValidationRules>
+                                            <utils:NotEmptyValidationRule/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </ComboBox.SelectedValue>
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}"
+                                                   TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                                                   VerticalAlignment="Center"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Style="{StaticResource FormElement}" Margin="20 2">
+                            <Label Style="{StaticResource FormLabel}">Пол</Label>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5">
+                                <RadioButton Content="м" Style="{StaticResource FormRadioButton}"
+                     IsChecked="{Binding Gender, Mode=TwoWay, Converter={StaticResource GenderToBoolConverter}, ConverterParameter=Male}" />
+                                <RadioButton Content="ж" Style="{StaticResource FormRadioButton}"
+                     IsChecked="{Binding Gender, Mode=TwoWay, Converter={StaticResource GenderToBoolConverter}, ConverterParameter=Female}" />
+                            </StackPanel>
+                        </StackPanel>
                     </StackPanel>
                 </StackPanel>
-
+                <Grid Grid.Column="1" Margin="5 67 5 0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="225" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Button ToolTip="Увеличить изображение"
+                            Style="{StaticResource ImgButtonStyle}"
+                            Click="EnlargeImageButton_Click"
+                            IsEnabled="{Binding Image, Converter={StaticResource StrToBoolConv}}"
+                            >
+                        <Image x:Name="EmployeeImg">
+                            <Image.Source>
+                                <MultiBinding Converter="{StaticResource ImgPathMultiConv}">
+                                    <Binding Path="Image" />
+                                    <Binding Path="Gender" />
+                                </MultiBinding>
+                            </Image.Source>
+                        </Image>
+                    </Button>
+                    <Popup StaysOpen="False" AllowsTransparency="True" Placement="MousePoint" PopupAnimation="Fade">
+                        <Border BorderBrush="LightGray" BorderThickness="1" Background="White"
+            CornerRadius="5" Padding="10"
+            >
+                            <ScrollViewer MaxWidth="500" VerticalScrollBarVisibility="Hidden">
+                                <Image />
+                            </ScrollViewer>
+                        </Border>
+                    </Popup>
+                    <StackPanel Grid.Row="1" Margin="5">
+                        <TextBlock FontWeight="Bold" FontSize="16" HorizontalAlignment="Center"
+                                   Style="{StaticResource Paragraph}"
+                                   Visibility="{Binding HasImage, Converter={StaticResource InvBoolToVis}}"
+                                   >
+                            <Hyperlink
+                                Command="{Binding AddImgCmd, RelativeSource={RelativeSource AncestorType=Page}}"
+                                >Добавить фото</Hyperlink>
+                        </TextBlock>
+                        <TextBlock FontWeight="Bold" FontSize="16" HorizontalAlignment="Center"
+                                   Style="{StaticResource Paragraph}"
+                                   Visibility="{Binding HasImage, Converter={StaticResource BoolToVis}}"
+                                   >
+                            <Hyperlink
+                                Command="{Binding AddImgCmd, RelativeSource={RelativeSource AncestorType=Page}}"
+                                >Сменить фото</Hyperlink>
+                        </TextBlock>
+                    </StackPanel>
+                </Grid>
             </Grid>
+            <StackPanel>
+                <DockPanel VerticalAlignment="Center" Margin="0 10 0 0">
+                    <Button DockPanel.Dock="Right" ToolTip="Добавить" HorizontalAlignment="Right" Margin="2 0 0 0" VerticalAlignment="Center"
+        Style="{StaticResource IconButtonCsv}"
+        Command="{Binding AddCmd}"
+        CommandParameter="1"
+        >
+                        <StackPanel>
+                            <Viewbox Stretch="Fill" Width="14" Height="16">
+                                <Path Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                  Data="{StaticResource PlusSolidPath}">
+                                    <Path.RenderTransform>
+                                        <TranslateTransform X="0" Y="0"/>
+                                    </Path.RenderTransform>
+                                </Path>
+                            </Viewbox>
+                        </StackPanel>
+                    </Button>
+                    <Label Foreground="{StaticResource magentaDarkBrush}" FontSize="16">Занятость</Label>
+                </DockPanel>
+                <ItemsControl ItemsSource="{Binding Staffs}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Style="{StaticResource FormElement}">
+                                    <Label Style="{StaticResource FormLabel}">Подразделение</Label>
+                                    <ComboBox Style="{StaticResource FormComboBox}"
+                                              IsTextSearchEnabled="True"
+                                              IsEnabled="{Binding DataContext.IsProgress, RelativeSource={RelativeSource AncestorType=ItemsControl}, Converter={StaticResource InvBoolConv}}"
+                                              ItemsSource="{Binding DataContext.Departments, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                              SelectedValue="{Binding DepartmentId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                              SelectedValuePath="Id"
+                                              utils:ValidationHelper.AutoErrorVisibility="True"
+                                              utils:ValidationHelper.EnableTouchedTracking="True"
+                                              >
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Title}" VerticalAlignment="Center"
+                   TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+        />
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Style="{StaticResource FormElement}">
+                                    <Label Style="{StaticResource FormLabel}">Должность</Label>
+                                    <ComboBox Style="{StaticResource FormComboBox}"
+                                              IsTextSearchEnabled="True"
+                                              IsEnabled="{Binding DataContext.IsProgress, RelativeSource={RelativeSource AncestorType=ItemsControl}, Converter={StaticResource InvBoolConv}}"
+                                              ItemsSource="{Binding DataContext.Positions, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                              SelectedValue="{Binding PositionId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                              SelectedValuePath="Id"
+                                              utils:ValidationHelper.AutoErrorVisibility="True"
+                                              utils:ValidationHelper.EnableTouchedTracking="True"
+                                              >
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Title}" VerticalAlignment="Center"
+                                                           TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                                                />
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+
             <Grid Margin="0 10 0 0" HorizontalAlignment="Right">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -134,6 +269,17 @@
                         <uc:Dots Visibility="{Binding IsProgress, Converter={StaticResource BoolToVis}}" />
                     </StackPanel>
                 </Button>
+                <Popup x:Name="ValidationPopup"
+                           PlacementTarget="{Binding ElementName=RootGrid}" Placement="Center"
+                           VerticalOffset="40"
+                           StaysOpen="False"
+                           AllowsTransparency="True"
+                           IsOpen="False">
+                    <Border Background="#C0FF2200" Padding="8" CornerRadius="5" >
+                        <TextBlock x:Name="ValidationMessage" Foreground="White" FontSize="12"
+                            />
+                    </Border>
+                </Popup>
             </Grid>
         </StackPanel>
     </ScrollViewer>

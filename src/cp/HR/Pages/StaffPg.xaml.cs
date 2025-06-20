@@ -30,29 +30,98 @@ using static HR.Services.AppEventHelper;
 
 namespace HR.Pages
 {
+
+    public class ActivityToBrushConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var fallbackBrush = Brushes.Gray;
+            if (!(value is Position pos)) return fallbackBrush;
+
+            string resourceKey;
+
+            switch (pos.ActivityId)
+            {
+                case 0:
+                    resourceKey = "ErrorBrush";         // Management
+                    break;
+                case 1:
+                    resourceKey = "CsvBrush";           // Teachers
+                    break;
+                case 2:
+                    resourceKey = "GreenDarkBrush";     // Educators
+                    break;
+                case 3:
+                    resourceKey = "GreenMediumBrush";   // Caregivers
+                    break;
+                case 4:
+                    resourceKey = "cyanDarkBrush";      // Tutors
+                    break;
+                case 5:
+                    resourceKey = "InfoBrush";          // Support
+                    break;
+                case 6:
+                    resourceKey = "OrangeRegularBrush"; // Service
+                    break;
+                case 7:
+                    resourceKey = "AwaitingBrush";      // Other
+                    break;
+                default:
+                    resourceKey = "greyDarkBrush";
+                    break;
+            }
+
+            if (Application.Current.Resources.Contains(resourceKey))
+            {
+                return Application.Current.Resources[resourceKey] as Brush ?? fallbackBrush;
+            }
+            else
+            {
+                return fallbackBrush;
+            }
+        }
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
     public class DepartmentToPathConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            EventCategory status;
-
-            if (value is EventCategory ec)
-                status = ec;
-            else if (value is byte b && Enum.IsDefined(typeof(EventCategory), b))
-                status = (EventCategory)b;
-            else
-                return null;
-
-            switch (status)
+            Debug.WriteLine("DepartmentToPathConverter");
+            if (!(value is Department dep)) return null;
+                
+            switch (dep.Id)
             {
-                case EventCategory.Auth:
-                    return Application.Current.TryFindResource("KeySolidPath") as Geometry;
-                case EventCategory.Data:
-                    return Application.Current.TryFindResource("DatabaseSolidPath") as Geometry;
-                case EventCategory.Navigation:
-                    return Application.Current.TryFindResource("LocationArrowSolidPath") as Geometry;
-                case EventCategory.Service:
-                    return Application.Current.TryFindResource("ToolsSolidPath") as Geometry;
+                case 1:
+                    return Application.Current.TryFindResource("UserTieSolidPath") as Geometry;
+                case 2:
+                    return Application.Current.TryFindResource("BookSolidPath") as Geometry;
+                case 3:
+                    return Application.Current.TryFindResource("SquareRootAltSolidPath") as Geometry;
+                case 4:
+                    return Application.Current.TryFindResource("BookSolidPath") as Geometry;
+                case 5:
+                    return Application.Current.TryFindResource("LanguageSolidPath") as Geometry;
+                case 6:
+                    return Application.Current.TryFindResource("MicroscopeSolidPath") as Geometry;
+                case 7:
+                    return Application.Current.TryFindResource("GlobeSolidPath") as Geometry; 
+                case 8:
+                    return Application.Current.TryFindResource("PaletteSolidPath") as Geometry;
+                case 9:
+                    return Application.Current.TryFindResource("VoleyballSolidPath") as Geometry;
+                case 10:
+                    return Application.Current.TryFindResource("ClipboardListSolidPath") as Geometry;
+                case 11:
+                    return Application.Current.TryFindResource("TheaterMasksSolidPath") as Geometry;
+                case 12:
+                    return Application.Current.TryFindResource("HandsHelpingSolidPath") as Geometry;
+                case 13:
+                    return Application.Current.TryFindResource("FanSolidPath") as Geometry;
+                case 14:
+                    return Application.Current.TryFindResource("SwatchbookSolidPath") as Geometry;
                 default:
                     return null;
             }
@@ -62,6 +131,7 @@ namespace HR.Pages
             throw new NotImplementedException();
         }
     }
+
     /// <summary>
     /// Interaction logic for StaffPg.xaml
     /// </summary>
@@ -140,9 +210,10 @@ namespace HR.Pages
         }
         public int FilteredCount => CollectionView?.Cast<object>().Count() ?? 0;
         public bool IsResetFilter => !string.IsNullOrWhiteSpace(SearchText) || SelectedFilter != null || CollectionFilter != null;
-        public bool IsTextSearch => !IsSelectedActivity && !IsSelectedDepartment || !IsSelectedSubject;
+        public bool IsTextSearch => !IsSelectedActivity && !IsSelectedDepartment || !IsSelectedPosition || !IsSelectedSubject;
         public bool IsSelectedActivity => SelectedFilter?.Name == "ActivityId";
         public bool IsSelectedDepartment => SelectedFilter?.Name == "DepartmentId";
+        public bool IsSelectedPosition => SelectedFilter?.Name == "PositionId";
         public bool IsSelectedSubject => SelectedFilter?.Name == "SubjectId";
         public List<SelectionFilter> FilterValues { get; set; } = new List<SelectionFilter> {
             new SelectionFilter { Name = "FullName", Title = "ФИО" },
@@ -163,10 +234,13 @@ namespace HR.Pages
                 OnPropertyChanged(nameof(IsResetFilter));
                 OnPropertyChanged(nameof(IsSelectedActivity));
                 OnPropertyChanged(nameof(IsSelectedDepartment));
+                OnPropertyChanged(nameof(IsSelectedPosition));
                 OnPropertyChanged(nameof(IsSelectedSubject));
                 OnPropertyChanged(nameof(IsTextSearch));
+                // Reset values
                 SelectedActivity = null;
                 SelectedDepartment = null;
+                SelectedPosition = null;
                 SelectedSubject = null;
             }
         }
@@ -197,11 +271,24 @@ namespace HR.Pages
             get => _departments;
             set { _departments = value; OnPropertyChanged(); }
         }
+
         private Department _selectedDepartment;
         public Department SelectedDepartment
         {
             get => _selectedDepartment;
             set { _selectedDepartment = value; OnPropertyChanged(); }
+        }
+        private List<Position> _positions;
+        public List<Position> Positions
+        {
+            get => _positions;
+            set { _positions = value; OnPropertyChanged(); }
+        }
+        private Position _selectedPosition;
+        public Position SelectedPosition
+        {
+            get => _selectedPosition;
+            set { _selectedPosition = value; OnPropertyChanged(); }
         }
 
         private List<Subject> _subjects;
@@ -227,13 +314,63 @@ namespace HR.Pages
                 _ => MainWindow.frame.Navigate(new EmployeePg()),
                 _ => !IsProgress
             );
+            DeleteCmd = new RelayCommand(
+                execute: param =>
+                {
+                    // Get list for deletion
+                    List<Employee> itemsToDelete = null;
+
+                    if (param is Employee singleItem)
+                        itemsToDelete = new List<Employee> { singleItem };
+                    else if (param is IEnumerable<Employee> manyItems)
+                        itemsToDelete = manyItems.ToList();
+                    else if (param is IList list && list.Count > 0 && list[0] is Employee)
+                        itemsToDelete = list.Cast<Employee>().ToList();
+
+                    if (itemsToDelete == null || itemsToDelete.Count == 0)
+                        return;
+
+                    // Confirmation
+                    string msg = itemsToDelete.Count == 1
+                        ? $"Вы действительно хотите удалить запись \"{itemsToDelete[0].FullName}\"?"
+                        : $"Вы действительно хотите удалить выбранные записи ({itemsToDelete.Count})?";
+                    var result = MessageBox.Show(
+                        msg,
+                        "Подтверждение удаления",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Warning,
+                        MessageBoxResult.No
+                    );
+
+                    if (result != MessageBoxResult.Yes)
+                    {
+                        RaiseAppEvent(new AppEventArgs
+                        {
+                            Category = EventCategory.Data,
+                            Name = "Delete",
+                            Op = 3,
+                            Scope = "Сотрудники",
+                            Type = EventType.Cancel,
+                            Message = "Удаление отменено",
+                            Details = "Отменено пользователем"
+                        });
+                        return;
+                    }
+
+                    DeleteItems(itemsToDelete);
+                },
+                canExecute: param =>
+                {
+                    return !IsProgress;
+                }
+            );
             FilterCmd = new RelayCommand(
                 execute: param =>
                 {
                     DataGrid dg = param as DataGrid ?? dataGrid;
                     DataGridCellInfo? cellInfo = null;
 
-                    MessageBox.Show("FilterCmd");
+                    // MessageBox.Show("FilterCmd");
                     // Search button click
                     if (param == null)
                     {
@@ -243,7 +380,7 @@ namespace HR.Pages
                             return;
                         }
                         object searchValue = GetSearchValue();
-                        MessageBox.Show($"searchValue {searchValue}");
+                        // MessageBox.Show($"searchValue {searchValue}");
                         CollectionFilter = new FilterParam(SelectedFilter.Name, searchValue);
                         SyncMenuFilters();
 
@@ -375,6 +512,58 @@ namespace HR.Pages
             }
         }
 
+        private async void DeleteItems(List<Employee> items)
+        {
+            var (cat, name, op, scope) = (EventCategory.Data, "Delete", 3, "Сотрудники");
+            try
+            {
+                IsProgress = true;
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Progress,
+                    Message = "Удаление данных"
+                });
+                Request.ctx.Employees.RemoveRange(items);
+                await Request.ctx.SaveChangesAsync();
+                // Delete from the collection in memory
+                foreach (var item in items)
+                    DataCollection.Remove(item);
+                Refresh();
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Success,
+                    Message = "Данные успешно удалены"
+                });
+                MessageBox.Show($"Данные успешно удалены.", "Успешное удаление", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception exc)
+            {
+                Debug.WriteLine(exc, "StaffPg");
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Error,
+                    Message = "Ошибка удаления данных",
+                    Details = exc.Message
+                });
+                MessageBox.Show($"Ошибка удаления данных: {exc.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsProgress = false;
+            }
+        }
         private string GetFilterPropName(string name)
         {
             switch (name)
@@ -383,6 +572,8 @@ namespace HR.Pages
                     return "ActivityId";
                 case "Подразделения":
                     return "DepartmentId";
+                case "Должности":
+                    return "PositionId";
                 case "Предметы":
                     return "SubjectId";
                 default:
@@ -400,6 +591,8 @@ namespace HR.Pages
                     return SelectedActivity?.Id;
                 case "DepartmentId":
                     return SelectedDepartment?.Id;
+                case "PositionId":
+                    return SelectedPosition?.Id;
                 case "SubjectId":
                     return SelectedSubject?.Id;
                 default:
@@ -419,6 +612,64 @@ namespace HR.Pages
             SelectedFilter = null;
             CollectionFilter = null;
         }
+        private async Task<bool> SaveData(Employee item)
+        {
+            var (cat, name, op, scope) = (EventCategory.Data, item.Id == 0 ? "Create" : "Update", item.Id == 0 ? 0 : 2, "Сотрудники");
+            try
+            {
+                IsProgress = true;
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Progress,
+                    Message = (op == 0 ? "Добавление" : "Сохранение") + "данных"
+                });
+                await Services.Request.ctx.SaveChangesAsync();
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Success,
+                    Message = "Данные успешно сохранены"
+                });
+                Refresh();
+                return true;
+            }
+            catch (Exception exc)
+            {
+                if (Request.ctx.Entry(item).State == EntityState.Added)
+                {
+                    Request.ctx.Entry(item).State = EntityState.Detached;
+                }
+                if (item.Id == 0)
+                {
+                    // Remove object from collection to stop displaying it in UI
+                    DataCollection.Remove(item);
+                }
+                Debug.WriteLine(exc, "StaffPg");
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Error,
+                    Message = $"Ошибка {(op == 0 ? "добавления" : "сохранения")} данных",
+                    Details = exc.Message
+                });
+                MessageBox.Show($"Ошибка {(op == 0 ? "добавления" : "сохранения")} данных: {exc.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return true;
+            }
+            finally
+            {
+                IsProgress = false;
+            }
+        }
         private async Task SetData()
         {
             Activities = ActivityHelper.GetAllActivities();
@@ -436,11 +687,12 @@ namespace HR.Pages
                     Message = "Загрузка данных"
                 });
                 // Run tasks in parallel
-                var employeesTask = Request.LoadEmployees();
+                var employeesTask = Request.LoadEmployees(true); // Return entities of current context !Improtant for tracking context changes
                 var departmentsTask = Request.LoadDepartments();
+                var positionsTask = Request.LoadPositions();
                 var subjectsTask = Request.LoadSubjects();
 
-                await Task.WhenAll(employeesTask, departmentsTask, subjectsTask);
+                await Task.WhenAll(employeesTask, departmentsTask, positionsTask, subjectsTask);
 
                 // Update UI via Dispatcher
                 await Dispatcher.InvokeAsync(() =>
@@ -448,10 +700,12 @@ namespace HR.Pages
                     DataCollection = new ObservableCollection<Employee>(employeesTask.Result);
                     CollectionView = CollectionViewSource.GetDefaultView(DataCollection);
                     Departments = departmentsTask.Result;
+                    Positions = positionsTask.Result;
                     Subjects = subjectsTask.Result;
 
                     CollectionView.Filter = obj => FilterHelper.FilterByValue(obj, CollectionFilter);
                     CollectionView.Refresh();
+                    SyncSearchFilters();
                 });
                 RaiseAppEvent(new AppEventArgs
                 {
@@ -486,7 +740,6 @@ namespace HR.Pages
         private void SyncMenuFilters()
         {
             var items = CollectionView?.Cast<Employee>().ToList();
-            // Извлекаем уникальные ActivityId из навигационных свойств Staffs -> Position -> ActivityId
             List<int> uniqueActivityIds = items?
                 .Where(emp => emp.Staffs != null)
                 .SelectMany(emp => emp.Staffs)
@@ -495,7 +748,6 @@ namespace HR.Pages
                 .Distinct()
                 .ToList();
 
-            // Уникальные DepartmentId из Staffs -> DepartmentId
             List<int> uniqueDepartmentIds = items?
                 .Where(emp => emp.Staffs != null)
                 .SelectMany(emp => emp.Staffs)
@@ -503,7 +755,13 @@ namespace HR.Pages
                 .Distinct()
                 .ToList();
 
-            // Уникальные SubjectId из Staffs -> Assignments -> SubjectId
+            List<int> uniquePositionIds = items?
+                .Where(emp => emp.Staffs != null)
+                .SelectMany(emp => emp.Staffs)
+                .Select(staff => staff.PositionId)
+                .Distinct()
+                .ToList();
+
             List<int> uniqueSubjectIds = items?
                 .Where(emp => emp.Staffs != null)
                 .SelectMany(emp => emp.Staffs)
@@ -516,13 +774,14 @@ namespace HR.Pages
 
             if (!(mainWindow?.MenuVM is MenuViewModel) || !(mainWindow.MenuVM.Filters is IEnumerable<MenuFilter>)) return;
 
-            MessageBox.Show($"SyncMenuFilters(): {CollectionFilter?.Name} {SelectedFilter?.Name}");
+            // MessageBox.Show($"SyncMenuFilters(): {CollectionFilter?.Name} {SelectedFilter?.Name}");
 
             var activityFilter = mainWindow.MenuVM.Filters.FirstOrDefault(f => f.Title == "Сотрудники");
             var departmentFilter = mainWindow.MenuVM.Filters.FirstOrDefault(f => f.Title == "Подразделения");
+            var positionFilter = mainWindow.MenuVM.Filters.FirstOrDefault(f => f.Title == "Должности");
             var subjectFilter = mainWindow.MenuVM.Filters.FirstOrDefault(f => f.Title == "Предметы");
 
-            // Синхронизация фильтра по активности
+            // Sync by Activity
             if (SelectedFilter?.Name == "ActivityId" && activityFilter != null && activityFilter.Values != null && uniqueActivityIds != null)
             {
                 activityFilter.IsChecked = true;
@@ -533,7 +792,7 @@ namespace HR.Pages
                 }
             }
 
-            // Синхронизация фильтра по отделам            
+            // Sync by Department
             if (SelectedFilter?.Name == "DepartmentId" && departmentFilter != null && departmentFilter.Values != null && uniqueDepartmentIds != null)
             {
                 departmentFilter.IsChecked = true;
@@ -542,8 +801,17 @@ namespace HR.Pages
                     val.IsChecked = uniqueDepartmentIds.Contains(val.Id);
                 }
             }
+            // Sync by Position
+            if (SelectedFilter?.Name == "PositionId" && positionFilter != null && positionFilter.Values != null && uniquePositionIds != null)
+            {
+                positionFilter.IsChecked = true;
+                foreach (var val in positionFilter.Values)
+                {
+                    val.IsChecked = uniquePositionIds.Contains(val.Id);
+                }
+            }
 
-            // Синхронизация фильтра по предметам
+            // Sync by Subject
             if (SelectedFilter?.Name == "SubjectId" && subjectFilter != null && subjectFilter.Values != null && uniqueSubjectIds != null)
             {
                 subjectFilter.IsChecked = true;
@@ -579,6 +847,15 @@ namespace HR.Pages
                         SelectedDepartment = Departments?.FirstOrDefault(a => a.Id == depIds.First());
                     else
                         SelectedDepartment = null;
+                    break;
+                case "PositionId":
+                    SelectedFilter = FilterValues.FirstOrDefault(f => f.Name == "PositionId");
+                    if (CollectionFilter.Value is int singlePosId)
+                        SelectedPosition = Positions?.FirstOrDefault(a => a.Id == singlePosId);
+                    else if (CollectionFilter.Value is IEnumerable<int> posIds && posIds.Any())
+                        SelectedPosition = Positions?.FirstOrDefault(a => a.Id == posIds.First());
+                    else
+                        SelectedPosition = null;
                     break;
                 case "SubjectId":
                     SelectedFilter = FilterValues.FirstOrDefault(f => f.Name == "SubjectId");
@@ -635,7 +912,7 @@ namespace HR.Pages
                 if (dg?.SelectedItems != null && dg.SelectedItems.Count > 0)
                 {
                     // Convert to AppEventArgs (or IList)
-                    var items = dg.SelectedItems.Cast<ClassGuidance>().ToList();
+                    var items = dg.SelectedItems.Cast<Employee>().ToList();
                     if (DeleteCmd.CanExecute(items))
                     {
                         DeleteCmd.Execute(items);
@@ -745,7 +1022,7 @@ namespace HR.Pages
         }
         private void DataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
-            var item = e.Row.Item as ClassGuidance;
+            var item = e.Row.Item as Employee;
             if (item == null) return;
 
             if (e.EditAction == DataGridEditAction.Commit)
@@ -753,44 +1030,47 @@ namespace HR.Pages
                 Dispatcher.BeginInvoke(
                     (Action)(async () =>  // Explicit Action delegate type declaration
                     {
-                        /*
-                        if (string.IsNullOrWhiteSpace(item.Title))
+                        dataGrid.CommitEdit(DataGridEditingUnit.Row, true);
+
+                       
+
+                        if (string.IsNullOrWhiteSpace(item.Surname))
                         {
-                            MessageBox.Show("Название не может быть пустым", "Неверные данные", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                            // Возвращаем фокус и редактирование
+                            MessageBox.Show("Фамилия не может отсутствовать", "Неверные данные", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                            // Return focus and edit state
                             dataGrid.Focus();
                             dataGrid.SelectedItem = item;
-                            dataGrid.CurrentCell = new DataGridCellInfo(item, dataGrid.Columns[1]); // e.g. first (second) column
+                            dataGrid.CurrentCell = new DataGridCellInfo(item, dataGrid.Columns[1]);
                             dataGrid.BeginEdit();
                             return;
                         }
-                        // Добавляем новый объект в контекст, если он новый
-                        if (item.Id == 0) // или другой признак нового объекта
+                        if (string.IsNullOrWhiteSpace(item.GivenName))
                         {
-                            bool isParsed = int.TryParse(item.Title.Split('-')[0], out int parsed);
-                            if (!isParsed)
-                            {
-                                MessageBox.Show("Неверный формат названия", "Неверные данные", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                                // Возвращаем фокус и редактирование
-                                dataGrid.Focus();
-                                dataGrid.SelectedItem = item;
-                                dataGrid.CurrentCell = new DataGridCellInfo(item, dataGrid.Columns[1]);
-                                dataGrid.BeginEdit();
-                                return;
-                            }
-                            item.GradeId = parsed;
-                            Request.ctx.ClassGuidances.Add(item);
+                            MessageBox.Show("Имя не может отсутствовать", "Неверные данные", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                            // Return focus and edit state
+                            dataGrid.Focus();
+                            dataGrid.SelectedItem = item;
+                            dataGrid.CurrentCell = new DataGridCellInfo(item, dataGrid.Columns[2]);
+                            dataGrid.BeginEdit();
+                            return;
                         }
-                        else
+                        
+                        // Get entity state
+                        var entry = Services.Request.ctx.Entry(item);
+            
+                        // Add if entity is detached
+                        if (entry.State == EntityState.Detached)
                         {
-                            var entry = Services.Request.ctx.Entry(item);
-                            bool isModified = entry.State == EntityState.Modified;
+                            Services.Request.ctx.Employees.Attach(item);
+                            //entry.State = EntityState.Modified; // Explicitely set as modified
+                        }
 
-                            if (!isModified) return;
-                        }
+                        // Check state
+                        bool isModified = entry.State == EntityState.Modified;
+
+                        if (!isModified) return;
 
                         await SaveData(item);
-                        */
                     }),
                     System.Windows.Threading.DispatcherPriority.Background); // Приоритет передается вторым аргументом
             }
@@ -828,26 +1108,15 @@ namespace HR.Pages
 
             string filterName = filter.Name;
             List<int> filterValues = filter.Values.Where(fv => fv.IsChecked).Select(item => item.Id).ToList();
-            MessageBox.Show($"{filter.Title} {GetFilterPropName(filter.Title)} {filterValues.Count.ToString()}");
+            //MessageBox.Show($"{filter.Title} {GetFilterPropName(filter.Title)} {filterValues.Count.ToString()}");
             CollectionFilter = new FilterParam(GetFilterPropName(filter.Title), filterValues);
-            CollectionView.Refresh();
+            //MessageBox.Show("OK");
+            //CollectionView?.Refresh();
             SyncSearchFilters();
         }
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             await SetData();
-
-
-
-            // Set employees collection
-            await SetEmployees();
-            // Get default view for the staff
-            staffView = CollectionViewSource.GetDefaultView(Staff);
-            if (staffView == null) return;
-            // Set filter conditions (predicate)
-            staffView.Filter = FilterStaff;
-            // Update filtered items count
-            UpdateFilteredCount();
         }
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {

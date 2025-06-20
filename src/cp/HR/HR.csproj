@@ -310,6 +310,7 @@
     <Compile Include="Services\CsvHelper.cs" />
     <Compile Include="Services\FilterHelper.cs" />
     <Compile Include="Services\Fs.cs" />
+    <Compile Include="Services\ImgHelper.cs" />
     <Compile Include="Services\JsonHelper.cs" />
     <Compile Include="Services\PdfHelper.cs" />
     <Compile Include="Services\PrintHelper.cs" />

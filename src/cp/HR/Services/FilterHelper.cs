@@ -75,6 +75,22 @@ namespace HR.Services
 
                     return false;
                 }
+                if (filterParam.Name == "PositionId")
+                {
+                    if (filterParam.Value is IEnumerable<int> filterValues)
+                    {
+                        return emp.Staffs != null && emp.Staffs.Any(staff =>
+                            filterValues.Contains(staff.PositionId));
+                    }
+
+                    if (filterParam.Value is int singleValue)
+                    {
+                        return emp.Staffs != null && emp.Staffs.Any(staff =>
+                            staff.PositionId == singleValue);
+                    }
+
+                    return false;
+                }
 
                 if (filterParam.Name == "SubjectId")
                 {
