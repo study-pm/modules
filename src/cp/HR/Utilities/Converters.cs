@@ -51,6 +51,37 @@ namespace HR.Utilities
             throw new NotImplementedException();
         }
     }
+    public class CapitalizeFirstLetterConverter : IValueConverter
+    {
+        /// <summary>
+        /// Converts a string so that its first character is uppercase and the rest are lowercase.
+        /// </summary>
+        /// <param name="value">The input value, expected to be a string.</param>
+        /// <param name="targetType">The target binding type.</param>
+        /// <param name="parameter">Optional parameter (not used).</param>
+        /// <param name="culture">The culture info.</param>
+        /// <returns>The capitalized string or the original value if not a string.</returns>
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is string input && !string.IsNullOrWhiteSpace(input))
+            {
+                if (input.Length == 1)
+                    return input.ToUpper(culture);
+
+                return char.ToUpper(input[0], culture) + input.Substring(1).ToLower(culture);
+            }
+
+            return value;
+        }
+
+        /// <summary>
+        /// ConvertBack is not implemented and throws NotSupportedException.
+        /// </summary>
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException("ConvertBack is not supported.");
+        }
+    }
     public class CollectionToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
