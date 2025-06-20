@@ -261,6 +261,16 @@ namespace HR.Services
                     .ConfigureAwait(false);
             }
         }
+        public static async Task<List<Position>> LoadPositions()
+        {
+            using (var db = new HREntities())
+            {
+                return await db.Positions
+                    .OrderBy(dep => dep.Title)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+            }
+        }
         public static async Task<List<Grade>> LoadGrades()
         {
             using (var db = new HREntities())
