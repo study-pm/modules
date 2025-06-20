@@ -101,7 +101,7 @@
         <Setter Property="HorizontalAlignment" Value="Left"/>
     </Style>
     <Style x:Key="FormLabel" TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
-        <Setter Property="Margin" Value="0 0 5 0"/>
+        <Setter Property="Margin" Value="5"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="ContentTemplate">
         <Setter.Value>
@@ -189,6 +189,9 @@
             </Setter.Value>
         </Setter>
     </Style>
+    <Style x:Key="FormTextBox" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+        <Setter Property="Margin" Value="5,0,5,0"/>
+    </Style>
     <Style x:Key="TextBoxMini" TargetType="TextBox">
         <Setter Property="FontFamily" Value="{StaticResource Roboto}"/>
         <Setter Property="FontSize" Value="13"/>
@@ -275,6 +278,7 @@
         <Setter Property="FontSize" Value="15"/>
         <Setter Property="MinHeight" Value="35"/>
         <Setter Property="Padding" Value="5,0,5,0"/>
+        <Setter Property="Margin" Value="3,0,3,0"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Validation.ErrorTemplate" Value="{DynamicResource ValidationErrorTemplate}"/>
         <Setter Property="Background" Value="White"/>
