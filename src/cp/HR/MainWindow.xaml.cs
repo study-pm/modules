@@ -68,6 +68,15 @@ namespace HR
             },
             new MenuFilter()
             {
+                Icon = (Geometry)Application.Current.FindResource("ProjectDiagramSolidPath"),
+                Name = "Должности",
+                Title = "Должности",
+                Page = "StaffPg",
+                PageUri = "Pages/StaffPg.xaml",
+                Values = new ObservableCollection<FilterValue>() // initialize empty collection
+            },
+            new MenuFilter()
+            {
                 Icon = (Geometry)Application.Current.FindResource("BookOpenSolidPath"),
                 Name = "Учебные предметы",
                 Title = "Предметы",
@@ -113,6 +122,13 @@ namespace HR
                     return await ctx.Departments.Select(x => new FilterValue { Id = x.Id, Title = x.Title }).ToListAsync();
                 }
             });
+            var getPosTask = Task.Run(async () =>
+            {
+                using (var ctx = new HR.Data.Models.HREntities())
+                {
+                    return await ctx.Positions.Select(x => new FilterValue { Id = x.Id, Title = x.Title }).OrderBy(x => x.Title).ToListAsync();
+                }
+            });
             var getSubjTask = Task.Run(async () =>
             {
                 using (var ctx = new HR.Data.Models.HREntities())
@@ -129,7 +145,7 @@ namespace HR
             });
 
             // Await both tasks in parallel
-            await Task.WhenAll(getDptTask, getSubjTask, getClassTask);
+            await Task.WhenAll(getDptTask, getPosTask, getSubjTask, getClassTask);
 
             // Process results
             //var departments = departmentsTask.Result;
@@ -138,8 +154,9 @@ namespace HR
             IsInProgress = false;
 
             Filters[1].Values = new ObservableCollection<FilterValue>(getDptTask.Result);
-            Filters[2].Values = new ObservableCollection<FilterValue>(getSubjTask.Result);
-            Filters[3].Values = new ObservableCollection<FilterValue>(getClassTask.Result);
+            Filters[2].Values = new ObservableCollection<FilterValue>(getPosTask.Result);
+            Filters[3].Values = new ObservableCollection<FilterValue>(getSubjTask.Result);
+            Filters[4].Values = new ObservableCollection<FilterValue>(getClassTask.Result);
         }
 
         private void Filter_PropertyChanged(object sender, PropertyChangedEventArgs e)
