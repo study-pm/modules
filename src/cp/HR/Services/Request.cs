@@ -261,6 +261,13 @@ namespace HR.Services
                     .ConfigureAwait(false);
             }
         }
+        public static async Task<List<Employee>> LoadEmployees(bool isCtx)
+        {
+            return await ctx.Employees.Include("Staffs.Position").Include("Staffs.Assignments").Include("Staffs.Department")
+                    .OrderBy(emp => emp.Surname)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+        }
         public static async Task<List<Position>> LoadPositions()
         {
             using (var db = new HREntities())
