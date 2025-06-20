@@ -13,6 +13,7 @@
                 <ResourceDictionary Source="../Res/AsideMenuStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <local:NavigationDataMultiConverter x:Key="NavigationDataConverter" />
+            <utils:CapitalizeFirstLetterConverter x:Key="CapFirstLetConv" />
             <utils:CollectionToVisibilityConverter x:Key="ColToVisConv"/>
             <utils:InverseBooleanConverter x:Key="InvBoolConv"/>
             <utils:InvertedPageToIsCheckedConverter x:Key="InvPgChkConv" />
@@ -58,10 +59,11 @@
                             <ItemsControl ItemsSource="{Binding Values}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <CheckBox Content="{Binding Title}" ToolTip="{Binding Title}"
-                                              Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                              IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                              >
+                                        <CheckBox Content="{Binding Title, Converter={StaticResource CapFirstLetConv}}"
+                                                  ToolTip="{Binding Title, Converter={StaticResource CapFirstLetConv}}"
+                                                  Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                  IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                    >
                                             <CheckBox.CommandParameter>
                                                 <Binding Path="DataContext" RelativeSource="{RelativeSource AncestorType=ItemsControl, AncestorLevel=1}"
                                                          Converter="{StaticResource NavDataConv}" />
