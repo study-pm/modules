@@ -183,6 +183,7 @@
     <Compile Include="Controls\IconHighlightButton.xaml.cs">
       <DependentUpon>IconHighlightButton.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\StretchingWrapPanel.cs" />
     <Compile Include="Controls\TopHeader.xaml.cs">
       <DependentUpon>TopHeader.xaml</DependentUpon>
     </Compile>
