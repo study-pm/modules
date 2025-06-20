@@ -417,6 +417,47 @@
         <Setter Property="Padding" Value="10"/>
     </Style>
 
+    <Style x:Key="FormRadioButton" TargetType="RadioButton">
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="Foreground" Value="{StaticResource cyanDarkBrush}"/>
+        <Setter Property="Margin" Value="0 0 10 5"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Grid VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Marker -->
+                        <Grid Grid.Column="0" Width="16" Height="16" VerticalAlignment="Center">
+                            <Ellipse Stroke="Gray" StrokeThickness="1" Fill="White"/>
+                            <Ellipse x:Name="Dot"
+                             Width="8" Height="8"
+                             Fill="{StaticResource magentaDarkBrush}"
+                             Visibility="Collapsed"/>
+                        </Grid>
+
+                        <!-- Text -->
+                        <ContentPresenter Grid.Column="1"
+                                  VerticalAlignment="Center"
+                                  Margin="5,0,20,0"
+                                  TextBlock.FontSize="{TemplateBinding FontSize}"
+                                  TextBlock.Foreground="{TemplateBinding Foreground}"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Dot" Property="Visibility" Value="Visible"/>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="False">
+                            <Setter TargetName="Dot" Property="Visibility" Value="Collapsed"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 
     <Style x:Key="ButtonFocusVisual" TargetType="Control">
         <Setter Property="Template">
