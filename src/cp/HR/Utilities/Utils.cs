@@ -13,6 +13,21 @@ namespace HR.Utilities
     internal static class Utils
     {
         /// <summary>
+        /// Capitalizes the first letter of the specified string and converts the rest of the characters to lowercase.
+        /// </summary>
+        /// <param name="input">The input string to capitalize.</param>
+        /// <returns>
+        /// A string with the first character converted to uppercase and the remaining characters converted to lowercase.
+        /// Returns the original string if it is null or empty.
+        /// </returns>
+        public static string CapitalizeFirstLetter(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return input;
+
+            return char.ToUpper(input[0]) + input.Substring(1).ToLower();
+        }
+        /// <summary>
         /// Generates a QR code image as a byte array representing the OTP Auth URI for a given secret and user login.
         /// </summary>
         /// <param name="secret">The secret key used for generating the OTP Auth URI.</param>
