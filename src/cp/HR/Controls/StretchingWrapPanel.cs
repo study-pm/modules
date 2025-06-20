@@ -11,7 +11,7 @@ namespace HR.Controls
     /// <summary>
     /// A custom <see cref="WrapPanel"/> that stretches child elements horizontally to fill the available width.
     /// </summary>
-    public class StretchingWrapPanel : WrapPanel
+    public class StretchWrapPanel : WrapPanel
     {
         /// <summary>
         /// Measures the size required for child elements with an unlimited available size,
@@ -149,4 +149,62 @@ namespace HR.Controls
         }
     }
 
+    public class StretchingWrapPanel : WrapPanel
+    {
+        protected override Size MeasureOverride(Size constraint)
+        {
+            // Измеряем все элементы как обычно
+            foreach (UIElement child in InternalChildren)
+            {
+                child.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+            }
+            return base.MeasureOverride(constraint);
+        }
+        protected override Size ArrangeOverride(Size finalSize)
+        {
+            // Логика размещения: определяем, сколько элементов помещается в строке
+            double lineWidth = 0;
+            double lineHeight = 0;
+            double x = 0, y = 0;
+            List<UIElement> lineElements = new List<UIElement>();
+
+            foreach (UIElement child in InternalChildren)
+            {
+                double childWidth = child.DesiredSize.Width;
+                double childHeight = child.DesiredSize.Height;
+
+                if (x + childWidth > finalSize.Width && lineElements.Count > 0)
+                {
+                    // Растягиваем элементы текущей строки
+                    StretchLine(lineElements, x, y, lineHeight, finalSize.Width);
+                    // Переходим на новую строку
+                    y += lineHeight;
+                    x = 0;
+                    lineHeight = 0;
+                    lineElements.Clear();
+                }
+
+                lineElements.Add(child);
+                x += childWidth;
+                lineHeight = Math.Max(lineHeight, childHeight);
+            }
+            // Растягиваем последнюю строку
+            if (lineElements.Count > 0)
+                StretchLine(lineElements, x, y, lineHeight, finalSize.Width);
+
+            return finalSize;
+        }
+
+        private void StretchLine(List<UIElement> elements, double usedWidth, double y, double height, double totalWidth)
+        {
+            double extra = (totalWidth - usedWidth) / elements.Count;
+            double x = 0;
+            foreach (var child in elements)
+            {
+                double width = child.DesiredSize.Width + extra;
+                child.Arrange(new Rect(x, y, width, height));
+                x += width;
+            }
+        }
+    }
 }
