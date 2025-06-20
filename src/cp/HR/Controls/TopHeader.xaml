@@ -14,12 +14,13 @@
             </ResourceDictionary.MergedDictionaries>
             <local:NavigationDataConverter x:Key="NavDataConv" />
             <local:NavigationDataMultiConverter x:Key="NavigationDataConverter" />
+            <utils:CapitalizeFirstLetterConverter x:Key="CapFirstLetConv" />
             <utils:PageToIsCheckedConverter x:Key="CheckedConverter" />
             <utils:PageToIsEnabledConverter x:Key="EnabledConverter" />
             <BooleanToVisibilityConverter x:Key="BoolToVis" />
             <utils:InverseBoolToVisibilityConverter x:Key="InverseBoolToVis" />
             <Style x:Key="SubMenuItem" TargetType="MenuItem" BasedOn="{StaticResource CheckMenuItemStyle}">
-                <Setter Property="Header" Value="{Binding Title}" />
+                <Setter Property="Header" Value="{Binding Title, Converter={StaticResource CapFirstLetConv}}" />
                 <Setter Property="IsChecked" Value="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 <Setter Property="Command" Value="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                 <Setter Property="CommandParameter">
@@ -107,7 +108,7 @@
                             <StaticResource ResourceKey="SubMenuItem"/>
                         </MenuItem.ItemContainerStyle>
                     </MenuItem>
-                    <MenuItem Header="Пред_меты" Tag="Pages/StaffPg.xaml" local:MenuItemExtensions.FilterIndex="2"
+                    <MenuItem Header="_Должности" Tag="Pages/StaffPg.xaml" local:MenuItemExtensions.FilterIndex="2"
                               IsChecked="{Binding DataContext.MenuVM.Filters[2].IsChecked, RelativeSource={RelativeSource AncestorType=Window}}"
                               >
                         <MenuItem.ItemsSource>
@@ -117,11 +118,21 @@
                             <StaticResource ResourceKey="SubMenuItem"/>
                         </MenuItem.ItemContainerStyle>
                     </MenuItem>
-                    <MenuItem Header="_Классы" Tag="Pages/ClassesPg.xaml" local:MenuItemExtensions.FilterIndex="3"
+                    <MenuItem Header="Пред_меты" Tag="Pages/StaffPg.xaml" local:MenuItemExtensions.FilterIndex="3"
                               IsChecked="{Binding DataContext.MenuVM.Filters[3].IsChecked, RelativeSource={RelativeSource AncestorType=Window}}"
                               >
                         <MenuItem.ItemsSource>
                             <Binding Path="DataContext.MenuVM.Filters[3].Values" RelativeSource="{RelativeSource AncestorType=Window}" />
+                        </MenuItem.ItemsSource>
+                        <MenuItem.ItemContainerStyle>
+                            <StaticResource ResourceKey="SubMenuItem"/>
+                        </MenuItem.ItemContainerStyle>
+                    </MenuItem>
+                    <MenuItem Header="_Классы" Tag="Pages/ClassesPg.xaml" local:MenuItemExtensions.FilterIndex="4"
+                              IsChecked="{Binding DataContext.MenuVM.Filters[4].IsChecked, RelativeSource={RelativeSource AncestorType=Window}}"
+                              >
+                        <MenuItem.ItemsSource>
+                            <Binding Path="DataContext.MenuVM.Filters[4].Values" RelativeSource="{RelativeSource AncestorType=Window}" />
                         </MenuItem.ItemsSource>
                         <MenuItem.ItemContainerStyle>
                             <StaticResource ResourceKey="SubMenuItem"/>
