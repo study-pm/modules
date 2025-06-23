@@ -98,7 +98,7 @@
                             <StaticResource ResourceKey="SubMenuItem"/>
                         </MenuItem.ItemContainerStyle>
                     </MenuItem>
-                    <MenuItem Header="Под_разделения" Tag="Pages/StaffPg.xaml" local:MenuItemExtensions.FilterIndex="1"
+                    <MenuItem Header="Подраз_деления" Tag="Pages/StaffPg.xaml" local:MenuItemExtensions.FilterIndex="1"
                               IsChecked="{Binding DataContext.MenuVM.Filters[1].IsChecked, RelativeSource={RelativeSource AncestorType=Window}}"
                               >
                         <MenuItem.ItemsSource>
