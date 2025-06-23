@@ -177,6 +177,7 @@ namespace HR.Pages
             var user = await Services.Request.ctx.Users.FirstOrDefaultAsync(x => x.Login == login);
             return user == null;
         }
+        private bool CheckPasswordMatch() => Password1 == Password2;
         public void ClearAllErrors()
         {
             ClearErrors(nameof(Login));
@@ -235,7 +236,7 @@ namespace HR.Pages
         {
             // Sync Password property with PasswordBox
             Password1 = Pw1Pwb.Password;
-            Password2 = Pw1Pwb.Password;
+            Password2 = Pw2Pwb.Password;
 
             // Get controls list
             List<Control> controls = new List<Control> { EmployeeCmb, LoginTxb, Pw1Pwb, Pw2Pwb };
@@ -349,6 +350,11 @@ namespace HR.Pages
             {
                 IsInProgress = true;
                 if (!Validate()) return;
+                if (!CheckPasswordMatch())
+                {
+                    MessageBox.Show("Пароли должны совпадать!", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
                 StatusInformer.ReportProgress("Загрузка данных");
                 bool isSuccess = await Register();
                 if (isSuccess == false) StatusInformer.ReportFailure("Невозможно зарегистрировать пользователя");
