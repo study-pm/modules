@@ -55,7 +55,12 @@
                         </TextBox>
                     </StackPanel>
                     <StackPanel Style="{StaticResource FormElement}">
-                        <Label Style="{StaticResource FormLabel}">Сотрудник</Label>
+                        <StackPanel Orientation="Horizontal" Margin="5">
+                            <Label>Сотрудник</Label>
+                            <uc:Details Type="Question"
+                                        ToolTip="Прикрепленный к пользователю сотрудник не может быть изменен"
+                                        />
+                        </StackPanel>
                         <ComboBox x:Name="EmployeeCmb" Height="25"
                                   Style="{StaticResource FormComboBox}"
                                   IsTextSearchEnabled="True"
@@ -83,7 +88,12 @@
                         </ComboBox>
                     </StackPanel>
                     <StackPanel Style="{StaticResource FormElement}">
-                        <Label Style="{StaticResource FormLabel}">Роль</Label>
+                        <StackPanel Orientation="Horizontal" Margin="5">
+                            <Label>Роль</Label>
+                            <uc:Details Type="Question"
+                                        ToolTip="Для смены роли обратитесь к администратору"
+                                        />
+                        </StackPanel>
                         <ComboBox x:Name="RoleCmb" Height="25"
                                   Style="{StaticResource FormComboBox}"
                                   IsTextSearchEnabled="True"
