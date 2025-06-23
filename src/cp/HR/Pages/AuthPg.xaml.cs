@@ -259,6 +259,10 @@ namespace HR.Pages
             ResetFields();
         }
 
-        private void TogglePwdBtn_Click(object sender, RoutedEventArgs e) => IsPwdOn = !IsPwdOn;
+        private void TogglePwdBtn_Click(object sender, RoutedEventArgs e)
+        {
+            IsPwdOn = !IsPwdOn;
+            PasswordTxt.Focus();
+        }
     }
 }
