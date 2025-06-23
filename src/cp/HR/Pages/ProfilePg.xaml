@@ -111,14 +111,19 @@
                         </ComboBox>
                     </StackPanel>
                     <StackPanel Style="{StaticResource FormElement}">
-                        <Label Style="{StaticResource FormLabel}">Пароль</Label>
-                        <TextBox x:Name="PasswordTxb" Style="{StaticResource FormTextBox}"
+                        <StackPanel Orientation="Horizontal" Margin="5">
+                            <Label>Пароль</Label>
+                            <uc:Details Type="Question"
+                                ToolTip="Пароль не может быть показан по соображениям безопасности"
+                                />
+                        </StackPanel>
+                        <PasswordBox x:Name="PasswordPwb" Style="{StaticResource FormPasswordBox}"
                                  IsEnabled="False"
+                                 Password="..............."
                                  utils:ValidationHelper.AutoErrorVisibility="True"
                                  utils:ValidationHelper.EnableTouchedTracking="True"
                                  >
-                            Пароль не отображается из соображений безопасности
-                        </TextBox>
+                        </PasswordBox>
                     </StackPanel>
                 </StackPanel>
                 <Grid Grid.Column="1" Margin="5 35 5 0">
