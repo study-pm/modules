@@ -27,6 +27,146 @@
             (не менее 8 символов, включая буквы в разных регистрах, цифры и специальные символы).
             Все поля должны быть заполнены.
             </TextBlock>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="200" />
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <StackPanel Style="{StaticResource FormElement}">
+                        <Label Style="{StaticResource FormLabel}">Регистрационное имя (Логин)</Label>
+                        <TextBox x:Name="LoginTxb" Style="{StaticResource FormTextBox}"
+                                 IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
+                                 utils:ValidationHelper.AutoErrorVisibility="True"
+                                 utils:ValidationHelper.EnableTouchedTracking="True"
+                                 >
+                            <TextBox.Text>
+                                <Binding Path="Login" UpdateSourceTrigger="PropertyChanged"
+                                         ValidatesOnDataErrors="True" NotifyOnValidationError="True"
+                                         ValidatesOnNotifyDataErrors="True"
+                                         >
+                                    <Binding.ValidationRules>
+                                        <utils:MaxLengthValidationRule MaxLength="32" />
+                                        <utils:MinLengthValidationRule MinLength="4" />
+                                        <utils:NotEmptyValidationRule/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                    </StackPanel>
+                    <StackPanel Style="{StaticResource FormElement}">
+                        <Label Style="{StaticResource FormLabel}">Сотрудник</Label>
+                        <ComboBox x:Name="EmployeeCmb" Height="25"
+                                  Style="{StaticResource FormComboBox}"
+                                  IsTextSearchEnabled="True"
+                                  TextSearch.TextPath="FullName"
+                                  IsEnabled="False" IsReadOnly="True"
+                                  ItemsSource="{Binding Employees}"
+                                  SelectedItem="{Binding Employee, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  SelectedValuePath="Id"
+                                  >
+                            <ComboBox.SelectedValue>
+                                <Binding Path="Employee.Id" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <utils:NotEmptyValidationRule/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </ComboBox.SelectedValue>
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding FullName}"
+                                               TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                                               VerticalAlignment="Center"
+                                               />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Style="{StaticResource FormElement}">
+                        <Label Style="{StaticResource FormLabel}">Роль</Label>
+                        <ComboBox x:Name="RoleCmb" Height="25"
+                                  Style="{StaticResource FormComboBox}"
+                                  IsTextSearchEnabled="True"
+                                  TextSearch.TextPath="DisplayName"
+                                  IsEnabled="False"
+                                  ItemsSource="{Binding Roles}"
+                                  SelectedItem="{Binding Role, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  SelectedValuePath="Id"
+                                  >
+                            <ComboBox.SelectedValue>
+                                <Binding Path="Role.Id" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <utils:NotEmptyValidationRule/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </ComboBox.SelectedValue>
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}"
+                                               TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                                               VerticalAlignment="Center"
+                                               />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Style="{StaticResource FormElement}">
+                        <Label Style="{StaticResource FormLabel}">Пароль</Label>
+                        <TextBox x:Name="PasswordTxb" Style="{StaticResource FormTextBox}"
+                                 IsEnabled="False"
+                                 utils:ValidationHelper.AutoErrorVisibility="True"
+                                 utils:ValidationHelper.EnableTouchedTracking="True"
+                                 >
+                            Пароль не отображается из соображений безопасности
+                        </TextBox>
+                    </StackPanel>
+                </StackPanel>
+                <Grid Grid.Column="1" Margin="5 35 5 0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="225" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <StackPanel>
+                        <Viewbox Stretch="Fill" Width="175" Height="175">
+                            <Path Fill="{StaticResource cyanDarkBrush}" Data="{StaticResource UserCircleSolidPath}"/>
+                        </Viewbox>
+                    </StackPanel>
+                    <Button ToolTip="Увеличить изображение"
+                            Style="{StaticResource ImgButtonStyle}"
+                            Click="EnlargeImageButton_Click"
+                            IsEnabled="{Binding Image, Converter={StaticResource StrToBoolConv}}"
+                            >
+                        <Image Source="{Binding Image, Converter={StaticResource ImgPathConv}}"/>
+                    </Button>
+                    <Popup StaysOpen="False" AllowsTransparency="True" Placement="MousePoint" PopupAnimation="Fade">
+                        <Border BorderBrush="LightGray" BorderThickness="1" Background="White"
+CornerRadius="5" Padding="10"
+>
+                            <ScrollViewer MaxWidth="500" VerticalScrollBarVisibility="Hidden">
+                                <Image />
+                            </ScrollViewer>
+                        </Border>
+                    </Popup>
+                    <StackPanel Grid.Row="1" Margin="5">
+                        <TextBlock FontWeight="Bold" FontSize="16" HorizontalAlignment="Center"
+                       Style="{StaticResource Paragraph}"
+                       Visibility="{Binding HasImage, Converter={StaticResource InvBoolConv}}"
+                       >
+                <Hyperlink
+                    Command="{Binding AddImgCmd, RelativeSource={RelativeSource AncestorType=Page}}"
+                    >Добавить фото</Hyperlink>
+                        </TextBlock>
+                        <TextBlock FontWeight="Bold" FontSize="16" HorizontalAlignment="Center"
+                       Style="{StaticResource Paragraph}"
+                       Visibility="{Binding HasImage, Converter={StaticResource BoolToVis}}"
+                       >
+                <Hyperlink
+                    Command="{Binding AddImgCmd, RelativeSource={RelativeSource AncestorType=Page}}"
+                    >Сменить фото</Hyperlink>
+                        </TextBlock>
+                    </StackPanel>
+                </Grid>
+            </Grid>
 
             <Grid Margin="0 30 0 0">
                 <Grid.ColumnDefinitions>
@@ -133,7 +273,7 @@
                             </Viewbox>
                         </StackPanel>
                     </uc:IconHighlightButton>
-                    <ComboBox x:Name="EmployeeCmb" Height="25"
+                    <ComboBox x:Name="RoleCmbbx" Height="25"
                               Style="{StaticResource FormComboBox}"
                               IsTextSearchEnabled="True"
                               TextSearch.TextPath="DisplayName"

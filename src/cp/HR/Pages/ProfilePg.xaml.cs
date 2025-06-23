@@ -28,6 +28,19 @@ namespace HR.Pages
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         internal Data.Models.User dm;
         public string EmployeeName => dm.Employee?.FullName ?? "—";
+        private string _login;
+        public string Login
+        {
+            get => _login;
+            set
+            {
+                if (_login == value) return;
+                _login = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsChanged));
+                OnPropertyChanged(nameof(IsEnabled));
+            }
+        }
         private Role _role;
         public Role Role
         {
