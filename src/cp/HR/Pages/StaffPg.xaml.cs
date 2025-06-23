@@ -706,6 +706,7 @@ namespace HR.Pages
                     CollectionView.Filter = obj => FilterHelper.FilterByValue(obj, CollectionFilter);
                     CollectionView.Refresh();
                     SyncSearchFilters();
+                    OnPropertyChanged(nameof(FilteredCount));   // update total count
                 });
                 RaiseAppEvent(new AppEventArgs
                 {
