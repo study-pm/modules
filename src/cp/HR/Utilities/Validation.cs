@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -108,6 +109,41 @@ namespace HR.Utilities
             return ValidationResult.ValidResult;
         }
     }
+    public class StrongPasswordValidationRule : ValidationRule
+    {
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
+        {
+            string password = value as string ?? string.Empty;
+
+            if (password.Length < 8)
+            {
+                return new ValidationResult(false, "Пароль должен содержать не менее 8 символов.");
+            }
+
+            if (!Regex.IsMatch(password, @"[A-Z]"))
+            {
+                return new ValidationResult(false, "Пароль должен содержать хотя бы одну заглавную букву.");
+            }
+
+            if (!Regex.IsMatch(password, @"[a-z]"))
+            {
+                return new ValidationResult(false, "Пароль должен содержать хотя бы одну строчную букву.");
+            }
+
+            if (!Regex.IsMatch(password, @"\d"))
+            {
+                return new ValidationResult(false, "Пароль должен содержать хотя бы одну цифру.");
+            }
+
+            if (!Regex.IsMatch(password, @"[\W_]"))
+            {
+                return new ValidationResult(false, "Пароль должен содержать хотя бы один специальный символ.");
+            }
+
+            return ValidationResult.ValidResult;
+        }
+    }
+
     public static class ValidationHelper
     {
         // Автоматическое управление видимостью ошибок (автоматически скрывать/показывать при фокусе)
