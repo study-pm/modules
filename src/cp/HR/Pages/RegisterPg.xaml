@@ -12,7 +12,9 @@
     <Page.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <utils:InverseBooleanConverter x:Key="InvBoolConv"/>
+        <utils:InverseBoolToVisibilityConverter x:Key="InvBoolVis"/>
         <utils:NotEmptyValidationRule x:Key="NotEmptyValidationRule"/>
+        <utils:StrongPasswordValidationRule x:Key="StrongPasswordValidationRule"/>
     </Page.Resources>
     <ScrollViewer Style="{StaticResource MainView}">
         <StackPanel>
@@ -78,24 +80,108 @@
 
                 <StackPanel Style="{StaticResource FormElement}">
                     <Label>Пароль</Label>
-                    <PasswordBox x:Name="Pw1Pwb"
-                                 IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
-                                 Tag="{Binding Password1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    <Grid>
+                        <PasswordBox x:Name="Pw1Pwb" Padding="5 0 25 0"
+                                     IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
+                                     Tag="{Binding Password1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     Visibility="{Binding IsPwd1On, Converter={StaticResource InvBoolVis}}"
+                                     utils:ValidationHelper.AutoErrorVisibility="True"
+                                     utils:ValidationHelper.EnableTouchedTracking="True"
+                                     PasswordChanged="Pw1Pwb_PasswordChanged"
+                                     />
+                        <TextBox x:Name="Pw1Txt" Padding="5 0 25 0"
+                                 Visibility="{Binding IsPwd1On, Converter={StaticResource BoolToVis}}"
                                  utils:ValidationHelper.AutoErrorVisibility="True"
                                  utils:ValidationHelper.EnableTouchedTracking="True"
-                                 PasswordChanged="Pw1Pwb_PasswordChanged"
-                 />
+                                 >
+                            <TextBox.Text>
+                                <Binding Path="Password1" UpdateSourceTrigger="PropertyChanged" Mode="TwoWay"
+                                         ValidatesOnDataErrors="True" NotifyOnValidationError="True"
+                                         ValidatesOnNotifyDataErrors="True"
+                                         >
+                                    <Binding.ValidationRules>
+                                        <utils:NotEmptyValidationRule />
+                                        <utils:StrongPasswordValidationRule />
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                        <Button ToolTip="Показать пароль" HorizontalAlignment="Right"
+                                Style="{StaticResource IconButton}"
+                                Visibility="{Binding IsPwd1On, Converter={StaticResource InvBoolVis}}"
+                                Click="TogglePwd1Btn_Click"
+                                >
+                            <StackPanel>
+                                <Viewbox Stretch="Fill" Width="19" Height="14">
+                                    <Path Fill="{StaticResource cyanDarkBrush}" Data="{StaticResource EyeSolidPath}"/>
+                                </Viewbox>
+                            </StackPanel>
+                        </Button>
+                        <Button ToolTip="Скрыть пароль" HorizontalAlignment="Right"  Margin="5 2 0 0"
+                                Style="{StaticResource IconButton}"
+                                Visibility="{Binding IsPwd1On, Converter={StaticResource BoolToVis}}"
+                                Click="TogglePwd1Btn_Click"
+                                 >
+                            <StackPanel>
+                                <Viewbox Stretch="Fill" Width="20" Height="16">
+                                    <Path Fill="{StaticResource cyanDarkBrush}" Data="{StaticResource EyeSlashSolidPath}"/>
+                                </Viewbox>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
                 </StackPanel>
 
                 <StackPanel Style="{StaticResource FormElement}">
                     <Label>Пароль (повтор)</Label>
-                    <PasswordBox x:Name="Pw2Pwb"
-                                 IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
-                                 Tag="{Binding Password2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    <Grid>
+                        <PasswordBox x:Name="Pw2Pwb" Padding="5 0 25 0"
+                                     IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
+                                     Tag="{Binding Password2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     Visibility="{Binding IsPwd2On, Converter={StaticResource InvBoolVis}}"
+                                     utils:ValidationHelper.AutoErrorVisibility="True"
+                                     utils:ValidationHelper.EnableTouchedTracking="True"
+                                     PasswordChanged="Pw2Pwb_PasswordChanged"
+                                     />
+                        <TextBox x:Name="Pw2Txt" Padding="5 0 25 0"
+                                 Visibility="{Binding IsPwd2On, Converter={StaticResource BoolToVis}}"
                                  utils:ValidationHelper.AutoErrorVisibility="True"
                                  utils:ValidationHelper.EnableTouchedTracking="True"
-                                 PasswordChanged="Pw2Pwb_PasswordChanged"
-                                 />
+                                 >
+                            <TextBox.Text>
+                                <Binding Path="Password2" UpdateSourceTrigger="PropertyChanged" Mode="TwoWay"
+                                         ValidatesOnDataErrors="True" NotifyOnValidationError="True"
+                                         ValidatesOnNotifyDataErrors="True"
+                                         >
+                                    <Binding.ValidationRules>
+                                        <utils:NotEmptyValidationRule />
+                                        <utils:StrongPasswordValidationRule />
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                        <Button ToolTip="Показать пароль" HorizontalAlignment="Right"
+                                Style="{StaticResource IconButton}"
+                                Visibility="{Binding IsPwd2On, Converter={StaticResource InvBoolVis}}"
+                                Click="TogglePwd2Btn_Click"
+                                >
+                            <StackPanel>
+                                <Viewbox Stretch="Fill" Width="19" Height="14">
+                                    <Path Fill="{StaticResource cyanDarkBrush}" Data="{StaticResource EyeSolidPath}"/>
+                                </Viewbox>
+                            </StackPanel>
+                        </Button>
+                        <Button ToolTip="Скрыть пароль" HorizontalAlignment="Right"  Margin="5 2 0 0"
+                                Style="{StaticResource IconButton}"
+                                Visibility="{Binding IsPwd2On, Converter={StaticResource BoolToVis}}"
+                                Click="TogglePwd2Btn_Click"
+                                >
+                            <StackPanel>
+                                <Viewbox Stretch="Fill" Width="20" Height="16">
+                                    <Path Fill="{StaticResource cyanDarkBrush}" Data="{StaticResource EyeSlashSolidPath}"/>
+                                </Viewbox>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
                 </StackPanel>
 
                 <Grid Margin="0 10 0 0">

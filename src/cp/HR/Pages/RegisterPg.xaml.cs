@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data;
 using System.Data.Entity;
 using System.Diagnostics;
 using System.Globalization;
@@ -115,8 +116,26 @@ namespace HR.Pages
             get => _password1;
             set
             {
+                if (_password1 == value) return;
                 _password1 = value;
+                OnPropertyChanged();
                 ValidatePassword(Password1, Pw1Pwb);
+            }
+        }
+        private bool _isPwd1On;
+        public bool IsPwd1On
+        {
+            get => _isPwd1On;
+            set
+            {
+                if (_isPwd1On == value) return;
+                _isPwd1On = value;
+                if (!_isPwd1On)
+                {
+                    // Update PasswordBox value when toggling its visibility on
+                    Pw1Pwb.Password = Password1;
+                }
+                OnPropertyChanged(nameof(IsPwd1On));
             }
         }
         private string _password2;
@@ -125,8 +144,26 @@ namespace HR.Pages
             get => _password2;
             set
             {
+                if (_password2 == value) return;
                 _password2 = value;
+                OnPropertyChanged();
                 ValidatePassword(Password2, Pw2Pwb);
+            }
+        }
+        private bool _isPwd2On;
+        public bool IsPwd2On
+        {
+            get => _isPwd2On;
+            set
+            {
+                if (_isPwd2On == value) return;
+                _isPwd2On = value;
+                if (!_isPwd2On)
+                {
+                    // Update PasswordBox value when toggling its visibility on
+                    Pw2Pwb.Password = Password2;
+                }
+                OnPropertyChanged(nameof(IsPwd2On));
             }
         }
         public RegisterPg()
@@ -260,27 +297,36 @@ namespace HR.Pages
         }
         private void ValidatePassword(string password, PasswordBox pwdBx)
         {
-            var rule = new PasswordLengthValidationRule { MinLength = 8 };
-            var result = rule.Validate(password, CultureInfo.CurrentCulture);
+            var rules = new List<ValidationRule> {
+                new PasswordLengthValidationRule { MinLength = 8 },
+                new StrongPasswordValidationRule()
+            };
 
-            var bindingExpression = pwdBx.GetBindingExpression(PasswordBox.TagProperty);
-            if (result.IsValid)
+            ValidationResult result = new ValidationResult(true, null);
+            foreach (var rule in rules)
             {
-                Validation.ClearInvalid(bindingExpression);
-            }
-            else
-            {
-                var validationError = new ValidationError(rule, bindingExpression)
+                result = rule.Validate(password, CultureInfo.CurrentCulture);
+
+                var bindingExpression = pwdBx.GetBindingExpression(PasswordBox.TagProperty);
+                if (result.IsValid)
                 {
-                    ErrorContent = result.ErrorContent
-                };
-                Validation.MarkInvalid(bindingExpression, validationError);
+                    Validation.ClearInvalid(bindingExpression);
+                }
+                else
+                {
+                    var validationError = new ValidationError(rule, bindingExpression)
+                    {
+                        ErrorContent = result.ErrorContent
+                    };
+                    Validation.MarkInvalid(bindingExpression, validationError);
+                }
+                if (!result.IsValid) break;
             }
         }
         private void Pw1Pwb_PasswordChanged(object sender, RoutedEventArgs e)
         {
             var pb = (PasswordBox)sender;
-            if (DataContext is RegisterPg vm) vm.Password1 = pb.Password;
+            Password1 = pb.Password;
         }
         private void Pw2Pwb_PasswordChanged(object sender, RoutedEventArgs e)
         {
@@ -324,6 +370,42 @@ namespace HR.Pages
             IsInProgress = true;
             Employees = new ObservableCollection<Employee>((await Services.Request.GetEmployeesUnregistered()).OrderBy(emp => emp.Surname));
             IsInProgress = false;
+        }
+        private void TogglePwd1Btn_Click(object sender, RoutedEventArgs e)
+        {
+            IsPwd1On = !IsPwd1On;
+            if (IsPwd1On)
+            {
+                Pw1Txt.Focus();
+                ValidationHelper.SetShowErrors(Pw1Txt, true);
+                ValidationHelper.SetTouched(Pw1Txt, true);
+                ValidationHelper.ForceValidate(Pw1Txt, TextBox.TextProperty);
+            }
+            else
+            {
+                Pw1Pwb.Focus();
+                ValidationHelper.SetShowErrors(Pw1Pwb, true);
+                ValidationHelper.SetTouched(Pw1Pwb, true);
+                ValidatePassword(Password1, Pw1Pwb);
+            }
+        }
+        private void TogglePwd2Btn_Click(object sender, RoutedEventArgs e)
+        {
+            IsPwd2On = !IsPwd2On;
+            if (IsPwd2On)
+            {
+                Pw2Txt.Focus();
+                ValidationHelper.SetShowErrors(Pw2Txt, true);
+                ValidationHelper.SetTouched(Pw2Txt, true);
+                ValidationHelper.ForceValidate(Pw2Txt, TextBox.TextProperty);
+            }
+            else
+            {
+                Pw2Pwb.Focus();
+                ValidationHelper.SetShowErrors(Pw2Pwb, true);
+                ValidationHelper.SetTouched(Pw2Pwb, true);
+                ValidatePassword(Password2, Pw2Pwb);
+            }
         }
     }
 }
