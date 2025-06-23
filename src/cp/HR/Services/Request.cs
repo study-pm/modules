@@ -263,6 +263,7 @@ namespace HR.Services
         }
         public static async Task<List<Employee>> LoadEmployees(bool isCtx)
         {
+            if (isCtx) return await ctx.Employees.OrderBy(emp => emp.Surname).ToListAsync();
             return await ctx.Employees.Include("Staffs.Position").Include("Staffs.Assignments").Include("Staffs.Department")
                     .OrderBy(emp => emp.Surname)
                     .ToListAsync()
