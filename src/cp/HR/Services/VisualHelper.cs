@@ -11,11 +11,38 @@ using System.Windows;
 namespace HR.Services
 {
     /// <summary>
-    /// Provides utility methods for navigating and interacting with the visual tree of UI elements,
-    /// specifically for WPF controls like <see cref="DataGrid"/>.
+    /// Provides utility methods for navigating and interacting with the visual tree of UI elements
     /// </summary>
     public class VisualHelper
     {
+        /// <summary>
+        /// Recursively finds all visual child elements of the specified type <typeparamref name="T"/> within a given <see cref="DependencyObject"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of visual children to find. Must be a <see cref="DependencyObject"/>.</typeparam>
+        /// <param name="depObj">The parent <see cref="DependencyObject"/> whose visual tree will be searched.</param>
+        /// <returns>
+        /// An <see cref="IEnumerable{T}"/> containing all visual children of type <typeparamref name="T"/> found within the visual tree of <paramref name="depObj"/>.
+        /// If <paramref name="depObj"/> is null or has no children of the specified type, the returned sequence will be empty.
+        /// </returns>
+        public static IEnumerable<T> FindVisualChildren<T>(DependencyObject depObj) where T : DependencyObject
+        {
+            if (depObj != null)
+            {
+                for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+                {
+                    DependencyObject child = VisualTreeHelper.GetChild(depObj, i);
+                    if (child != null && child is T t)
+                    {
+                        yield return t;
+                    }
+
+                    foreach (T childOfChild in FindVisualChildren<T>(child))
+                    {
+                        yield return childOfChild;
+                    }
+                }
+            }
+        }
         /// <summary>
         /// Retrieves a specific <see cref="DataGridCell"/> from a <see cref="DataGridRow"/>
         /// at the given column index.
