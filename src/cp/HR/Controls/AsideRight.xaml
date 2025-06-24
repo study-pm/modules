@@ -98,7 +98,7 @@
                       CommandTarget="{Binding ElementName=mainFrame}"
                       >
                 <MenuItem.Header>
-                    <TextBlock TextTrimming="CharacterEllipsis">Предпочтения</TextBlock>
+                    <TextBlock TextTrimming="CharacterEllipsis">Настройки</TextBlock>
                 </MenuItem.Header>
                 <MenuItem.Icon>
                     <Viewbox Height="16" Width="16" ToolTip="Предпочтения">
