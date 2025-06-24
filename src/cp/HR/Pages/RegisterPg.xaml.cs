@@ -1,4 +1,5 @@
 ﻿using HR.Data.Models;
+using HR.Models;
 using HR.Services;
 using HR.Utilities;
 using System;
@@ -24,6 +25,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static HR.Services.AppEventHelper;
 
 namespace HR.Pages
 {
@@ -36,14 +38,7 @@ namespace HR.Pages
         protected void OnPropertyChanged([CallerMemberName] string prop = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
 
-        public static readonly DependencyProperty InProgressProp =
-            DependencyProperty.Register(nameof(IsInProgress), typeof(bool), typeof(RegisterPg), new PropertyMetadata(false));
-
-        public bool IsInProgress
-        {
-            get { return (bool)GetValue(InProgressProp); }
-            set { SetValue(InProgressProp, value); }
-        }
+        public RelayCommand SubmitCmd { get; }
 
         private ObservableCollection<Employee> employees;
         public ObservableCollection<Employee> Employees
@@ -70,32 +65,18 @@ namespace HR.Pages
                 }
             }
         }
-        // --- Add for async validation ---
-        private readonly Dictionary<string, List<string>> _errors = new Dictionary<string, List<string>>();
-        public bool HasErrors => _errors.Count > 0;
-        public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
-        public IEnumerable GetErrors(string propertyName)
+        private bool _isProgress;
+        public bool IsProgress
         {
-            if (string.IsNullOrEmpty(propertyName)) return null;
-            return _errors.ContainsKey(propertyName) ? _errors[propertyName] : null;
+            get => _isProgress;
+            set
+            {
+                if (_isProgress == value) return;
+                _isProgress = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsEnabled));
+            }
         }
-        private void AddError(string propertyName, string error)
-        {
-            if (!_errors.ContainsKey(propertyName))
-                _errors[propertyName] = new List<string>();
-            if (!_errors[propertyName].Contains(error))
-                _errors[propertyName].Add(error);
-        }
-        private void ClearErrors(string propertyName)
-        {
-            if (_errors.ContainsKey(propertyName))
-                _errors.Remove(propertyName);
-        }
-        protected virtual void OnErrorsChanged(string propertyName)
-        {
-            ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
-        }
-        // --- End async validation fields ---
         private string _login;
         public string Login
         {
@@ -166,11 +147,52 @@ namespace HR.Pages
                 OnPropertyChanged(nameof(IsPwd2On));
             }
         }
+        // --- Async validation --- //
+        private readonly Dictionary<string, List<string>> _errors = new Dictionary<string, List<string>>();
+        public bool HasErrors => _errors.Count > 0;
+        public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
+        public IEnumerable GetErrors(string propertyName)
+        {
+            if (string.IsNullOrEmpty(propertyName)) return null;
+            return _errors.ContainsKey(propertyName) ? _errors[propertyName] : null;
+        }
+        private void AddError(string propertyName, string error)
+        {
+            if (!_errors.ContainsKey(propertyName))
+                _errors[propertyName] = new List<string>();
+            if (!_errors[propertyName].Contains(error))
+                _errors[propertyName].Add(error);
+        }
+        private void ClearErrors(string propertyName)
+        {
+            if (_errors.ContainsKey(propertyName))
+                _errors.Remove(propertyName);
+        }
+        protected virtual void OnErrorsChanged(string propertyName)
+        {
+            ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
+        }
+        // --- End async validation fields --- //
         public RegisterPg()
         {
             InitializeComponent();
-            Employees = new ObservableCollection<Employee>(); // Инициализация пустой коллекции
+            Employees = new ObservableCollection<Employee>(); // Initialize empty collection
             this.DataContext = this;
+
+            SubmitCmd = new RelayCommand(
+                _ =>
+                {
+                    if (!Validate()) return;
+                    if (!CheckPasswordMatch())
+                    {
+                        MessageBox.Show("Пароли должны совпадать!", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+
+                    Task task = SaveData();
+                },
+                _ => !IsProgress
+            );
         }
         private async Task<bool> CheckLoginUniqueAsync(string login)
         {
@@ -190,16 +212,15 @@ namespace HR.Pages
             OnErrorsChanged(nameof(Password2));
             OnErrorsChanged(nameof(EmployeeId));
         }
-        private async Task<bool> Register()
+        private (byte[] hash, byte[] salt) Cypher(string password)
         {
             byte[] salt = Crypto.GenerateSalt();
-            byte[] hash = Crypto.HashPassword(Password1, salt);
+            byte[] hash = Crypto.HashPassword(password, salt);
             Debug.WriteLine("0x" + BitConverter.ToString(salt).Replace("-", ""));
             string hexString = BitConverter.ToString(hash).Replace("-", "");
             string sqlValue = "0x" + hexString;
             Debug.WriteLine(sqlValue);
-            await Request.MockAsync(2000);
-            throw new NotImplementedException("Register logic here");
+            return (hash, salt);
         }
         private void Reset()
         {
@@ -231,6 +252,66 @@ namespace HR.Pages
 
             // Reset errors display
             ValidationHelper.ForceErrorsDisplay(controls, false);
+        }
+
+        private async Task SaveData(Employee item = null)
+        {
+            var (cat, op, name, scope) = (EventCategory.Auth, 0, "Create", "Пользователь");
+            try
+            {
+                IsProgress = true;
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Progress,
+                    Message = "Регистрация пользователя"
+                });
+
+                var (hash, salt) = Cypher(Password1);
+                HR.Data.Models.User data = new HR.Data.Models.User()
+                {
+                    EmployeeId = EmployeeId,
+                    Login = Login,
+                    PasswordHash = hash,
+                    RoleId = 4,
+                    Salt = salt,
+                    Status = 1
+                };
+                var res = Request.ctx.Users.Add(data);
+                await Request.ctx.SaveChangesAsync();
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Success,
+                    Message = "Пользователь успешно зарегистрирован"
+                });
+                MainWindow.frame.Navigate(new RegisteredPg());
+            }
+            catch (Exception exc)
+            {
+                Debug.WriteLine(exc, "RegisterPg");
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Error,
+                    Message = $"Ошибка регистрации пользователя",
+                    Details = exc.Message
+                });
+                MessageBox.Show($"Ошибка регистрации пользователя: {exc.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsProgress = false;
+            }
         }
         private bool Validate()
         {
@@ -324,6 +405,13 @@ namespace HR.Pages
                 if (!result.IsValid) break;
             }
         }
+
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            IsProgress = true;
+            Employees = new ObservableCollection<Employee>((await Services.Request.GetEmployeesUnregistered()).OrderBy(emp => emp.Surname));
+            IsProgress = false;
+        }
         private void Pw1Pwb_PasswordChanged(object sender, RoutedEventArgs e)
         {
             var pb = (PasswordBox)sender;
@@ -343,39 +431,6 @@ namespace HR.Pages
             {
                 MessageBox.Show(exc.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-        }
-        private async void SignOnBtn_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                IsInProgress = true;
-                if (!Validate()) return;
-                if (!CheckPasswordMatch())
-                {
-                    MessageBox.Show("Пароли должны совпадать!", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-                StatusInformer.ReportProgress("Загрузка данных");
-                bool isSuccess = await Register();
-                if (isSuccess == false) StatusInformer.ReportFailure("Невозможно зарегистрировать пользователя");
-                else StatusInformer.ReportSuccess("Успешная регистрация пользователя");
-            }
-            catch (Exception exc)
-            {
-                StatusInformer.ReportFailure("Невозможно зарегистрировать пользователя");
-                MessageBox.Show(exc.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            finally
-            {
-                IsInProgress = false;
-            }
-        }
-
-        private async void Page_Loaded(object sender, RoutedEventArgs e)
-        {
-            IsInProgress = true;
-            Employees = new ObservableCollection<Employee>((await Services.Request.GetEmployeesUnregistered()).OrderBy(emp => emp.Surname));
-            IsInProgress = false;
         }
         private void TogglePwd1Btn_Click(object sender, RoutedEventArgs e)
         {

@@ -195,11 +195,15 @@
                             IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
                             Click="ResetBtn_Click"
                             />
-                    <Button x:Name="SignOnBtn" Grid.Column="2" Content="Регистрация" IsDefault="True"
+                    <Button Grid.Column="2" IsDefault="True"
                             Style="{StaticResource GreenBtn}"
-                            IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
-                            Click="SignOnBtn_Click"
-                            />
+                            Command="{Binding SubmitCmd, RelativeSource={RelativeSource AncestorType=Page}}"
+                            >
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Регистрация" Visibility="{Binding IsProgress, Converter={StaticResource InvBoolVis}}" />
+                            <uc:Dots Visibility="{Binding IsProgress, Converter={StaticResource BoolToVis}}" />
+                        </StackPanel>
+                    </Button>
                     <Popup x:Name="ValidationPopup"
                            PlacementTarget="{Binding ElementName=RootGrid}" Placement="Center"
                            VerticalOffset="40" StaysOpen="False" AllowsTransparency="True"
