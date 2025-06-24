@@ -212,8 +212,16 @@
                                 <ComboBox ItemsSource="{Binding DataContext.Employees, RelativeSource={RelativeSource AncestorType=Page}}"
                                       SelectedValue="{Binding EmployeeId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                       SelectedValuePath="Id"
-                                      DisplayMemberPath="FullName" IsEditable="False"
-                                      />
+                                      IsEditable="False"
+                                      >
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding FullName}" VerticalAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                                                       />
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
                             </Grid>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
