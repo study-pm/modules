@@ -204,6 +204,7 @@ namespace HR.Pages
                 if (_collectionFilter == value) return;
                 _collectionFilter = value;
                 OnPropertyChanged();
+                SyncSearchFilters();
                 OnPropertyChanged(nameof(IsResetFilter));
                 Refresh();
             }
@@ -720,7 +721,7 @@ namespace HR.Pages
             }
             catch (Exception exc)
             {
-                Debug.WriteLine(exc, "ClassesPg");
+                Debug.WriteLine(exc, "StaffPg");
                 RaiseAppEvent(new AppEventArgs
                 {
                     Category = cat,
@@ -827,7 +828,7 @@ namespace HR.Pages
             if (CollectionFilter == null) return;
             switch(CollectionFilter.Name)
             {
-                case "Surname":  case "GivenName": case "FirstName":
+                case "Surname":  case "GivenName": case "Patronymic":
                     SelectedFilter = FilterValues.FirstOrDefault(f => f.Name == "FullName");
                     SearchText = CollectionFilter.Value.ToString();
                     break;
@@ -1033,8 +1034,6 @@ namespace HR.Pages
                     {
                         dataGrid.CommitEdit(DataGridEditingUnit.Row, true);
 
-                       
-
                         if (string.IsNullOrWhiteSpace(item.Surname))
                         {
                             MessageBox.Show("Фамилия не может отсутствовать", "Неверные данные", MessageBoxButton.OK, MessageBoxImage.Exclamation);
@@ -1065,9 +1064,34 @@ namespace HR.Pages
                             Services.Request.ctx.Employees.Attach(item);
                             //entry.State = EntityState.Modified; // Explicitely set as modified
                         }
+                        bool isStaffModified = false;
+                        // Checkout Staffs
+                        foreach (var staff in item.Staffs)
+                        {
+                            var staffEntry = Request.ctx.Entry(staff);
+                            if (staffEntry.State == EntityState.Detached)
+                            {
+                                Request.ctx.Staffs.Attach(staff);
+                            }
+
+                            var departmentSrc = staffEntry.Property(s => s.DepartmentId).OriginalValue;
+                            var departmentCur = staffEntry.Property(s => s.DepartmentId).CurrentValue;
+                            var positionSrc = staffEntry.Property(s => s.PositionId).OriginalValue;
+                            var positionCur = staffEntry.Property(s => s.PositionId).CurrentValue;
+
+                            if (!Equals(positionSrc, positionCur) || !Equals(departmentSrc, departmentCur))
+                            {
+                                staffEntry.State = EntityState.Modified;
+                                isStaffModified = true;
+                            }
+                            else
+                            {
+                                staffEntry.State = EntityState.Unchanged;
+                            }
+                        }
 
                         // Check state
-                        bool isModified = entry.State == EntityState.Modified;
+                        bool isModified = entry.State == EntityState.Modified || isStaffModified;
 
                         if (!isModified) return;
 
