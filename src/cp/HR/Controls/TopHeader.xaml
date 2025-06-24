@@ -191,14 +191,26 @@
                                 </Viewbox>
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="П_редпочтения"
+                        <MenuItem Header="Настройки"
                                   Style="{StaticResource SubMenuItemStyle}"
                                   Command="NavigationCommands.GoToPage"
                                   CommandParameter="Pages/PreferencesPg.xaml"
                                   CommandTarget="{Binding ElementName=mainFrame}"
                                   IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=PreferencesPg}"
                                   Visibility="{Binding IsAuth, Source={x:Static Application.Current}, Converter={StaticResource BoolToVis}}"
-                                  />
+                                  >
+                            <MenuItem.Icon>
+                                <Viewbox Height="16" Width="16" ToolTip="Настройки приложения">
+                                    <Canvas Height="512" Width="512">
+                                        <Path Fill="DodgerBlue" Data="{StaticResource UserGearSolidPath}">
+                                            <Path.RenderTransform>
+                                                <TranslateTransform X="0" Y="0"/>
+                                            </Path.RenderTransform>
+                                        </Path>
+                                    </Canvas>
+                                </Viewbox>
+                            </MenuItem.Icon>
+                        </MenuItem>
                         <MenuItem Header="Про_филь"
                                   Style="{StaticResource SubMenuItemStyle}"
                                   Command="NavigationCommands.GoToPage"
@@ -211,26 +223,6 @@
                                 <Viewbox Height="16" Width="16" ToolTip="Профиль">
                                     <Canvas Height="512" Width="512">
                                         <Path Fill="DodgerBlue" Data="{StaticResource UserTagSolidPath}">
-                                            <Path.RenderTransform>
-                                                <TranslateTransform X="0" Y="0"/>
-                                            </Path.RenderTransform>
-                                        </Path>
-                                    </Canvas>
-                                </Viewbox>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Header="Пользователи"
-                                  Style="{StaticResource SubMenuItemStyle}"
-                                  Command="NavigationCommands.GoToPage"
-                                  CommandParameter="Pages/UsersPg.xaml"
-                                  CommandTarget="{Binding ElementName=mainFrame}"
-                                  IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=UsersPg}"
-                                  Visibility="{Binding IsAuth, Source={x:Static Application.Current}, Converter={StaticResource BoolToVis}}"
-                                  >
-                            <MenuItem.Icon>
-                                <Viewbox Height="16" Width="16" ToolTip="Управление пользователями">
-                                    <Canvas Height="512" Width="512">
-                                        <Path Fill="DodgerBlue" Data="{StaticResource UsersCogSolidPath}">
                                             <Path.RenderTransform>
                                                 <TranslateTransform X="0" Y="0"/>
                                             </Path.RenderTransform>
@@ -253,6 +245,26 @@
                                         <Path Fill="DodgerBlue" Data="{StaticResource HistorySolidPath}">
                                             <Path.RenderTransform>
                                                 <TranslateTransform X="100" Y="0"/>
+                                            </Path.RenderTransform>
+                                        </Path>
+                                    </Canvas>
+                                </Viewbox>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Пользователи"
+                                  Style="{StaticResource SubMenuItemStyle}"
+                                  Command="NavigationCommands.GoToPage"
+                                  CommandParameter="Pages/UsersPg.xaml"
+                                  CommandTarget="{Binding ElementName=mainFrame}"
+                                  IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=UsersPg}"
+                                  Visibility="{Binding IsAuth, Source={x:Static Application.Current}, Converter={StaticResource BoolToVis}}"
+                                  >
+                            <MenuItem.Icon>
+                                <Viewbox Height="16" Width="16" ToolTip="Управление пользователями">
+                                    <Canvas Height="512" Width="512">
+                                        <Path Fill="DodgerBlue" Data="{StaticResource UsersCogSolidPath}">
+                                            <Path.RenderTransform>
+                                                <TranslateTransform X="0" Y="0"/>
                                             </Path.RenderTransform>
                                         </Path>
                                     </Canvas>
