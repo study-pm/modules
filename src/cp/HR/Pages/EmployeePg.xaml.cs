@@ -335,7 +335,7 @@ namespace HR.Pages
             SaveOriginalStaffs(dm.Staffs); // <-- только здесь!
             SubscribeToStaffsCollectionChanged();
         }
-        private void LoadStaffsFromModel(IEnumerable<Staff> staffModels)
+        public void LoadStaffsFromModel(IEnumerable<Staff> staffModels)
         {
             if (staffModels == null)
             {
@@ -440,6 +440,8 @@ namespace HR.Pages
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
 
         public RelayCommand AddImgCmd { get; }
+        public RelayCommand AddStaffCmd { get; }
+        public RelayCommand DelStaffCmd { get; }
         public RelayCommand ResetCommand { get; }
         public RelayCommand SubmitCommand { get; }
 
@@ -472,6 +474,28 @@ namespace HR.Pages
                 _ =>
                 {
                     ChangeImage();
+                },
+                _ => !vm.IsProgress
+            );
+            AddStaffCmd = new RelayCommand(
+                _ =>
+                {
+                    Staff newStaff = new Staff
+                    {
+                        Department = null,
+                        DepartmentId = 0,
+                        Position = null,
+                        PositionId = 0
+                    };
+                    vm.Staffs.Add(new StaffViewModel(newStaff));
+                },
+                _ => !vm.IsProgress
+            );
+            DelStaffCmd = new RelayCommand(
+                execute: param =>
+                {
+                    if (!(param is StaffViewModel staffVm)) return;
+                    vm.Staffs.Remove(staffVm);
                 },
                 _ => !vm.IsProgress
             );
@@ -508,8 +532,7 @@ namespace HR.Pages
             string imgPath = ofd.FileName;
             string imgFullName = Guid.NewGuid().ToString() + System.IO.Path.GetExtension(imgPath).ToLower();
             ImgHelper.SetPreviewImage(imgPath, EmployeeImg);
-            MessageBox.Show($"Images {imgPath} {imgFullName}");
-            vm.Image = ImgHelper.SaveImg(imgPath);
+            vm.Image = ImgHelper.SaveImg(imgPath, 40);
         }
         private void ResetValidation()
         {
@@ -545,6 +568,8 @@ namespace HR.Pages
                 data.Gender = vm.Gender;
                 data.Image = vm.Image;
 
+                MessageBox.Show($"Save image {data.Image}");
+
                 if (op == 0)
                     Request.ctx.Employees.Add(data);
 
@@ -552,8 +577,7 @@ namespace HR.Pages
                 var newStaffs = vm.Staffs.Select(vmStaff => vmStaff.GetModel()).ToList();
                 SyncStaffsCollection(data, newStaffs);
 
-                var entry = Services.Request.ctx.Entry(data);
-                if (entry.State == EntityState.Unchanged)
+                if (!Request.ctx.ChangeTracker.Entries().Any(e => e.State != EntityState.Unchanged))
                 {
                     Debug.WriteLine("No changes detected", "EmployeePg");
                     RaiseAppEvent(new AppEventArgs
@@ -569,6 +593,8 @@ namespace HR.Pages
                     return;
                 }
                 await Request.ctx.SaveChangesAsync();
+                await Request.ctx.Entry(data).Collection(e => e.Staffs).LoadAsync();
+                vm.LoadStaffsFromModel(data.Staffs);
                 vm.Set();
                 RaiseAppEvent(new AppEventArgs
                 {
@@ -684,7 +710,10 @@ namespace HR.Pages
             // Delete missing
             var toRemove = employee.Staffs.Where(s => !newStaffs.Any(ns => ns.Id == s.Id)).ToList();
             foreach (var staff in toRemove)
+            {
                 employee.Staffs.Remove(staff);
+                Request.ctx.Staffs.Remove(staff); // Remove from EF context
+            }
 
             // Add new
             var toAdd = newStaffs.Where(ns => !employee.Staffs.Any(s => s.Id == ns.Id)).ToList();
@@ -711,6 +740,14 @@ namespace HR.Pages
             // Get validity state
             Dictionary<Control, bool> validity = new Dictionary<Control, bool>();
             controls.ForEach(ctl => validity.Add(ctl, !Validation.GetHasError(ctl)));
+            // Check Staffs ComboBoxes
+            var comboBoxes = VisualHelper.FindVisualChildren<ComboBox>(StaffsIc).ToList();
+            foreach (var combo in comboBoxes)
+            {
+                ValidationHelper.SetShowErrors(combo, true);
+                ValidationHelper.ForceValidate(combo, ComboBox.SelectedValueProperty); // или SelectedItemProperty, если у вас биндинг по SelectedItem
+                validity.Add(combo, !Validation.GetHasError(combo));
+            }
             // Force update UI if error
             foreach (var state in validity)
                 if (!state.Value) ValidationHelper.ForceUpdateUI(state.Key);

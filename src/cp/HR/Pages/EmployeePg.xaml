@@ -137,6 +137,8 @@
                             Style="{StaticResource ImgButtonStyle}"
                             Click="EnlargeImageButton_Click"
                             IsEnabled="{Binding Image, Converter={StaticResource StrToBoolConv}}"
+                            VerticalAlignment="Top"
+                            VerticalContentAlignment="Top"
                             >
                         <Image x:Name="EmployeeImg">
                             <Image.Source>
@@ -179,14 +181,13 @@
             <StackPanel>
                 <DockPanel VerticalAlignment="Center" Margin="0 10 0 0">
                     <Button DockPanel.Dock="Right" ToolTip="Добавить" HorizontalAlignment="Right" Margin="2 0 0 0" VerticalAlignment="Center"
-        Style="{StaticResource IconButtonCsv}"
-        Command="{Binding AddCmd}"
-        CommandParameter="1"
-        >
+                            Style="{StaticResource IconButtonCsv}"
+                            Command="{Binding AddStaffCmd, RelativeSource={RelativeSource AncestorType=Page}}"
+                            >
                         <StackPanel>
                             <Viewbox Stretch="Fill" Width="14" Height="16">
                                 <Path Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
-                  Data="{StaticResource PlusSolidPath}">
+                                      Data="{StaticResource PlusSolidPath}">
                                     <Path.RenderTransform>
                                         <TranslateTransform X="0" Y="0"/>
                                     </Path.RenderTransform>
@@ -196,7 +197,7 @@
                     </Button>
                     <Label Foreground="{StaticResource magentaDarkBrush}" FontSize="16">Занятость</Label>
                 </DockPanel>
-                <ItemsControl ItemsSource="{Binding Staffs}">
+                <ItemsControl x:Name="StaffsIc" ItemsSource="{Binding Staffs}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Grid>
@@ -210,7 +211,6 @@
                                               IsTextSearchEnabled="True"
                                               IsEnabled="{Binding DataContext.IsProgress, RelativeSource={RelativeSource AncestorType=ItemsControl}, Converter={StaticResource InvBoolConv}}"
                                               ItemsSource="{Binding DataContext.Departments, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                              SelectedValue="{Binding DepartmentId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                               SelectedValuePath="Id"
                                               utils:ValidationHelper.AutoErrorVisibility="True"
                                               utils:ValidationHelper.EnableTouchedTracking="True"
@@ -218,19 +218,43 @@
                                         <ComboBox.ItemTemplate>
                                             <DataTemplate>
                                                 <TextBlock Text="{Binding Title}" VerticalAlignment="Center"
-                   TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                                                           TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
         />
                                             </DataTemplate>
                                         </ComboBox.ItemTemplate>
+                                        <ComboBox.SelectedValue>
+                                            <Binding Path="DepartmentId" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True" NotifyOnValidationError="True">
+                                                <Binding.ValidationRules>
+                                                    <utils:NotEmptyValidationRule/>
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </ComboBox.SelectedValue>
                                     </ComboBox>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1" Style="{StaticResource FormElement}">
-                                    <Label Style="{StaticResource FormLabel}">Должность</Label>
+                                    <DockPanel VerticalAlignment="Center">
+                                        <Label Style="{StaticResource FormLabel}">Должность</Label>
+                                        <Button DockPanel.Dock="Right" ToolTip="Добавить" HorizontalAlignment="Right" Margin="2 0 0 0" VerticalAlignment="Center"
+                                                Style="{StaticResource IconButtonRed}"
+                                                Command="{Binding DelStaffCmd, RelativeSource={RelativeSource AncestorType=Page}}"
+                                                CommandParameter="{Binding}"
+                                                >
+                                            <StackPanel>
+                                                <Viewbox Stretch="Fill" Width="14" Height="16">
+                                                    <Path Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                                          Data="{StaticResource MinusSolidNewPath}">
+                                                        <Path.RenderTransform>
+                                                            <TranslateTransform X="0" Y="-100"/>
+                                                        </Path.RenderTransform>
+                                                    </Path>
+                                                </Viewbox>
+                                            </StackPanel>
+                                        </Button>
+                                    </DockPanel>
                                     <ComboBox Style="{StaticResource FormComboBox}"
                                               IsTextSearchEnabled="True"
                                               IsEnabled="{Binding DataContext.IsProgress, RelativeSource={RelativeSource AncestorType=ItemsControl}, Converter={StaticResource InvBoolConv}}"
                                               ItemsSource="{Binding DataContext.Positions, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                              SelectedValue="{Binding PositionId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                               SelectedValuePath="Id"
                                               utils:ValidationHelper.AutoErrorVisibility="True"
                                               utils:ValidationHelper.EnableTouchedTracking="True"
@@ -242,6 +266,13 @@
                                                 />
                                             </DataTemplate>
                                         </ComboBox.ItemTemplate>
+                                        <ComboBox.SelectedValue>
+                                            <Binding Path="PositionId" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True" NotifyOnValidationError="True">
+                                                <Binding.ValidationRules>
+                                                    <utils:NotEmptyValidationRule/>
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </ComboBox.SelectedValue>
                                     </ComboBox>
                                 </StackPanel>
                             </Grid>
