@@ -420,13 +420,18 @@ namespace HR.Pages
                             // Define property type based on column index
                             int colIndex = dataGrid.Columns.IndexOf(cellInfo.Value.Column);
                             if (colIndex == 1) propertyName = "Surname";
-                            if (colIndex == 2) propertyName = "Givenname";
+                            if (colIndex == 2) propertyName = "GivenName";
                             if (colIndex == 3) propertyName = "Patronymic";
+                            if (colIndex == 5) propertyName = "PositionId";
                         }
 
                         if (!string.IsNullOrEmpty(propertyName))
                         {
                             var value = item.GetType().GetProperty(propertyName)?.GetValue(item, null);
+                            if (value == null && item is Data.Models.Employee emp && propertyName == "PositionId")
+                            {
+                                value = emp.Staffs.Select(x => x.PositionId).ToList();
+                            }
                             CollectionFilter = new FilterParam(propertyName, value);
                             SyncMenuFilters();
                         }
@@ -443,10 +448,15 @@ namespace HR.Pages
                                 case 1: propertyName = "Surname"; break;
                                 case 2: propertyName = "GivenName"; break;
                                 case 3: propertyName = "Patronymic"; break;
+                                case 5: propertyName = "PositionId"; break;
                             }
                             if (!string.IsNullOrEmpty(propertyName))
                             {
                                 var value = selectedItem.GetType().GetProperty(propertyName)?.GetValue(selectedItem, null);
+                                if (value == null && selectedItem is Data.Models.Employee emp && propertyName == "PositionId")
+                                {
+                                    value = emp.Staffs.Select(x => x.PositionId).ToList();
+                                }
                                 CollectionFilter = new FilterParam(propertyName, value);
                                 SyncMenuFilters();
                             }
@@ -732,7 +742,9 @@ namespace HR.Pages
                     Message = $"Ошибка извлечения данных",
                     Details = exc.Message
                 });
-                MessageBox.Show($"Ошибка извлечения данных: {exc.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                bool isEfContextError = exc is InvalidOperationException || exc is NotSupportedException;
+                if (!isEfContextError)
+                    MessageBox.Show($"Ошибка извлечения данных: {exc.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {

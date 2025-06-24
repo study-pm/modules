@@ -309,7 +309,6 @@ Command="{Binding PrintCmd}"
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
-
             </DataGrid.Columns>
             <DataGrid.ContextMenu>
                 <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
