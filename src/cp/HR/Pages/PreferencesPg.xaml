@@ -44,21 +44,21 @@
                     <Label Foreground="{StaticResource magentaDarkBrush}" FontSize="16">Внешний вид</Label>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <CheckBox Content="Панель фильтрации"
+                    <CheckBox Content="Скрывать панель фильтрации"
                               IsEnabled="{Binding IsProgress, Converter={StaticResource InvBoolConv}}"
-                              IsChecked="{Binding Dm.IsStayLoggedIn}"
+                              IsChecked="{Binding Dm.IsLeftAsideOff}"
                               />
                     <uc:Details Type="Question"
-                                ToolTip="Сохраняет состояние аутентификации между запусками приложения (автоматический вход)"
+                                ToolTip="Включает или выключает отображение левой боковой панели"
                                 />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <CheckBox Content="Пользовательская панель"
+                <StackPanel Orientation="Horizontal" Margin="0 5">
+                    <CheckBox Content="Скрывать пользовательскую панель"
                               IsEnabled="{Binding IsProgress, Converter={StaticResource InvBoolConv}}"
-                              IsChecked="{Binding Dm.IsStayLoggedIn}"
+                              IsChecked="{Binding Dm.IsRightAsideOff}"
                               />
                     <uc:Details Type="Question"
-                                ToolTip="Сохраняет состояние аутентификации между запусками приложения (автоматический вход)"
+                                ToolTip="Включает или выключает отображение правой боковой панели"
                                 />
                 </StackPanel>
             </StackPanel>

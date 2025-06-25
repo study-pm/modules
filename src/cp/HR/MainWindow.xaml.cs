@@ -237,7 +237,7 @@ namespace HR
             MainLayoutContainer.ColumnDefinitions[0].Width = IsVisible ? new GridLength(NormalWidth, GridUnitType.Pixel) : new GridLength(0);
             MainLayoutContainer.ColumnDefinitions[0].MinWidth = IsVisible ? MinimalWidth : 0;
         }
-        private void UpdateVisibility(double width)
+        public void UpdateVisibility(double width)
         {
             if (width < NarrowWidth)
             {
@@ -247,14 +247,14 @@ namespace HR
             }
             else if (width < MediumWidth)
             {
-                SetLeftSide(true);
+                SetLeftSide(App.Current.Preferences.IsLeftAsideOff ? false : true);
                 SetRightSide(false);
                 TopHeader.SetNarrowMode(false);
             }
             else
             {
-                SetLeftSide(true);
-                SetRightSide(true);
+                SetLeftSide(App.Current.Preferences.IsLeftAsideOff ? false: true);
+                SetRightSide(App.Current.Preferences.IsRightAsideOff ? false : true);
                 TopHeader.SetNarrowMode(false);
             }
         }

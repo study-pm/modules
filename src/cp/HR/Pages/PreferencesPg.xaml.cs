@@ -43,6 +43,28 @@ namespace HR.Pages
                 OnPropertyChanged();
             }
         }
+        private bool _isLeftAsideOff;
+        public bool IsLeftAsideOff
+        {
+            get => _isLeftAsideOff;
+            set
+            {
+                if (_isLeftAsideOff == value) return;
+                _isLeftAsideOff = value;
+                OnPropertyChanged();
+            }
+        }
+        private bool _isRigtAsideOff;
+        public bool IsRightAsideOff
+        {
+            get => _isRigtAsideOff;
+            set
+            {
+                if (_isRigtAsideOff == value) return;
+                _isRigtAsideOff = value;
+                OnPropertyChanged();
+            }
+        }
         private bool _isStayLoggedIn;
         public bool IsStayLoggedIn
         {
@@ -234,6 +256,8 @@ namespace HR.Pages
         protected void OnPropertyChanged([CallerMemberName] string prop = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
 
+        private MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
+
         private NavigationService _navigationService;
 
         private int uid = ((App)(Application.Current)).CurrentUser.Id;
@@ -296,6 +320,8 @@ namespace HR.Pages
                 // Handle user authentication state file
                 if (vm.Dm.IsStayLoggedIn) await Services.Request.SaveUidToFileAsync(uid, Data.Models.User.uidFilePath);
                 else await Request.DeleteUidFileAsync(Data.Models.User.uidFilePath);
+
+                mainWindow.UpdateVisibility(mainWindow.ActualWidth); // Toggle panel visibility instantly
             }
             catch (Exception exc)
             {
