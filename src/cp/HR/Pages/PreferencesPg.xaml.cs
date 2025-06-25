@@ -234,6 +234,8 @@ namespace HR.Pages
         protected void OnPropertyChanged([CallerMemberName] string prop = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
 
+        private NavigationService _navigationService;
+
         private int uid = ((App)(Application.Current)).CurrentUser.Id;
 
         private string prefsDir = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Preferences");
@@ -255,6 +257,8 @@ namespace HR.Pages
         public PreferencesPg()
         {
             InitializeComponent();
+            Unloaded += Page_Unloaded;
+
             prefsPath = System.IO.Path.Combine(prefsDir, uid.ToString() + ".xml");
             vm = new ItemViewModel<Preferences, PreferencesModel>(App.Current.Preferences);
             DataContext = vm;
@@ -272,6 +276,13 @@ namespace HR.Pages
                 _ => Save(),
                 _ => vm.IsEnabled
             );
+
+            // Subscribe to navigation events for the main frame
+            _navigationService = MainWindow.frame.NavigationService;
+            if (_navigationService != null)
+            {
+                _navigationService.Navigating += NavigationService_Navigating;
+            }
         }
         private async void Save()
         {
@@ -293,6 +304,24 @@ namespace HR.Pages
             finally
             {
                 vm.IsProgress = false;
+            }
+        }
+
+        private void NavigationService_Navigating(object sender, NavigatingCancelEventArgs e)
+        {
+            if (e.Content == this) return; // Skip if navigation to current page
+
+            if (!vm.IsChanged) return;
+            var result = MessageBox.Show("Форма содержит несохраненные изменения. Вы действительно хотите уйти без сохранения данных?", "Несохраненные изменения", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result != MessageBoxResult.Yes)
+                e.Cancel = true; // Cancel navigation
+        }
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            if (_navigationService != null)
+            {
+                _navigationService.Navigating -= NavigationService_Navigating;
+                _navigationService = null;
             }
         }
     }
