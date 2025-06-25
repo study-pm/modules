@@ -269,6 +269,16 @@ namespace HR.Services
                     .ToListAsync()
                     .ConfigureAwait(false);
         }
+        public static async Task<List<Employee>> LoadEmployeesLight()
+        {
+            using (var db = new HREntities())
+            {
+                return await db.Employees
+                    .OrderBy(emp => emp.Id)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+            }
+        }
         public static async Task<List<Position>> LoadPositions()
         {
             using (var db = new HREntities())
@@ -284,6 +294,16 @@ namespace HR.Services
             using (var db = new HREntities())
             {
                 return await db.Grades
+                    .OrderBy(g => g.Id)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+            }
+        }
+        public static async Task<List<Role>> LoadRoles()
+        {
+            using (var db = new HREntities())
+            {
+                return await db.Roles
                     .OrderBy(g => g.Id)
                     .ToListAsync()
                     .ConfigureAwait(false);
