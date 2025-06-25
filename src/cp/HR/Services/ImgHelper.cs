@@ -69,8 +69,13 @@ namespace HR.Services
         /// ensuring a unique file name by appending a numeric suffix if needed.
         /// </summary>
         /// <param name="srcPath">The full path to the source image file.</param>
+        /// <param name="maxNameLength">
+        /// Optional. The maximum allowed length for the file name (without extension).
+        /// If the original file name exceeds this length, it will be truncated.
+        /// Default value is 256.
+        /// </param>
         /// <returns>The file name under which the image was saved in the images folder.</returns>
-        public static string SaveImg(string srcPath)
+        public static string SaveImg(string srcPath, int maxNameLength = 256)
         {
             // Source image name
             string srcName = System.IO.Path.GetFileName(srcPath);
@@ -89,6 +94,11 @@ namespace HR.Services
             // Get file name without extension and extension
             string fileName = System.IO.Path.GetFileNameWithoutExtension(srcName);
             string fileExt = System.IO.Path.GetExtension(srcName);
+            // Restrict file name up to maxNameLength symbols
+            if (fileName.Length > maxNameLength)
+            {
+                fileName = fileName.Substring(0, maxNameLength);
+            }
             // File name suffix
             int count = 1;
             // Generate new file name with suffix (_1, _2, etc.) if file already exists
