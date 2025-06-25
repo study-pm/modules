@@ -243,12 +243,12 @@ namespace HR
             {
                 SetLeftSide(false);
                 SetRightSide(false);
-                TopHeader.SetNarrowMode(true);
+                TopHeader.SetNarrowMode(false);
             }
             else if (width < MediumWidth)
             {
-                SetLeftSide(false);
-                SetRightSide(true);
+                SetLeftSide(true);
+                SetRightSide(false);
                 TopHeader.SetNarrowMode(false);
             }
             else
