@@ -98,7 +98,7 @@
                             <StaticResource ResourceKey="SubMenuItem"/>
                         </MenuItem.ItemContainerStyle>
                     </MenuItem>
-                    <MenuItem Header="Подраз_деления" Tag="Pages/StaffPg.xaml" local:MenuItemExtensions.FilterIndex="1"
+                    <MenuItem Header="Под_разделения" Tag="Pages/StaffPg.xaml" local:MenuItemExtensions.FilterIndex="1"
                               IsChecked="{Binding DataContext.MenuVM.Filters[1].IsChecked, RelativeSource={RelativeSource AncestorType=Window}}"
                               >
                         <MenuItem.ItemsSource>
@@ -289,7 +289,7 @@
                             </MenuItem.Icon>
                         </MenuItem>
                     </MenuItem>
-                    <MenuItem Header="Сп_равка"
+                    <MenuItem Header="Спра_вка"
                               IsChecked="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource CheckedConverter}, ConverterParameter='HelpPg'}"
                               IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=HelpPg}"
                               Command="NavigationCommands.GoToPage"
