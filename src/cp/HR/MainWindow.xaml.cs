@@ -1,12 +1,14 @@
 ﻿using HR.Controls;
 using HR.Data.Models;
 using HR.Pages;
+using HR.Services;
 using HR.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data.Entity;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -20,6 +22,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static HR.Services.AppEventHelper;
 
 namespace HR
 {
@@ -183,6 +186,8 @@ namespace HR
             // Handle window resize and elements visibility
             this.SizeChanged += MainWindow_SizeChanged;
             UpdateVisibility(this.ActualWidth);
+            // Handle closing main window
+            this.Closing += MainWindow_Closing;
             // Implement navigation command bindings
             CommandBinding goToPageBinding = new CommandBinding(NavigationCommands.GoToPage, GoToPage_Executed, GoToPage_CanExecute);
             this.CommandBindings.Add(goToPageBinding);
@@ -258,7 +263,53 @@ namespace HR
                 TopHeader.SetNarrowMode(false);
             }
         }
+        private void MainWindow_Closing(object sender, CancelEventArgs e)
+        {
+            if (!App.Current.IsAuth || App.Current.Preferences.StartPage != "resume") return;
 
+            string lastUri = null;
+            if (mainFrame.CurrentSource != null)
+            {
+                lastUri = mainFrame.CurrentSource.ToString();
+            }
+            else if (mainFrame.Content != null)
+            {
+                var page = mainFrame.Content as Page;
+                lastUri = page?.GetType().FullName;
+            }
+
+            if (string.IsNullOrEmpty(lastUri)) return;
+
+            var (cat, name, op, scope) = (EventCategory.Service, "Shutdown", 0, "Приложение");
+            try
+            {
+                bool res = Request.SaveLastState(App.Current.CurrentUser.Id, lastUri);
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Success,
+                    Message = "Состояние успешно сохранено",
+                    Details = $"Последнее состояние: {lastUri}"
+                });
+            }
+            catch(Exception exc)
+            {
+                Debug.WriteLine(exc, "MainWindow: preserve state");
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Error,
+                    Message = "Ошибка сохранения состояния",
+                    Details = exc.Message
+                });
+            }
+        }
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             await MenuVM.SetFilterData();
