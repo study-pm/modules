@@ -257,6 +257,7 @@
     <Compile Include="Data\Models\Staff.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Data\Models\StartupPage.cs" />
     <Compile Include="Data\Models\Subject.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
@@ -267,6 +268,7 @@
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Data\Models\User.partial.cs" />
+    <Compile Include="Data\Models\UserAppState.cs" />
     <Compile Include="Models\CheckableItem.cs" />
     <Compile Include="Models\Employee.cs" />
     <Compile Include="Models\ItemViewModel.cs" />
