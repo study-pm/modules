@@ -16,7 +16,7 @@
     </Page.Resources>
     <ScrollViewer Style="{StaticResource MainView}">
         <StackPanel>
-            <uc:Header HeaderText="Предпочтения"></uc:Header>
+            <uc:Header HeaderText="Настройки"></uc:Header>
             <TextBlock Style="{StaticResource Paragraph}">
                 Данный раздел содержит информацию о пользовательских предпочтениях и установках, хранимых локально:
                 стартовая страница (открывающаяся по умолчанию при запуске приложения),
@@ -36,7 +36,32 @@
                                 ToolTip="Сохраняет состояние аутентификации между запусками приложения (автоматический вход)"
                                 />
                 </StackPanel>
-                <TextBlock>Стартовая страница</TextBlock>
+                <StackPanel Style="{StaticResource FormElement}">
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <Label>Стартовое состояние</Label>
+                        <uc:Details Type="Question"
+                                    ToolTip="Автоматически загружается при открытии приложения"
+                                    />
+                    </StackPanel>
+                    <ComboBox x:Name="EmployeeCmb" Height="25"
+                              Style="{StaticResource FormComboBox}"
+                              IsTextSearchEnabled="True"
+                              TextSearch.TextPath="Title"
+                              IsEnabled="{Binding IsProgress, Converter={StaticResource InvBoolConv}}"
+                              ItemsSource="{Binding Dm.Pages}"
+                              SelectedValue="{Binding Dm.StartPage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                              SelectedValuePath="Uri"
+                              >
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Title}"
+                                           TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                                           VerticalAlignment="Center"
+                                           />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </StackPanel>
             </StackPanel>
 
             <StackPanel Margin="0 10 0 0">

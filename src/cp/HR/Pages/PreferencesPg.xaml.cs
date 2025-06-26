@@ -76,6 +76,30 @@ namespace HR.Pages
                 OnPropertyChanged();
             }
         }
+        private string _startPage;
+        public string StartPage
+        {
+            get => _startPage;
+            set
+            {
+                if (_startPage == value) return;
+                _startPage = value;
+                OnPropertyChanged();
+            }
+        }
+        public ObservableCollection<StartupPage> Pages { get; set; } = new ObservableCollection<StartupPage>
+        {
+            new StartupPage { Id = -1, Name = null, Title = "Не установлено", Uri = null },
+            new StartupPage { Id = 0, Name = "Latest", Title = "Возобновлять состояние", Uri = "resume" },
+            new StartupPage { Id = 1, Name = "SettingsPg", Title = "Безопасность", Uri = "Pages/SettingsPg.xaml" },
+            new StartupPage { Id = 2, Name = "HomePg", Title = "Главная", Uri = "Pages/HomePg.xaml" },
+            new StartupPage { Id = 3, Name = "LogPg", Title = "Журнал", Uri = "Pages/LogPg.xaml" },
+            new StartupPage { Id = 4, Name = "PreferencesPg", Title = "Настройки", Uri = "Pages/PreferencesPg.xaml" },
+            new StartupPage { Id = 5, Name = "ClassesPg", Title = "Классы", Uri = "Pages/ClassesPg.xaml" },
+            new StartupPage { Id = 6, Name = "ProfilePg", Title = "Профиль", Uri = "Pages/ProfilePg.xaml" },
+            new StartupPage { Id = 7, Name = "HelpPg", Title = "Помощь", Uri = "Pages/HelpPg.xaml" },
+            new StartupPage { Id = 8, Name = "StaffPg", Title = "Сотрудники", Uri = "Pages/StaffPg.xaml" },
+        };
 
         private ObservableCollection<int> _logCategories;
         public ObservableCollection<int> LogCategories
