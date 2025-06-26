@@ -241,6 +241,14 @@ namespace HR.Services
                 StatusInformer.ReportFailure($"Ошибка удаления файла пользователя: {ex.Message}");
             }
         }
+        internal static async Task<string> LoadLastState(int userId)
+        {
+            string filePath = Path.Combine(UserAppState.cacheFolder, $"{userId}.xml");
+
+            var state = await XmlHelper.LoadAsync<UserAppState>(filePath);
+
+            return state.LastState ?? string.Empty;
+        }
         public static async Task<List<Department>> LoadDepartments()
         {
             using (var db = new HREntities())
@@ -342,6 +350,15 @@ namespace HR.Services
             timer.Start();
 
             return tcs.Task;
+        }
+        internal static bool SaveLastState(int userId, string uri)
+        {
+            string filePath = Path.Combine(UserAppState.cacheFolder, $"{userId}.xml");
+
+            var state = new UserAppState { LastState = uri };
+
+            XmlHelper.Save(state, filePath);
+            return true;
         }
         internal static async Task SaveUidToFileAsync(int userId, string uidFilePath)
         {
