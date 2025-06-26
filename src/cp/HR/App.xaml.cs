@@ -209,7 +209,7 @@ namespace HR
                     string uri = Preferences.StartPage;
                     if (uri == "resume")
                         uri = await GetStartUri(CurrentUser.Id);
-                    if (!string.IsNullOrWhiteSpace(uri))
+                    if (!string.IsNullOrWhiteSpace(uri) && UserAppState.IsPageAllowed(uri))
                         mainWindow.mainFrame.Navigate(new Uri(uri, UriKind.Relative));
                 }
             }
