@@ -16,7 +16,7 @@
         </Style>
     </UserControl.Resources>
     <Grid>
-        <Viewbox Visibility="{Binding IsAsterisk, Converter={StaticResource BoolToVis}}">
+        <Viewbox Visibility="{Binding IsAsterisk, Converter={StaticResource BoolToVis}}" Width="7">
             <Canvas Height="512" Width="512">
                 <Path Data="{StaticResource AsteriskSolidPath}" Fill="Red">
                     <Path.RenderTransform>
