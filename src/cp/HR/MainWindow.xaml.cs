@@ -252,14 +252,25 @@ namespace HR
             }
             else if (width < MediumWidth)
             {
-                SetLeftSide(App.Current.Preferences.IsLeftAsideOff ? false : true);
-                SetRightSide(false);
+                if (App.Current.Preferences != null)
+                    SetLeftSide(App.Current.Preferences.IsLeftAsideOff ? false : true);
+                else
+                    SetLeftSide(false);
+                SetRightSide(true);
                 TopHeader.SetNarrowMode(false);
             }
             else
             {
-                SetLeftSide(App.Current.Preferences.IsLeftAsideOff ? false: true);
-                SetRightSide(App.Current.Preferences.IsRightAsideOff ? false : true);
+                if (App.Current.Preferences != null)
+                {
+                    SetLeftSide(App.Current.Preferences.IsLeftAsideOff ? false : true);
+                    SetRightSide(App.Current.Preferences.IsRightAsideOff ? false : true);
+                }
+                else
+                {
+                    SetLeftSide(true);
+                    SetRightSide(true);
+                }
                 TopHeader.SetNarrowMode(false);
             }
         }
@@ -271,11 +282,6 @@ namespace HR
             if (mainFrame.CurrentSource != null)
             {
                 lastUri = mainFrame.CurrentSource.ToString();
-            }
-            else if (mainFrame.Content != null)
-            {
-                var page = mainFrame.Content as Page;
-                lastUri = page?.GetType().FullName;
             }
 
             if (string.IsNullOrEmpty(lastUri)) return;
