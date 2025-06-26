@@ -111,6 +111,9 @@
         </Setter.Value>
     </Setter>
     </Style>
+    <Style x:Key="FormEl" TargetType="FrameworkElement">
+        <Setter Property="Margin" Value="5"/>
+    </Style>
     <Style x:Key="FormElement" TargetType="FrameworkElement">
         <Setter Property="Margin" Value="0 10"/>
     </Style>
@@ -504,6 +507,10 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <Style x:Key="FormButtons" TargetType="Grid">
+        <Setter Property="Margin" Value="0 20"/>
     </Style>
 
     <Style x:Key="FormBtn" TargetType="Button">
