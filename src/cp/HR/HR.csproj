@@ -567,13 +567,6 @@
     <Resource Include="Images\БратухинаЕВ.jpg" />
     <Resource Include="Images\ВодопьяноваОИ.jpg" />
     <Resource Include="Images\ВоронинаЕН.jpg" />
-    <Resource Include="Images\ТрофимоваНП.jpg" />
-    <Resource Include="Images\СафоноваЕА.jpg" />
-    <Resource Include="Images\ПащенкоКН.jpg" />
-    <Resource Include="Images\ДеменковаОВ.jpg" />
-    <Resource Include="Images\ГавриловаОВ.jpg" />
-    <Resource Include="Images\РебяковДВ.jpg" />
-    <Resource Include="Images\КарягинСН.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
