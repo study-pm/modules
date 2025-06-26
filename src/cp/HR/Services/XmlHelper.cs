@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Xml.Serialization;
 
 namespace HR.Services
@@ -43,6 +44,31 @@ namespace HR.Services
                     return new T();
                 }
             });
+        }
+        /// <summary>
+        /// Serializes the specified object of type <typeparamref name="T"/> to an XML file at the given file path.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to serialize.</typeparam>
+        /// <param name="obj">The object instance to serialize and save.</param>
+        /// <param name="filePath">The full file path where the XML file will be created or overwritten.</param>
+        /// <remarks>
+        /// If the directory specified in <paramref name="filePath"/> does not exist, it will be created automatically.
+        /// The method uses <see cref="XmlSerializer"/> to perform XML serialization.
+        /// </remarks>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="filePath"/> is null or empty.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if the object cannot be serialized.</exception>
+        /// <exception cref="IOException">Thrown if there is an I/O error during file creation or writing.</exception>
+        public static void Save<T>(T obj, string filePath)
+        {
+            var directory = System.IO.Path.GetDirectoryName(filePath);
+            if (!System.IO.Directory.Exists(directory))
+                System.IO.Directory.CreateDirectory(directory);
+
+            var serializer = new XmlSerializer(typeof(T));
+            using (var stream = System.IO.File.Create(filePath))
+            {
+                serializer.Serialize(stream, obj);
+            }
         }
         /// <summary>
         /// Asynchronously saves an object of type <typeparamref name="T"/> to an XML file.
