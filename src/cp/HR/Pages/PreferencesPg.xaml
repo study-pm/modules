@@ -7,7 +7,7 @@
       xmlns:uc="clr-namespace:HR.Controls"
       xmlns:utils="clr-namespace:HR.Utilities"
       mc:Ignorable="d"
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="800" d:DesignWidth="800"
       Title="PreferencesPg"
       >
     <Page.Resources>
@@ -18,16 +18,16 @@
         <StackPanel>
             <uc:Header HeaderText="Настройки"></uc:Header>
             <TextBlock Style="{StaticResource Paragraph}">
-                Данный раздел содержит информацию о пользовательских предпочтениях и установках, хранимых локально:
-                стартовая страница (открывающаяся по умолчанию при запуске приложения),
-                оставаться в системе (сохранение состояния аутентификации),
-                тема интерфейса (светлая или темная).
+                Данный раздел содержит информацию о пользовательских предпочтениях и установках, хранимых локально.
             </TextBlock>
+
+            <uc:StretchWrapPanel>
+            <StackPanel>
             <StackPanel Margin="0 10 0 0">
                 <StackPanel  Margin="0 10">
                     <Label Foreground="{StaticResource magentaDarkBrush}" FontSize="16">Параметры входа</Label>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Horizontal" Style="{StaticResource FormEl}">
                     <CheckBox Content="Оставаться в системе"
                               IsEnabled="{Binding IsProgress, Converter={StaticResource InvBoolConv}}"
                               IsChecked="{Binding Dm.IsStayLoggedIn}"
@@ -36,7 +36,7 @@
                                 ToolTip="Сохраняет состояние аутентификации между запусками приложения (автоматический вход)"
                                 />
                 </StackPanel>
-                <StackPanel Style="{StaticResource FormElement}">
+                <StackPanel Style="{StaticResource FormEl}">
                     <StackPanel Orientation="Horizontal" Margin="5">
                         <Label>Стартовое состояние</Label>
                         <uc:Details Type="Question"
@@ -63,12 +63,13 @@
                     </ComboBox>
                 </StackPanel>
             </StackPanel>
+            </StackPanel>
 
             <StackPanel Margin="0 10 0 0">
                 <StackPanel  Margin="0 10">
                     <Label Foreground="{StaticResource magentaDarkBrush}" FontSize="16">Внешний вид</Label>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Horizontal" Style="{StaticResource FormEl}">
                     <CheckBox Content="Скрывать панель фильтрации"
                               IsEnabled="{Binding IsProgress, Converter={StaticResource InvBoolConv}}"
                               IsChecked="{Binding Dm.IsLeftAsideOff}"
@@ -77,21 +78,23 @@
                                 ToolTip="Включает или выключает отображение левой боковой панели"
                                 />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0 5">
-                    <CheckBox Content="Скрывать пользовательскую панель"
+                <StackPanel Orientation="Horizontal" Style="{StaticResource FormEl}">
+                        <CheckBox Content="Скрывать пользовательскую панель"
                               IsEnabled="{Binding IsProgress, Converter={StaticResource InvBoolConv}}"
                               IsChecked="{Binding Dm.IsRightAsideOff}"
                               />
-                    <uc:Details Type="Question"
+                        <uc:Details Type="Question"
                                 ToolTip="Включает или выключает отображение правой боковой панели"
                                 />
                 </StackPanel>
             </StackPanel>
+            </uc:StretchWrapPanel>
+
             <StackPanel Margin="0 10 0 0">
                 <StackPanel  Margin="0 10">
                     <Label Foreground="{StaticResource magentaDarkBrush}" FontSize="16">Настройки журналирования</Label>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Horizontal" Style="{StaticResource FormEl}">
                     <CheckBox Content="Включить логирование"
                   IsEnabled="{Binding IsProgress, Converter={StaticResource InvBoolConv}}"
                   IsChecked="{Binding Dm.IsLogOn}"
@@ -100,8 +103,9 @@
                     ToolTip="Сохраняет события выбранного типа и категории на компьютере пользователя"
                     />
                 </StackPanel>
+                <uc:StretchWrapPanel>
                 <StackPanel Margin="0 10 0 0">
-                    <Label>Категории событий</Label>
+                    <Label Style="{StaticResource FormLabel}">Категории событий</Label>
                     <ItemsControl ItemsSource="{Binding Dm.Categories}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -120,7 +124,7 @@
                     </ItemsControl>
                 </StackPanel>
                 <StackPanel Margin="0 10 0 0">
-                    <Label>Типы событий</Label>
+                        <Label Style="{StaticResource FormLabel}">Типы событий</Label>
                     <ItemsControl ItemsSource="{Binding Dm.Types}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -138,8 +142,10 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </StackPanel>
+                </uc:StretchWrapPanel>
             </StackPanel>
-            <Grid Margin="0 10 0 0" HorizontalAlignment="Right">
+
+            <Grid HorizontalAlignment="Right" Style="{StaticResource FormButtons}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="5"/>
