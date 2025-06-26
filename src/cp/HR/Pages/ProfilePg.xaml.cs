@@ -112,6 +112,9 @@ namespace HR.Pages
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string prop = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+
+        private NavigationService _navigationService;
+
         private Data.Models.User user = ((App)(Application.Current)).CurrentUser;
         private UserViewModel _vm;
         public UserViewModel vm
@@ -148,6 +151,8 @@ namespace HR.Pages
         public ProfilePg()
         {
             InitializeComponent();
+            Unloaded += Page_Unloaded;
+
             vm = new UserViewModel(user);
             DataContext = vm;
         }
@@ -208,6 +213,23 @@ namespace HR.Pages
 
         }
 
+        private void NavigationService_Navigating(object sender, NavigatingCancelEventArgs e)
+        {
+            if (e.Content == this) return; // Skip if navigation to current page
+
+            if (!vm.IsChanged) return;
+            var result = MessageBox.Show("Форма содержит несохраненные изменения. Вы действительно хотите уйти без сохранения данных?", "Несохраненные изменения", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result != MessageBoxResult.Yes)
+                e.Cancel = true; // Cancel navigation
+        }
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            if (_navigationService != null)
+            {
+                _navigationService.Navigating -= NavigationService_Navigating;
+                _navigationService = null;
+            }
+        }
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             vm = new UserViewModel(user);
