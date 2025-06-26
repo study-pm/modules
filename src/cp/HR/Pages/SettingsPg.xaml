@@ -107,7 +107,7 @@
                     <StackPanel Orientation="Horizontal">
                         <Label Foreground="{StaticResource magentaDarkBrush}" FontSize="16">Безопасный вход</Label>
                         <uc:Details Type="Question"
-                                    ToolTip="Для обеспечения безопасного входа необходимо настроить и подключить двухэтапную аутентификацию"
+                                    ToolTip="Для обеспечения безопасного входа рекомендуется настроить и подключить двухэтапную аутентификацию"
                                     />
                     </StackPanel>
                     <TextBlock Style="{StaticResource Paragraph}">
