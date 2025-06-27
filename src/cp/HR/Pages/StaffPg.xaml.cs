@@ -170,6 +170,18 @@ namespace HR.Pages
             }
         }
 
+        private bool _isListView;
+        public bool IsListView
+        {
+            get => _isListView;
+            set
+            {
+                if (_isListView == value) return;
+                _isListView = value;
+                OnPropertyChanged();
+            }
+        }
+
         private bool _isProgress;
         public bool IsProgress
         {
@@ -499,7 +511,7 @@ namespace HR.Pages
             );
 
             // @TODO: Read user preferences and set here
-            // IsGridView = true;
+            // IsListView = true;
 
             /*
             PrintCommand = new RelayCommand(
@@ -1208,13 +1220,13 @@ namespace HR.Pages
         public bool? IsStaffEmpty => Staff?.Count == 0;
         public bool? IsStaffNotEmpty => Staff?.Count > 0;
         /*
-        private bool isGridView;
-        public bool IsGridView
+        private bool IsListView;
+        public bool IsListView
         {
-            get => isGridView;
+            get => IsListView;
             set
             {
-                isGridView = value;
+                IsListView = value;
                 OnPropertyChanged();
                 if (EmployeesDataGrid != null) ResetSorting();
             }
