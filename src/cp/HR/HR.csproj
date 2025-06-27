@@ -554,13 +554,9 @@
     <Resource Include="Images\ДюжечкинаНА.jpg" />
     <Resource Include="Images\ЕрмачковаТА.jpg" />
     <Resource Include="Images\КалитинаАВ.jpg" />
-    <Resource Include="Images\ГлебоваМД.jpg" />
-    <Resource Include="Images\ГлинкаЛА.jpg" />
     <Resource Include="Images\ГорюноваТЮ.jpg" />
     <Resource Include="Images\ГорячеваЛА.jpg" />
     <Resource Include="Images\ДанилюкИГ.jpg" />
-    <Resource Include="Images\ВодопьяноваОИ.jpg" />
-    <Resource Include="Images\ВоронинаЕН.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
