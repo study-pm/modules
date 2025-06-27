@@ -7,7 +7,7 @@
       xmlns:uc="clr-namespace:HR.Controls"
       xmlns:utils="clr-namespace:HR.Utilities"
       mc:Ignorable="d"
-      d:DesignHeight="600" d:DesignWidth="800"
+      d:DesignHeight="800" d:DesignWidth="800"
       Title="ProfilePg" Loaded="Page_Loaded">
     <Page.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
@@ -34,7 +34,11 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel>
                     <StackPanel Style="{StaticResource FormElement}">
-                        <Label Style="{StaticResource FormLabel}">Регистрационное имя (Логин)</Label>
+                        <StackPanel Orientation="Horizontal">
+                            <Label>Регистрационное имя (Логин)</Label>
+                            <uc:Details Type="Asterisk" ToolTip="Обязательно для заполнения"/>
+                            <uc:Details Type="Question" ToolTip="Должно быть не менее 4 и не более 32 символов"/>
+                        </StackPanel>
                         <TextBox x:Name="LoginTxb" Style="{StaticResource FormTextBox}"
                                  IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
                                  utils:ValidationHelper.AutoErrorVisibility="True"

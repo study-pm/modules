@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -95,10 +96,12 @@ namespace HR.Pages
         }
         public void Reset()
         {
+            Login = dm.Login;
             Role = dm.Role;
         }
         public void Set()
         {
+            dm.Login = Login;
             dm.Role = Role;
             OnPropertyChanged(nameof(IsChanged));
             OnPropertyChanged(nameof(IsEnabled));
@@ -235,6 +238,7 @@ namespace HR.Pages
             vm = new UserViewModel(user);
             await vm.InitializeAsync();
             DataContext = vm;
+            vm.Reset();
         }
     }
 }
