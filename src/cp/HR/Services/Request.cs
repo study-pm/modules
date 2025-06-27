@@ -249,6 +249,16 @@ namespace HR.Services
 
             return state.LastState ?? string.Empty;
         }
+        public static async Task<List<Degree>> LoadDegrees()
+        {
+            using (var db = new HREntities())
+            {
+                return await db.Degrees
+                    .OrderBy(deg => deg.Id)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+            }
+        }
         public static async Task<List<Department>> LoadDepartments()
         {
             using (var db = new HREntities())
@@ -287,16 +297,6 @@ namespace HR.Services
                     .ConfigureAwait(false);
             }
         }
-        public static async Task<List<Position>> LoadPositions()
-        {
-            using (var db = new HREntities())
-            {
-                return await db.Positions
-                    .OrderBy(dep => dep.Title)
-                    .ToListAsync()
-                    .ConfigureAwait(false);
-            }
-        }
         public static async Task<List<Grade>> LoadGrades()
         {
             using (var db = new HREntities())
@@ -307,12 +307,42 @@ namespace HR.Services
                     .ConfigureAwait(false);
             }
         }
+        public static async Task<List<Position>> LoadPositions()
+        {
+            using (var db = new HREntities())
+            {
+                return await db.Positions
+                    .OrderBy(x => x.Title)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+            }
+        }
+        public static async Task<List<Qualification>> LoadQualifications()
+        {
+            using (var db = new HREntities())
+            {
+                return await db.Qualifications
+                    .OrderBy(x => x.Title)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+            }
+        }
         public static async Task<List<Role>> LoadRoles()
         {
             using (var db = new HREntities())
             {
                 return await db.Roles
                     .OrderBy(g => g.Id)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+            }
+        }
+        public static async Task<List<Specialty>> LoadSpecialties()
+        {
+            using (var db = new HREntities())
+            {
+                return await db.Specialties
+                    .OrderBy(sp => sp.Title)
                     .ToListAsync()
                     .ConfigureAwait(false);
             }
