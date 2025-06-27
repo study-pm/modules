@@ -940,7 +940,7 @@ namespace HR.Pages
             if (CollectionFilter == null) return;
             switch(CollectionFilter.Name)
             {
-                case "Surname":  case "GivenName": case "Patronymic":
+                case "Surname":  case "GivenName": case "Patronymic": case "FullName":
                     SelectedFilter = FilterValues.FirstOrDefault(f => f.Name == "FullName");
                     SearchText = CollectionFilter.Value.ToString();
                     break;
