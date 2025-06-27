@@ -25,5 +25,6 @@ namespace HR.Data.Models
         public virtual Employee Employee { get; set; }
         public virtual Qualification Qualification { get; set; }
         public virtual Specialty Specialty { get; set; }
+        public virtual Organization Organization { get; set; }
     }
 }

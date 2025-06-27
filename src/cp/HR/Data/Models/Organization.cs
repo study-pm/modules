@@ -19,6 +19,7 @@ namespace HR.Data.Models
         {
             this.DevelopmentCourses = new HashSet<DevelopmentCourse>();
             this.RetrainingCourses = new HashSet<RetrainingCourse>();
+            this.Educations = new HashSet<Education>();
         }
     
         public int Id { get; set; }
@@ -28,5 +29,7 @@ namespace HR.Data.Models
         public virtual ICollection<DevelopmentCourse> DevelopmentCourses { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RetrainingCourse> RetrainingCourses { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Education> Educations { get; set; }
     }
 }

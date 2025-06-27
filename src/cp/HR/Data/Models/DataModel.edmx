@@ -292,6 +292,20 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Education_Organization">
+          <End Role="Organization" Type="Self.Organization" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Education" Type="Self.Education" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Organization">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Education">
+              <PropertyRef Name="OrganizationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Education_Qualification">
           <End Role="Qualification" Type="Self.Qualification" Multiplicity="0..1" />
           <End Role="Education" Type="Self.Education" Multiplicity="*" />
@@ -479,6 +493,10 @@
             <End Role="Employee" EntitySet="Employee" />
             <End Role="Education" EntitySet="Education" />
           </AssociationSet>
+          <AssociationSet Name="FK_Education_Organization" Association="Self.FK_Education_Organization">
+            <End Role="Organization" EntitySet="Organization" />
+            <End Role="Education" EntitySet="Education" />
+          </AssociationSet>
           <AssociationSet Name="FK_Education_Qualification" Association="Self.FK_Education_Qualification">
             <End Role="Qualification" EntitySet="Qualification" />
             <End Role="Education" EntitySet="Education" />
@@ -596,6 +614,7 @@
           <NavigationProperty Name="Employee" Relationship="Self.FK_Education_Employee" FromRole="Education" ToRole="Employee" />
           <NavigationProperty Name="Qualification" Relationship="Self.FK_Education_Qualification" FromRole="Education" ToRole="Qualification" />
           <NavigationProperty Name="Specialty" Relationship="Self.FK_Education_Specialty" FromRole="Education" ToRole="Specialty" />
+          <NavigationProperty Name="Organization" Relationship="HRModel.FK_Education_Organization" FromRole="Education" ToRole="Organization" />
         </EntityType>
         <EntityType Name="Employee">
           <Key>
@@ -631,6 +650,7 @@
           <Property Name="Title" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="DevelopmentCourses" Relationship="Self.FK_DevelopmentCourse_Organization" FromRole="Organization" ToRole="DevelopmentCourse" />
           <NavigationProperty Name="RetrainingCourses" Relationship="Self.FK_RetrainingCourse_Organization" FromRole="Organization" ToRole="RetrainingCourse" />
+          <NavigationProperty Name="Educations" Relationship="HRModel.FK_Education_Organization" FromRole="Organization" ToRole="Education" />
         </EntityType>
         <EntityType Name="Position">
           <Key>
@@ -1074,7 +1094,25 @@
             <End Role="Role" EntitySet="Roles" />
             <End Role="User" EntitySet="Users" />
           </AssociationSet>
+          <AssociationSet Name="FK_Education_Organization" Association="HRModel.FK_Education_Organization">
+            <End Role="Organization" EntitySet="Organizations" />
+            <End Role="Education" EntitySet="Educations" />
+          </AssociationSet>
         </EntityContainer>
+        <Association Name="FK_Education_Organization">
+          <End Type="HRModel.Organization" Role="Organization" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="HRModel.Education" Role="Education" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Organization">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Education">
+              <PropertyRef Name="OrganizationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->

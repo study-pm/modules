@@ -44,6 +44,7 @@
         <AssociationConnector Association="HRModel.FK_Staff_Position" ManuallyRouted="false" />
         <AssociationConnector Association="HRModel.FK_Retraining_RetrainingCourse" ManuallyRouted="false" />
         <AssociationConnector Association="HRModel.FK_User_Role" ManuallyRouted="false" />
+        <AssociationConnector Association="HRModel.FK_Education_Organization" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
