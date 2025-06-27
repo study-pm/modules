@@ -24,7 +24,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition MaxWidth="250" Width="250" MinWidth="70"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
-                <ColumnDefinition Width="*" MinWidth="400" MaxWidth="1440"></ColumnDefinition>
+                <ColumnDefinition Width="*" MinWidth="400" MaxWidth="1600"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition MaxWidth="250" Width="250" MinWidth="70"></ColumnDefinition>
             </Grid.ColumnDefinitions>
