@@ -24,13 +24,13 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using static HR.Services.AppEventHelper;
 
 namespace HR.Pages
 {
-
     public class ActivityToBrushConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -65,6 +65,51 @@ namespace HR.Pages
                     break;
                 case 7:
                     resourceKey = "AwaitingBrush";      // Other
+                    break;
+                default:
+                    resourceKey = "greyDarkBrush";
+                    break;
+            }
+
+            if (Application.Current.Resources.Contains(resourceKey))
+            {
+                return Application.Current.Resources[resourceKey] as Brush ?? fallbackBrush;
+            }
+            else
+            {
+                return fallbackBrush;
+            }
+        }
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+    public class DegreeToBrushConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var fallbackBrush = Brushes.Gray;
+            if (!(value is int deg)) return fallbackBrush;
+
+            string resourceKey;
+
+            switch (deg)
+            {
+                case 1:
+                    resourceKey = "cyanDarkBrush";
+                    break;
+                case 2:
+                    resourceKey = "GreenDarkBrush";
+                    break;
+                case 3:
+                    resourceKey = "GreenMediumBrush";
+                    break;
+                case 4:
+                    resourceKey = "magentaDarkBrush";
+                    break;
+                case 5:
+                    resourceKey = "DarkBrownBrush";
                     break;
                 default:
                     resourceKey = "greyDarkBrush";
@@ -278,6 +323,19 @@ namespace HR.Pages
             set { _selectedActivity = value; OnPropertyChanged(); }
         }
 
+        private List<Degree> _degrees;
+        public List<Degree> Degrees
+        {
+            get => _degrees;
+            set { _degrees = value; OnPropertyChanged(); }
+        }
+
+        private Degree _selectedDegree;
+        public Degree SelectedDegree
+        {
+            get => _selectedDegree;
+            set { _selectedDegree = value; OnPropertyChanged(); }
+        }
         private List<Department> _departments;
         public List<Department> Departments
         {
@@ -303,7 +361,31 @@ namespace HR.Pages
             get => _selectedPosition;
             set { _selectedPosition = value; OnPropertyChanged(); }
         }
+        private List<Qualification> _qualifications;
+        public List<Qualification> Qualifications
+        {
+            get => _qualifications;
+            set { _qualifications = value; OnPropertyChanged(); }
+        }
+        private Qualification _selectedQualification;
+        public Qualification SelectedQualification
+        {
+            get => _selectedQualification;
+            set { _selectedQualification = value; OnPropertyChanged(); }
+        }
+        private List<Specialty> _specialties;
+        public List<Specialty> Specialties
+        {
+            get => _specialties;
+            set { _specialties = value; OnPropertyChanged(); }
+        }
 
+        private Specialty _selectedSpecialty;
+        public Specialty SelectedSpecialty
+        {
+            get => _selectedSpecialty;
+            set { _selectedSpecialty = value; OnPropertyChanged(); }
+        }
         private List<Subject> _subjects;
         public List<Subject> Subjects
         {
@@ -711,19 +793,25 @@ namespace HR.Pages
                 });
                 // Run tasks in parallel
                 var employeesTask = Request.LoadEmployees(true); // Return entities of current context !Improtant for tracking context changes
+                var degreesTask = Request.LoadDegrees();
                 var departmentsTask = Request.LoadDepartments();
                 var positionsTask = Request.LoadPositions();
+                var qualificationsTask = Request.LoadQualifications();
+                var specialtiesTask = Request.LoadSpecialties();
                 var subjectsTask = Request.LoadSubjects();
 
-                await Task.WhenAll(employeesTask, departmentsTask, positionsTask, subjectsTask);
+                await Task.WhenAll(employeesTask, degreesTask, departmentsTask, positionsTask, qualificationsTask, specialtiesTask, subjectsTask);
 
                 // Update UI via Dispatcher
                 await Dispatcher.InvokeAsync(() =>
                 {
                     DataCollection = new ObservableCollection<Employee>(employeesTask.Result);
                     CollectionView = CollectionViewSource.GetDefaultView(DataCollection);
+                    Degrees = degreesTask.Result;
                     Departments = departmentsTask.Result;
                     Positions = positionsTask.Result;
+                    Qualifications = qualificationsTask.Result;
+                    Specialties = specialtiesTask.Result;
                     Subjects = subjectsTask.Result;
 
                     CollectionView.Filter = obj => FilterHelper.FilterByValue(obj, CollectionFilter);
@@ -1011,14 +1099,23 @@ namespace HR.Pages
         }
         private void DataGrid_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            var depObj = (DependencyObject)e.OriginalSource;
+            DependencyObject depObj = e.OriginalSource as DependencyObject;
+
             while (depObj != null && !(depObj is DataGridCell))
-                depObj = VisualTreeHelper.GetParent(depObj);
+            {
+                if (depObj is Visual || depObj is Visual3D)
+                {
+                    depObj = VisualTreeHelper.GetParent(depObj);
+                }
+                else
+                {
+                    depObj = LogicalTreeHelper.GetParent(depObj);
+                }
+            }
 
             if (depObj is DataGridCell cell)
             {
-                var dataGrid = sender as DataGrid;
-                if (dataGrid != null)
+                if (sender is DataGrid dataGrid)
                 {
                     _lastColumnIndex = dataGrid.Columns.IndexOf(cell.Column);
                 }

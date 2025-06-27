@@ -15,11 +15,13 @@
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <local:DepartmentToPathConverter x:Key="DepToPathConv"/>
         <local:ActivityToBrushConverter x:Key="ActToBrushConv"/>
+        <local:DegreeToBrushConverter x:Key="DegToBrushConv"/>
         <utils:AddOneConverter x:Key="AddOneConv"/>
         <utils:CollectionToVisibilityConverter x:Key="ColToVisConv"/>
         <utils:InverseBooleanConverter x:Key="InvBoolConv"/>
         <utils:ImagePathConverter x:Key="ImgPathConv"/>
         <utils:ImagePathMultiConverter x:Key="ImgPathMultiConv" />
+        <utils:IntToSymbolConverter x:Key="IntToSymbolConv"/>
         <utils:InverseBoolToVisibilityConverter x:Key="InvBoolToVis"/>
         <utils:ListToStringConverter x:Key="ListToStrConv"/>
         <utils:NotEmptyValidationRule x:Key="NotEmptyValidationRule"/>
@@ -224,7 +226,9 @@ Command="{Binding PrintCmd}"
                     <MenuItem Header="Имя" IsCheckable="True" Click="DataGridColumnHeaderMenuItem_Click" Tag="2"/>
                     <MenuItem Header="Отчество" IsCheckable="True" Click="DataGridColumnHeaderMenuItem_Click" Tag="3"/>
                     <MenuItem Header="Стаж" IsCheckable="True" Click="DataGridColumnHeaderMenuItem_Click" Tag="4"/>
-                    <MenuItem Header="Должность" IsCheckable="True" Click="DataGridColumnHeaderMenuItem_Click" Tag="5"/>
+                    <MenuItem Header="Образование" IsCheckable="True" Click="DataGridColumnHeaderMenuItem_Click" Tag="5"/>
+                    <MenuItem Header="Должность" IsCheckable="True" Click="DataGridColumnHeaderMenuItem_Click" Tag="6"/>
+                    <MenuItem Header="Предметы" IsCheckable="True" Click="DataGridColumnHeaderMenuItem_Click" Tag="7"/>
                 </ContextMenu>
                 <Style TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
                     <Setter Property="ContextMenu" Value="{StaticResource ColumnHeaderContextMenu}"/>
@@ -239,8 +243,8 @@ Command="{Binding PrintCmd}"
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock HorizontalAlignment="Center"
-                           Text="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=Header}"
-                           />
+                                       Text="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=Header}"
+                                       />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -256,7 +260,96 @@ Command="{Binding PrintCmd}"
                 <DataGridTextColumn Header="Стаж" IsReadOnly="True" Width="Auto"
                                     Binding="{Binding Experience}"
                                     CellStyle="{StaticResource RightAlignedCellStyle}" />
-                <DataGridTemplateColumn Header="Должность" SortMemberPath="MainPositionTitle" Width="2*">
+                <DataGridTemplateColumn Header="Образование" SortMemberPath="MainEducationTitle" Width="2*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ItemsControl ItemsSource="{Binding Educations}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="25"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Viewbox Stretch="Fill" Width="12" Height="12" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5 0">
+                                                <Path Data="{StaticResource UserGraduateSolidPath}"
+                                                      Fill="{Binding DegreeId, Converter={StaticResource DegToBrushConv}}"
+                                                      ToolTip="{Binding Degree.Title}"
+                                                      />
+                                            </Viewbox>
+                                            <TextBlock Grid.Column="1" Style="{StaticResource TextBlockWithEllipsisStyle}"
+                                                       ToolTip="{Binding Specialty.Title}"
+                                                       >
+                                                <Run Text="{Binding Specialty.Title}" /><Run Text="{Binding SpecialtyId, Converter={StaticResource IntToSymbolConv}}" /><Run Text="{Binding Qualification.Title}" />
+                                                <Run Text="{Binding SpecialtyId, Converter={StaticResource IntToSymbolConv}, ConverterParameter=(}" /><Run Text="{Binding Organization.Title}" /><Run Text="{Binding SpecialtyId, Converter={StaticResource IntToSymbolConv}, ConverterParameter=)}" />
+                                            </TextBlock>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <ListBox ItemsSource="{Binding Educations}" SelectionMode="Single" x:Name="positionsList"
+                                     ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                     >
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,2,0,2" HorizontalAlignment="Stretch">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <ComboBox HorizontalAlignment="Stretch" Width="Auto"
+                                                      ItemsSource="{Binding DataContext.Degrees, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                      SelectedValue="{Binding DegreeId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                      SelectedValuePath="Id" DisplayMemberPath="Title"
+                                                      >
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Title}" VerticalAlignment="Center"
+                                                                   TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                                                                   />
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
+                                            <ComboBox Grid.Column="1" HorizontalAlignment="Stretch" Width="Auto"
+                                                      ItemsSource="{Binding DataContext.Specialties, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                      SelectedValue="{Binding SpecialtyId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                      SelectedValuePath="Id" DisplayMemberPath="Title"
+                                                      >
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Title}" VerticalAlignment="Center"
+                                                                   TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                                                                   />
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
+                                            <ComboBox Grid.Column="2" HorizontalAlignment="Stretch" Width="Auto"
+                                                      ItemsSource="{Binding DataContext.Qualifications, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                                      SelectedValue="{Binding QualificationId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                      SelectedValuePath="Id" DisplayMemberPath="Title"
+                                                      >
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Title}" VerticalAlignment="Center"
+                                                                   TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                                                                   />
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Должность" SortMemberPath="MainPositionTitle" Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <ItemsControl ItemsSource="{Binding Staffs}">
@@ -329,6 +422,16 @@ Command="{Binding PrintCmd}"
                         </DataTemplate>
                     </DataGridTemplateColumn.CellEditingTemplate>
                 </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Предметы" Width="2*" ElementStyle="{StaticResource TextBlockWithEllipsisStyle}"
+                                    Binding="{Binding Subjects, Mode=OneWay, Converter={StaticResource ListToStrConv}, ConverterParameter=Title}"
+                                    >
+                    <DataGridTextColumn.CellStyle>
+                        <Style TargetType="DataGridCell" BasedOn="{StaticResource {x:Type DataGridCell}}">
+                            <Setter Property="ToolTip" 
+                                    Value="{Binding Subjects, Mode=OneWay, Converter={StaticResource ListToStrConv}, ConverterParameter=Title}" />
+                        </Style>
+                    </DataGridTextColumn.CellStyle>
+                </DataGridTextColumn>
             </DataGrid.Columns>
             <DataGrid.ContextMenu>
                 <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
