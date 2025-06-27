@@ -200,6 +200,7 @@
                                 <Hyperlink Command="{Binding DataContext.NavigateCmd, RelativeSource={RelativeSource AncestorType=Page}}"
                                            CommandParameter="{Binding Employee}"
                                            IsEnabled="{Binding Employee, Converter={StaticResource NotNullToBoolConverter}}"
+                                           ToolTip="Перейти к карточке сотрудника"
                                            >
                                            <TextBlock Text="{Binding Employee.FullName}" />
                                 </Hyperlink>
