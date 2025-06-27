@@ -9,12 +9,15 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Navigation;
 using HR.Data.Models;
 using HR.Pages;
 using HR.Services;
@@ -57,6 +60,44 @@ namespace HR
                 typeof(FrameworkElement),
                 new FrameworkPropertyMetadata(
                     XmlLanguage.GetLanguage(culture.IetfLanguageTag)));
+        }
+
+        private async Task<string> GetStartUri(int uid)
+        {
+            string uri = string.Empty;
+            var (cat, name, op, scope) = (EventCategory.Service, "Read", 1, "Приложение");
+            try
+            {
+                uri = await Request.LoadLastState(uid);
+                if (string.IsNullOrEmpty(uri))
+                    throw new Exception("URI is null or empty");
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Success,
+                    Message = "Возобновление состояния",
+                    Details = "Последнее состояние предыдущего сеанса успешно возобновлено"
+                });
+                return uri;
+            }
+            catch (Exception exc)
+            {
+                Debug.WriteLine(exc, "App: restore previous state");
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Error,
+                    Message = "Ошибка возобновления состояния",
+                    Details = exc.Message
+                });
+                return null;
+            }
         }
         public async void LogOut()
         {
@@ -153,8 +194,8 @@ namespace HR
                 var mainWindow = new MainWindow();
                 // this.MainWindow = mainWindow; // Assign as main window
                 mainWindow.Show();
-
-                splash.Close(TimeSpan.FromMilliseconds(200));
+                // Close splash screen with no delay
+                splash.Close(TimeSpan.FromMilliseconds(0));
 
                 RaiseAppEvent(new AppEventArgs
                 {
@@ -162,6 +203,15 @@ namespace HR
                     Message = IsAuth ? "Возобновление сеанса" : "Новый сеанс",
                     Details = IsAuth ? "Пользовательский режим" : "Гостевой режим"
                 });
+
+                if (IsAuth && !string.IsNullOrWhiteSpace(Preferences.StartPage))
+                {
+                    string uri = Preferences.StartPage;
+                    if (uri == "resume")
+                        uri = await GetStartUri(CurrentUser.Id);
+                    if (!string.IsNullOrWhiteSpace(uri) && UserAppState.IsPageAllowed(uri))
+                        mainWindow.mainFrame.Navigate(new Uri(uri, UriKind.Relative));
+                }
             }
             catch (Exception exc)
             {

@@ -7,7 +7,7 @@
       xmlns:uc="clr-namespace:HR.Controls"
       xmlns:utils="clr-namespace:HR.Utilities"
       mc:Ignorable="d"
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="500" d:DesignWidth="800"
       Title="AuthPg"
       >
     <Page.Resources>
@@ -112,15 +112,15 @@
                             />
                         </Border>
                     </Popup>
-                </Grid>
+            </Grid>
 
+
+            <TextBlock Style="{StaticResource Paragraph}" Margin="0 20 0 0">
+                Забыли пароль? Обратитесь к администратору за новым паролем.
+            </TextBlock>
             <TextBlock Style="{StaticResource Paragraph}" Margin="0 20 0 0">
                 Нет учетной записи? Вы можете
                 <Hyperlink NavigateUri="RegisterPg.xaml"><Bold>зарегистрироваться</Bold></Hyperlink>.
-            </TextBlock>
-            <TextBlock Style="{StaticResource Paragraph}" Margin="0 20 0 0">
-                Забыли пароль? Отправьте администратору<LineBreak/>
-                <Hyperlink NavigateUri="RegisterPg.xaml"><Bold>заявку на сброс пароля</Bold></Hyperlink>.
             </TextBlock>
 
         </StackPanel>

@@ -18,8 +18,11 @@ namespace HR.Data.Models
         public static readonly string prefsFolder = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, basePath);
         public bool IsStayLoggedIn { get; set; }
         public bool IsLogOn { get; set; }
+        public bool IsLeftAsideOff { get; set; }
+        public bool IsRightAsideOff { get; set; }
         public List<int> LogCategories { get; set; } = new List<int>();
         public List<int> LogTypes { get; set; } = new List<int>();
+        public string StartPage { get; set; }
 
         private static string GetFilePath(int uid) => System.IO.Path.Combine(prefsFolder, $"{uid.ToString()}.xml");
         public static async Task<Preferences> LoadAsync(int uid)

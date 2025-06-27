@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -28,6 +29,19 @@ namespace HR.Pages
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         internal Data.Models.User dm;
         public string EmployeeName => dm.Employee?.FullName ?? "—";
+        private string _login;
+        public string Login
+        {
+            get => _login;
+            set
+            {
+                if (_login == value) return;
+                _login = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsChanged));
+                OnPropertyChanged(nameof(IsEnabled));
+            }
+        }
         private Role _role;
         public Role Role
         {
@@ -82,10 +96,12 @@ namespace HR.Pages
         }
         public void Reset()
         {
+            Login = dm.Login;
             Role = dm.Role;
         }
         public void Set()
         {
+            dm.Login = Login;
             dm.Role = Role;
             OnPropertyChanged(nameof(IsChanged));
             OnPropertyChanged(nameof(IsEnabled));
@@ -99,6 +115,9 @@ namespace HR.Pages
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string prop = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+
+        private NavigationService _navigationService;
+
         private Data.Models.User user = ((App)(Application.Current)).CurrentUser;
         private UserViewModel _vm;
         public UserViewModel vm
@@ -135,6 +154,8 @@ namespace HR.Pages
         public ProfilePg()
         {
             InitializeComponent();
+            Unloaded += Page_Unloaded;
+
             vm = new UserViewModel(user);
             DataContext = vm;
         }
@@ -195,11 +216,29 @@ namespace HR.Pages
 
         }
 
+        private void NavigationService_Navigating(object sender, NavigatingCancelEventArgs e)
+        {
+            if (e.Content == this) return; // Skip if navigation to current page
+
+            if (!vm.IsChanged) return;
+            var result = MessageBox.Show("Форма содержит несохраненные изменения. Вы действительно хотите уйти без сохранения данных?", "Несохраненные изменения", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result != MessageBoxResult.Yes)
+                e.Cancel = true; // Cancel navigation
+        }
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            if (_navigationService != null)
+            {
+                _navigationService.Navigating -= NavigationService_Navigating;
+                _navigationService = null;
+            }
+        }
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             vm = new UserViewModel(user);
             await vm.InitializeAsync();
             DataContext = vm;
+            vm.Reset();
         }
     }
 }

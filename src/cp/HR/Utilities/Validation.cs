@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,7 +26,7 @@ namespace HR.Utilities
             {
                 if (!char.IsDigit(c))
                 {
-                    return new ValidationResult(false, "Допустимы только цифры.");
+                    return new ValidationResult(false, "Допустимы только цифры");
                 }
             }
 
@@ -46,7 +47,7 @@ namespace HR.Utilities
             }
             else
             {
-                return new ValidationResult(false, $"Длина должна быть ровно {RequiredLength} символов.");
+                return new ValidationResult(false, $"Длина должна быть ровно {RequiredLength} символов");
             }
         }
     }
@@ -60,7 +61,7 @@ namespace HR.Utilities
 
             if (str.Length > MaxLength)
             {
-                return new ValidationResult(false, $"Должно быть не более {MaxLength} символов.");
+                return new ValidationResult(false, $"Должно быть не более {MaxLength} символов");
             }
 
             return ValidationResult.ValidResult;
@@ -68,11 +69,14 @@ namespace HR.Utilities
     }
     public class MinLengthValidationRule : ValidationRule
     {
+        public int MinLength { get; set; }
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
-            string input = value as string;
-            if (input.Length < 5)
-                return new ValidationResult(false, "Поле должно быть содержать более {5} символов");
+            var str = value as string ?? string.Empty;
+
+            if (str.Length < 5)
+                return new ValidationResult(false, $"Должно быть не менее {MinLength} символов");
+
             return new ValidationResult(true, null);
         }
     }
@@ -81,14 +85,14 @@ namespace HR.Utilities
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
             if (value == null)
-                return new ValidationResult(false, "Поле обязательно для заполнения");
+                return new ValidationResult(false, "Обязательно для заполнения");
             if (value is int intVal && intVal == 0)
             {
-                return new ValidationResult(false, "Поле обязательно для заполнения");
+                return new ValidationResult(false, "Обязательно для заполнения");
             }
             if (value is string strVal && string.IsNullOrWhiteSpace(strVal))
             {
-                return new ValidationResult(false, "Поле обязательно для заполнения");
+                return new ValidationResult(false, "Обязательно для заполнения");
             }
             return new ValidationResult(true, null);
         }
@@ -105,6 +109,41 @@ namespace HR.Utilities
             return ValidationResult.ValidResult;
         }
     }
+    public class StrongPasswordValidationRule : ValidationRule
+    {
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
+        {
+            string password = value as string ?? string.Empty;
+
+            if (password.Length < 8)
+            {
+                return new ValidationResult(false, "Должен содержать не менее 8 символов");
+            }
+
+            if (!Regex.IsMatch(password, @"[A-Z]"))
+            {
+                return new ValidationResult(false, "Должен содержать хотя бы одну заглавную букву");
+            }
+
+            if (!Regex.IsMatch(password, @"[a-z]"))
+            {
+                return new ValidationResult(false, "Должен содержать хотя бы одну строчную букву");
+            }
+
+            if (!Regex.IsMatch(password, @"\d"))
+            {
+                return new ValidationResult(false, "Должен содержать хотя бы одну цифру");
+            }
+
+            if (!Regex.IsMatch(password, @"[\W_]"))
+            {
+                return new ValidationResult(false, "Должен содержать хотя бы один специальный символ");
+            }
+
+            return ValidationResult.ValidResult;
+        }
+    }
+
     public static class ValidationHelper
     {
         // Автоматическое управление видимостью ошибок (автоматически скрывать/показывать при фокусе)

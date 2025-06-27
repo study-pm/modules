@@ -1,11 +1,14 @@
 ﻿using HR.Controls;
+using HR.Data.Models;
 using HR.Pages;
+using HR.Services;
 using HR.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data.Entity;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -19,6 +22,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static HR.Services.AppEventHelper;
 
 namespace HR
 {
@@ -48,19 +52,28 @@ namespace HR
                 Title = "Сотрудники",
                 Page = "StaffPg",
                 PageUri = "Pages/StaffPg.xaml",
-                Values = new ObservableCollection<FilterValue>
-                {
-                    new FilterValue { Id = 1, Title = "Администрация" },
-                    new FilterValue { Id = 2, Title = "Учителя" },
-                    new FilterValue { Id = 3, Title = "Преподаватели" },
-                    new FilterValue { Id = 4, Title = "Воспитатели" },
-                }
+                Values = new ObservableCollection<FilterValue>(
+                    ActivityHelper.GetAllActivities().Select(a => new FilterValue
+                    {
+                        Id = a.Id,
+                        Title = a.Title
+                    })
+                )
             },
             new MenuFilter()
             {
                 Icon = (Geometry)Application.Current.FindResource("SitemapSolidPath"),
                 Name = "Структурные подразделения",
                 Title = "Подразделения",
+                Page = "StaffPg",
+                PageUri = "Pages/StaffPg.xaml",
+                Values = new ObservableCollection<FilterValue>() // initialize empty collection
+            },
+            new MenuFilter()
+            {
+                Icon = (Geometry)Application.Current.FindResource("ProjectDiagramSolidPath"),
+                Name = "Должности",
+                Title = "Должности",
                 Page = "StaffPg",
                 PageUri = "Pages/StaffPg.xaml",
                 Values = new ObservableCollection<FilterValue>() // initialize empty collection
@@ -112,6 +125,13 @@ namespace HR
                     return await ctx.Departments.Select(x => new FilterValue { Id = x.Id, Title = x.Title }).ToListAsync();
                 }
             });
+            var getPosTask = Task.Run(async () =>
+            {
+                using (var ctx = new HR.Data.Models.HREntities())
+                {
+                    return await ctx.Positions.Select(x => new FilterValue { Id = x.Id, Title = x.Title }).OrderBy(x => x.Title).ToListAsync();
+                }
+            });
             var getSubjTask = Task.Run(async () =>
             {
                 using (var ctx = new HR.Data.Models.HREntities())
@@ -128,7 +148,7 @@ namespace HR
             });
 
             // Await both tasks in parallel
-            await Task.WhenAll(getDptTask, getSubjTask, getClassTask);
+            await Task.WhenAll(getDptTask, getPosTask, getSubjTask, getClassTask);
 
             // Process results
             //var departments = departmentsTask.Result;
@@ -137,8 +157,9 @@ namespace HR
             IsInProgress = false;
 
             Filters[1].Values = new ObservableCollection<FilterValue>(getDptTask.Result);
-            Filters[2].Values = new ObservableCollection<FilterValue>(getSubjTask.Result);
-            Filters[3].Values = new ObservableCollection<FilterValue>(getClassTask.Result);
+            Filters[2].Values = new ObservableCollection<FilterValue>(getPosTask.Result);
+            Filters[3].Values = new ObservableCollection<FilterValue>(getSubjTask.Result);
+            Filters[4].Values = new ObservableCollection<FilterValue>(getClassTask.Result);
         }
 
         private void Filter_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -165,6 +186,8 @@ namespace HR
             // Handle window resize and elements visibility
             this.SizeChanged += MainWindow_SizeChanged;
             UpdateVisibility(this.ActualWidth);
+            // Handle closing main window
+            this.Closing += MainWindow_Closing;
             // Implement navigation command bindings
             CommandBinding goToPageBinding = new CommandBinding(NavigationCommands.GoToPage, GoToPage_Executed, GoToPage_CanExecute);
             this.CommandBindings.Add(goToPageBinding);
@@ -219,28 +242,80 @@ namespace HR
             MainLayoutContainer.ColumnDefinitions[0].Width = IsVisible ? new GridLength(NormalWidth, GridUnitType.Pixel) : new GridLength(0);
             MainLayoutContainer.ColumnDefinitions[0].MinWidth = IsVisible ? MinimalWidth : 0;
         }
-        private void UpdateVisibility(double width)
+        public void UpdateVisibility(double width)
         {
             if (width < NarrowWidth)
             {
                 SetLeftSide(false);
                 SetRightSide(false);
-                TopHeader.SetNarrowMode(true);
+                TopHeader.SetNarrowMode(false);
             }
             else if (width < MediumWidth)
             {
+                if (App.Current.Preferences != null)
+                    SetRightSide(App.Current.Preferences.IsRightAsideOff ? false : true);
+                else
+                    SetRightSide(true);
                 SetLeftSide(false);
-                SetRightSide(true);
                 TopHeader.SetNarrowMode(false);
             }
             else
             {
-                SetLeftSide(true);
-                SetRightSide(true);
+                if (App.Current.Preferences != null)
+                {
+                    SetLeftSide(App.Current.Preferences.IsLeftAsideOff ? false : true);
+                    SetRightSide(App.Current.Preferences.IsRightAsideOff ? false : true);
+                }
+                else
+                {
+                    SetLeftSide(true);
+                    SetRightSide(true);
+                }
                 TopHeader.SetNarrowMode(false);
             }
         }
+        private void MainWindow_Closing(object sender, CancelEventArgs e)
+        {
+            if (!App.Current.IsAuth || App.Current.Preferences.StartPage != "resume") return;
 
+            string lastUri = null;
+            if (mainFrame.CurrentSource != null)
+            {
+                lastUri = mainFrame.CurrentSource.ToString();
+            }
+
+            if (string.IsNullOrEmpty(lastUri)) return;
+
+            var (cat, name, op, scope) = (EventCategory.Service, "Shutdown", 0, "Приложение");
+            try
+            {
+                bool res = Request.SaveLastState(App.Current.CurrentUser.Id, lastUri);
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Success,
+                    Message = "Состояние успешно сохранено",
+                    Details = $"Последнее состояние: {lastUri}"
+                });
+            }
+            catch(Exception exc)
+            {
+                Debug.WriteLine(exc, "MainWindow: preserve state");
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Error,
+                    Message = "Ошибка сохранения состояния",
+                    Details = exc.Message
+                });
+            }
+        }
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             await MenuVM.SetFilterData();

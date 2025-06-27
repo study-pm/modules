@@ -101,7 +101,7 @@
         <Setter Property="HorizontalAlignment" Value="Left"/>
     </Style>
     <Style x:Key="FormLabel" TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
-        <Setter Property="Margin" Value="0 0 5 0"/>
+        <Setter Property="Margin" Value="5"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="ContentTemplate">
         <Setter.Value>
@@ -110,6 +110,9 @@
             </DataTemplate>
         </Setter.Value>
     </Setter>
+    </Style>
+    <Style x:Key="FormEl" TargetType="FrameworkElement">
+        <Setter Property="Margin" Value="5"/>
     </Style>
     <Style x:Key="FormElement" TargetType="FrameworkElement">
         <Setter Property="Margin" Value="0 10"/>
@@ -188,6 +191,9 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+    <Style x:Key="FormTextBox" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+        <Setter Property="Margin" Value="5,0,5,0"/>
     </Style>
     <Style x:Key="TextBoxMini" TargetType="TextBox">
         <Setter Property="FontFamily" Value="{StaticResource Roboto}"/>
@@ -270,11 +276,15 @@
             </Setter.Value>
         </Setter>
     </Style>
+    <Style x:Key="FormPasswordBox" TargetType="PasswordBox" BasedOn="{StaticResource {x:Type PasswordBox}}">
+        <Setter Property="Margin" Value="5,0,5,0"/>
+    </Style>
     <Style x:Key="FormComboBox" TargetType="ComboBox">
         <Setter Property="FontFamily" Value="{StaticResource Roboto}"/>
         <Setter Property="FontSize" Value="15"/>
         <Setter Property="MinHeight" Value="35"/>
         <Setter Property="Padding" Value="5,0,5,0"/>
+        <Setter Property="Margin" Value="3,0,3,0"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Validation.ErrorTemplate" Value="{DynamicResource ValidationErrorTemplate}"/>
         <Setter Property="Background" Value="White"/>
@@ -413,6 +423,47 @@
         <Setter Property="Padding" Value="10"/>
     </Style>
 
+    <Style x:Key="FormRadioButton" TargetType="RadioButton">
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="Foreground" Value="{StaticResource cyanDarkBrush}"/>
+        <Setter Property="Margin" Value="0 0 10 5"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Grid VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Marker -->
+                        <Grid Grid.Column="0" Width="16" Height="16" VerticalAlignment="Center">
+                            <Ellipse Stroke="Gray" StrokeThickness="1" Fill="White"/>
+                            <Ellipse x:Name="Dot"
+                             Width="8" Height="8"
+                             Fill="{StaticResource magentaDarkBrush}"
+                             Visibility="Collapsed"/>
+                        </Grid>
+
+                        <!-- Text -->
+                        <ContentPresenter Grid.Column="1"
+                                  VerticalAlignment="Center"
+                                  Margin="5,0,20,0"
+                                  TextBlock.FontSize="{TemplateBinding FontSize}"
+                                  TextBlock.Foreground="{TemplateBinding Foreground}"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Dot" Property="Visibility" Value="Visible"/>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="False">
+                            <Setter TargetName="Dot" Property="Visibility" Value="Collapsed"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 
     <Style x:Key="ButtonFocusVisual" TargetType="Control">
         <Setter Property="Template">
@@ -456,6 +507,10 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <Style x:Key="FormButtons" TargetType="Grid">
+        <Setter Property="Margin" Value="0 20"/>
     </Style>
 
     <Style x:Key="FormBtn" TargetType="Button">

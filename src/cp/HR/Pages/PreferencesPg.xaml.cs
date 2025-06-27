@@ -43,6 +43,28 @@ namespace HR.Pages
                 OnPropertyChanged();
             }
         }
+        private bool _isLeftAsideOff;
+        public bool IsLeftAsideOff
+        {
+            get => _isLeftAsideOff;
+            set
+            {
+                if (_isLeftAsideOff == value) return;
+                _isLeftAsideOff = value;
+                OnPropertyChanged();
+            }
+        }
+        private bool _isRigtAsideOff;
+        public bool IsRightAsideOff
+        {
+            get => _isRigtAsideOff;
+            set
+            {
+                if (_isRigtAsideOff == value) return;
+                _isRigtAsideOff = value;
+                OnPropertyChanged();
+            }
+        }
         private bool _isStayLoggedIn;
         public bool IsStayLoggedIn
         {
@@ -54,6 +76,23 @@ namespace HR.Pages
                 OnPropertyChanged();
             }
         }
+        private string _startPage;
+        public string StartPage
+        {
+            get => _startPage;
+            set
+            {
+                if (_startPage == value) return;
+                _startPage = value;
+                OnPropertyChanged();
+            }
+        }
+        public List<StartupPage> Pages { get; set; } = new List<StartupPage>
+        {
+            new StartupPage { Id = -1, Name = null, Title = "Не установлено", Uri = null },
+            new StartupPage { Id = 0, Name = "Latest", Title = "Возобновлять состояние", Uri = "resume" }
+        }
+        .Concat(UserAppState.Pages).ToList();
 
         private ObservableCollection<int> _logCategories;
         public ObservableCollection<int> LogCategories
@@ -234,6 +273,10 @@ namespace HR.Pages
         protected void OnPropertyChanged([CallerMemberName] string prop = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
 
+        private MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
+
+        private NavigationService _navigationService;
+
         private int uid = ((App)(Application.Current)).CurrentUser.Id;
 
         private string prefsDir = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Preferences");
@@ -255,6 +298,8 @@ namespace HR.Pages
         public PreferencesPg()
         {
             InitializeComponent();
+            Unloaded += Page_Unloaded;
+
             prefsPath = System.IO.Path.Combine(prefsDir, uid.ToString() + ".xml");
             vm = new ItemViewModel<Preferences, PreferencesModel>(App.Current.Preferences);
             DataContext = vm;
@@ -272,6 +317,13 @@ namespace HR.Pages
                 _ => Save(),
                 _ => vm.IsEnabled
             );
+
+            // Subscribe to navigation events for the main frame
+            _navigationService = MainWindow.frame.NavigationService;
+            if (_navigationService != null)
+            {
+                _navigationService.Navigating += NavigationService_Navigating;
+            }
         }
         private async void Save()
         {
@@ -285,6 +337,8 @@ namespace HR.Pages
                 // Handle user authentication state file
                 if (vm.Dm.IsStayLoggedIn) await Services.Request.SaveUidToFileAsync(uid, Data.Models.User.uidFilePath);
                 else await Request.DeleteUidFileAsync(Data.Models.User.uidFilePath);
+
+                mainWindow.UpdateVisibility(mainWindow.ActualWidth); // Toggle panel visibility instantly
             }
             catch (Exception exc)
             {
@@ -293,6 +347,24 @@ namespace HR.Pages
             finally
             {
                 vm.IsProgress = false;
+            }
+        }
+
+        private void NavigationService_Navigating(object sender, NavigatingCancelEventArgs e)
+        {
+            if (e.Content == this) return; // Skip if navigation to current page
+
+            if (!vm.IsChanged) return;
+            var result = MessageBox.Show("Форма содержит несохраненные изменения. Вы действительно хотите уйти без сохранения данных?", "Несохраненные изменения", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result != MessageBoxResult.Yes)
+                e.Cancel = true; // Cancel navigation
+        }
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            if (_navigationService != null)
+            {
+                _navigationService.Navigating -= NavigationService_Navigating;
+                _navigationService = null;
             }
         }
     }

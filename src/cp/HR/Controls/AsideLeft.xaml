@@ -12,10 +12,12 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Res/AsideMenuStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <local:NavigationDataMultiConverter x:Key="NavigationDataConverter" />
+            <utils:CapitalizeFirstLetterConverter x:Key="CapFirstLetConv" />
             <utils:CollectionToVisibilityConverter x:Key="ColToVisConv"/>
             <utils:InverseBooleanConverter x:Key="InvBoolConv"/>
             <utils:InvertedPageToIsCheckedConverter x:Key="InvPgChkConv" />
-            <utils:NavigationDataConverter x:Key="NavDataConv" />
+            <local:NavigationDataConverter x:Key="NavDataConv" />
             <utils:PageToIsCheckedConverter x:Key="CheckedConverter" />
             <utils:PageToIsEnabledConverter x:Key="EnabledConverter" />
         </ResourceDictionary>
@@ -51,30 +53,22 @@
                                       Visibility="{Binding Values, Converter={StaticResource ColToVisConv}}"
                                       >
                                 <CheckBox.CommandParameter>
-                                    <MultiBinding Converter="{StaticResource NavDataConv}">
-                                        <!-- Pass the entire Values collection from the current MenuFilter -->
-                                        <Binding Path="Values" />
-                                        <!-- The second param — the page Uri from the current MenuFilter -->
-                                        <Binding Path="PageUri" />
-                                    </MultiBinding>
+                                    <Binding Path="." Converter="{StaticResource NavDataConv}" />
                                 </CheckBox.CommandParameter>
                             </CheckBox>
                             <ItemsControl ItemsSource="{Binding Values}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <CheckBox Content="{Binding Title}" ToolTip="{Binding Title}"
-                                              Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                              IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                              >
+                                        <CheckBox Content="{Binding Title, Converter={StaticResource CapFirstLetConv}}"
+                                                  ToolTip="{Binding Title, Converter={StaticResource CapFirstLetConv}}"
+                                                  Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                  IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                    >
                                             <CheckBox.CommandParameter>
-                                                <MultiBinding Converter="{StaticResource NavDataConv}">
-                                                    <!-- Pass the entire Values collection -->
-                                                    <Binding RelativeSource="{RelativeSource AncestorType=ItemsControl, AncestorLevel=1}" Path="ItemsSource" />
-                                                    <!-- The second param — the page Uri from the parent MenuFilter (e.g., Tag or Uri) -->
-                                                    <Binding RelativeSource="{RelativeSource AncestorType=ItemsControl, AncestorLevel=1}" Path="DataContext.PageUri" />
-                                                </MultiBinding>
+                                                <Binding Path="DataContext" RelativeSource="{RelativeSource AncestorType=ItemsControl, AncestorLevel=1}"
+                                                         Converter="{StaticResource NavDataConv}" />
                                             </CheckBox.CommandParameter>
-                                    </CheckBox>
+                                        </CheckBox>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>

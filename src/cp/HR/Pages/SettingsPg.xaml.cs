@@ -47,7 +47,7 @@ namespace HR.Pages
                 OnPropertyChanged();
             }
         }
-        public bool IsChanged => dm.Is2faOn != Is2FA;
+        public bool IsChanged => dm?.Is2faOn != Is2FA;
         public bool IsEnabled => IsChanged && !IsInProgress;
         private bool _isInProgress;
         public bool IsInProgress

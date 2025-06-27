@@ -183,6 +183,7 @@
     <Compile Include="Controls\IconHighlightButton.xaml.cs">
       <DependentUpon>IconHighlightButton.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\StretchingWrapPanel.cs" />
     <Compile Include="Controls\TopHeader.xaml.cs">
       <DependentUpon>TopHeader.xaml</DependentUpon>
     </Compile>
@@ -235,6 +236,7 @@
     <Compile Include="Data\Models\Position.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Data\Models\Position.partial.cs" />
     <Compile Include="Data\Models\Preferences.cs" />
     <Compile Include="Data\Models\Qualification.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
@@ -255,6 +257,7 @@
     <Compile Include="Data\Models\Staff.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Data\Models\StartupPage.cs" />
     <Compile Include="Data\Models\Subject.cs">
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
@@ -265,6 +268,7 @@
       <DependentUpon>DataModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Data\Models\User.partial.cs" />
+    <Compile Include="Data\Models\UserAppState.cs" />
     <Compile Include="Models\CheckableItem.cs" />
     <Compile Include="Models\Employee.cs" />
     <Compile Include="Models\ItemViewModel.cs" />
@@ -287,6 +291,9 @@
     <Compile Include="Pages\ProfilePg.xaml.cs">
       <DependentUpon>ProfilePg.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\RegisteredPg.xaml.cs">
+      <DependentUpon>RegisteredPg.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\RegisterPg.xaml.cs">
       <DependentUpon>RegisterPg.xaml</DependentUpon>
     </Compile>
@@ -306,11 +313,14 @@
     <Compile Include="Services\CommandHelper.cs" />
     <Compile Include="Services\Crypto.cs" />
     <Compile Include="Services\CsvHelper.cs" />
+    <Compile Include="Services\FilterHelper.cs" />
     <Compile Include="Services\Fs.cs" />
+    <Compile Include="Services\ImgHelper.cs" />
     <Compile Include="Services\JsonHelper.cs" />
     <Compile Include="Services\PdfHelper.cs" />
     <Compile Include="Services\PrintHelper.cs" />
     <Compile Include="Services\Request.cs" />
+    <Compile Include="Services\VisualHelper.cs" />
     <Compile Include="Services\XmlHelper.cs" />
     <Compile Include="SplashWindow.xaml.cs">
       <DependentUpon>SplashWindow.xaml</DependentUpon>
@@ -402,6 +412,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\ProfilePg.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\RegisteredPg.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -522,13 +536,8 @@
     <Resource Include="Static\Img\no-photo-male.jpg" />
     <Resource Include="Images\ФоминскаяЕЮ.jpg" />
     <Resource Include="Images\ШураеваАС.jpg" />
-    <Resource Include="Images\ТелюкинаЮС.jpg" />
     <Resource Include="Images\ПилипенкоВА.jpg" />
     <Resource Include="Images\ПолетаеваНВ.jpg" />
-    <Resource Include="Images\КислинскаяТС.jpg" />
-    <Resource Include="Images\КозловаЖЮ.jpg" />
-    <Resource Include="Images\КопыловаГА.jpg" />
-    <Resource Include="Images\КоряковскаяКН.jpg" />
     <Resource Include="Images\КостюкЛИ.jpg" />
     <Resource Include="Images\КрасовскаяАС.jpg" />
     <Resource Include="Images\КузнецоваТО.jpg" />
@@ -538,28 +547,6 @@
     <Resource Include="Images\МажниковаЕВ.jpg" />
     <Resource Include="Images\МироноваМА.jpg" />
     <Resource Include="Images\НазарянЛЮ.jpg" />
-    <Resource Include="Images\ДюжечкинаНА.jpg" />
-    <Resource Include="Images\ЕрмачковаТА.jpg" />
-    <Resource Include="Images\КалитинаАВ.jpg" />
-    <Resource Include="Images\ГлебоваМД.jpg" />
-    <Resource Include="Images\ГлинкаЛА.jpg" />
-    <Resource Include="Images\ГорюноваТЮ.jpg" />
-    <Resource Include="Images\ГорячеваЛА.jpg" />
-    <Resource Include="Images\ДанилюкИГ.jpg" />
-    <Resource Include="Images\АболмасоваЛВ.jpg" />
-    <Resource Include="Images\БасановаМВ.jpg" />
-    <Resource Include="Images\БерезинаАН.jpg" />
-    <Resource Include="Images\БогачеваЕИ.jpg" />
-    <Resource Include="Images\БратухинаЕВ.jpg" />
-    <Resource Include="Images\ВодопьяноваОИ.jpg" />
-    <Resource Include="Images\ВоронинаЕН.jpg" />
-    <Resource Include="Images\ТрофимоваНП.jpg" />
-    <Resource Include="Images\СафоноваЕА.jpg" />
-    <Resource Include="Images\ПащенкоКН.jpg" />
-    <Resource Include="Images\ДеменковаОВ.jpg" />
-    <Resource Include="Images\ГавриловаОВ.jpg" />
-    <Resource Include="Images\РебяковДВ.jpg" />
-    <Resource Include="Images\КарягинСН.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

@@ -1,4 +1,5 @@
 ﻿using HR.Data.Models;
+using HR.Models;
 using HR.Services;
 using HR.Utilities;
 using System;
@@ -6,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data;
 using System.Data.Entity;
 using System.Diagnostics;
 using System.Globalization;
@@ -23,6 +25,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static HR.Services.AppEventHelper;
 
 namespace HR.Pages
 {
@@ -35,14 +38,7 @@ namespace HR.Pages
         protected void OnPropertyChanged([CallerMemberName] string prop = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
 
-        public static readonly DependencyProperty InProgressProp =
-            DependencyProperty.Register(nameof(IsInProgress), typeof(bool), typeof(RegisterPg), new PropertyMetadata(false));
-
-        public bool IsInProgress
-        {
-            get { return (bool)GetValue(InProgressProp); }
-            set { SetValue(InProgressProp, value); }
-        }
+        public RelayCommand SubmitCmd { get; }
 
         private ObservableCollection<Employee> employees;
         public ObservableCollection<Employee> Employees
@@ -69,7 +65,89 @@ namespace HR.Pages
                 }
             }
         }
-        // --- Add for async validation ---
+        private bool _isProgress;
+        public bool IsProgress
+        {
+            get => _isProgress;
+            set
+            {
+                if (_isProgress == value) return;
+                _isProgress = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsEnabled));
+            }
+        }
+        private string _login;
+        public string Login
+        {
+            get => _login;
+            set
+            {
+                if (_login != value)
+                {
+                    _login = value;
+                    OnPropertyChanged();
+                    _ = ValidateLoginAsync(); // ← Start async validation on change
+                }
+            }
+        }
+        private string _password1;
+        public string Password1
+        {
+            get => _password1;
+            set
+            {
+                if (_password1 == value) return;
+                _password1 = value;
+                OnPropertyChanged();
+                ValidatePassword(Password1, Pw1Pwb);
+            }
+        }
+        private bool _isPwd1On;
+        public bool IsPwd1On
+        {
+            get => _isPwd1On;
+            set
+            {
+                if (_isPwd1On == value) return;
+                _isPwd1On = value;
+                if (!_isPwd1On)
+                {
+                    // Update PasswordBox value when toggling its visibility on
+                    Pw1Pwb.Password = Password1;
+                }
+                OnPropertyChanged(nameof(IsPwd1On));
+            }
+        }
+        private string _password2;
+        public string Password2
+        {
+            get => _password2;
+            set
+            {
+                if (_password2 == value) return;
+                _password2 = value;
+                OnPropertyChanged();
+                ValidatePassword(Password2, Pw2Pwb);
+            }
+        }
+        private bool _isPwd2On;
+        public bool IsPwd2On
+        {
+            get => _isPwd2On;
+            set
+            {
+                if (_isPwd2On == value) return;
+                _isPwd2On = value;
+                if (!_isPwd2On)
+                {
+                    // Update PasswordBox value when toggling its visibility on
+                    Pw2Pwb.Password = Password2;
+                }
+                OnPropertyChanged(nameof(IsPwd2On));
+            }
+        }
+        // --- Async validation --- //
         private readonly Dictionary<string, List<string>> _errors = new Dictionary<string, List<string>>();
         public bool HasErrors => _errors.Count > 0;
         public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
@@ -94,52 +172,34 @@ namespace HR.Pages
         {
             ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
         }
-        // --- End async validation fields ---
-        private string _login;
-        public string Login
-        {
-            get => _login;
-            set
-            {
-                if (_login != value)
-                {
-                    _login = value;
-                    OnPropertyChanged();
-                    _ = ValidateLoginAsync(); // ← Start async validation on change
-                }
-            }
-        }
-        private string _password1;
-        public string Password1
-        {
-            get => _password1;
-            set
-            {
-                _password1 = value;
-                ValidatePassword(Password1, Pw1Pwb);
-            }
-        }
-        private string _password2;
-        public string Password2
-        {
-            get => _password2;
-            set
-            {
-                _password2 = value;
-                ValidatePassword(Password2, Pw2Pwb);
-            }
-        }
+        // --- End async validation fields --- //
         public RegisterPg()
         {
             InitializeComponent();
-            Employees = new ObservableCollection<Employee>(); // Инициализация пустой коллекции
+            Employees = new ObservableCollection<Employee>(); // Initialize empty collection
             this.DataContext = this;
+
+            SubmitCmd = new RelayCommand(
+                _ =>
+                {
+                    if (!Validate()) return;
+                    if (!CheckPasswordMatch())
+                    {
+                        MessageBox.Show("Пароли должны совпадать!", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+
+                    Task task = SaveData();
+                },
+                _ => !IsProgress
+            );
         }
         private async Task<bool> CheckLoginUniqueAsync(string login)
         {
             var user = await Services.Request.ctx.Users.FirstOrDefaultAsync(x => x.Login == login);
             return user == null;
         }
+        private bool CheckPasswordMatch() => Password1 == Password2;
         public void ClearAllErrors()
         {
             ClearErrors(nameof(Login));
@@ -152,16 +212,15 @@ namespace HR.Pages
             OnErrorsChanged(nameof(Password2));
             OnErrorsChanged(nameof(EmployeeId));
         }
-        private async Task<bool> Register()
+        private (byte[] hash, byte[] salt) Cypher(string password)
         {
             byte[] salt = Crypto.GenerateSalt();
-            byte[] hash = Crypto.HashPassword(Password1, salt);
+            byte[] hash = Crypto.HashPassword(password, salt);
             Debug.WriteLine("0x" + BitConverter.ToString(salt).Replace("-", ""));
             string hexString = BitConverter.ToString(hash).Replace("-", "");
             string sqlValue = "0x" + hexString;
             Debug.WriteLine(sqlValue);
-            await Request.MockAsync(2000);
-            throw new NotImplementedException("Register logic here");
+            return (hash, salt);
         }
         private void Reset()
         {
@@ -194,11 +253,71 @@ namespace HR.Pages
             // Reset errors display
             ValidationHelper.ForceErrorsDisplay(controls, false);
         }
+
+        private async Task SaveData(Employee item = null)
+        {
+            var (cat, op, name, scope) = (EventCategory.Auth, 0, "Create", "Пользователь");
+            try
+            {
+                IsProgress = true;
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Progress,
+                    Message = "Регистрация пользователя"
+                });
+
+                var (hash, salt) = Cypher(Password1);
+                HR.Data.Models.User data = new HR.Data.Models.User()
+                {
+                    EmployeeId = EmployeeId,
+                    Login = Login,
+                    PasswordHash = hash,
+                    RoleId = 4,
+                    Salt = salt,
+                    Status = 1
+                };
+                var res = Request.ctx.Users.Add(data);
+                await Request.ctx.SaveChangesAsync();
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Success,
+                    Message = "Пользователь успешно зарегистрирован"
+                });
+                MainWindow.frame.Navigate(new RegisteredPg());
+            }
+            catch (Exception exc)
+            {
+                Debug.WriteLine(exc, "RegisterPg");
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Error,
+                    Message = $"Ошибка регистрации пользователя",
+                    Details = exc.Message
+                });
+                MessageBox.Show($"Ошибка регистрации пользователя: {exc.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsProgress = false;
+            }
+        }
         private bool Validate()
         {
             // Sync Password property with PasswordBox
             Password1 = Pw1Pwb.Password;
-            Password2 = Pw1Pwb.Password;
+            Password2 = Pw2Pwb.Password;
 
             // Get controls list
             List<Control> controls = new List<Control> { EmployeeCmb, LoginTxb, Pw1Pwb, Pw2Pwb };
@@ -260,27 +379,43 @@ namespace HR.Pages
         }
         private void ValidatePassword(string password, PasswordBox pwdBx)
         {
-            var rule = new PasswordLengthValidationRule { MinLength = 8 };
-            var result = rule.Validate(password, CultureInfo.CurrentCulture);
+            var rules = new List<ValidationRule> {
+                new PasswordLengthValidationRule { MinLength = 8 },
+                new StrongPasswordValidationRule()
+            };
 
-            var bindingExpression = pwdBx.GetBindingExpression(PasswordBox.TagProperty);
-            if (result.IsValid)
+            ValidationResult result = new ValidationResult(true, null);
+            foreach (var rule in rules)
             {
-                Validation.ClearInvalid(bindingExpression);
-            }
-            else
-            {
-                var validationError = new ValidationError(rule, bindingExpression)
+                result = rule.Validate(password, CultureInfo.CurrentCulture);
+
+                var bindingExpression = pwdBx.GetBindingExpression(PasswordBox.TagProperty);
+                if (result.IsValid)
                 {
-                    ErrorContent = result.ErrorContent
-                };
-                Validation.MarkInvalid(bindingExpression, validationError);
+                    Validation.ClearInvalid(bindingExpression);
+                }
+                else
+                {
+                    var validationError = new ValidationError(rule, bindingExpression)
+                    {
+                        ErrorContent = result.ErrorContent
+                    };
+                    Validation.MarkInvalid(bindingExpression, validationError);
+                }
+                if (!result.IsValid) break;
             }
+        }
+
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            IsProgress = true;
+            Employees = new ObservableCollection<Employee>((await Services.Request.GetEmployeesUnregistered()).OrderBy(emp => emp.Surname));
+            IsProgress = false;
         }
         private void Pw1Pwb_PasswordChanged(object sender, RoutedEventArgs e)
         {
             var pb = (PasswordBox)sender;
-            if (DataContext is RegisterPg vm) vm.Password1 = pb.Password;
+            Password1 = pb.Password;
         }
         private void Pw2Pwb_PasswordChanged(object sender, RoutedEventArgs e)
         {
@@ -297,33 +432,41 @@ namespace HR.Pages
                 MessageBox.Show(exc.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-        private async void SignOnBtn_Click(object sender, RoutedEventArgs e)
+        private void TogglePwd1Btn_Click(object sender, RoutedEventArgs e)
         {
-            try
+            IsPwd1On = !IsPwd1On;
+            if (IsPwd1On)
             {
-                IsInProgress = true;
-                if (!Validate()) return;
-                StatusInformer.ReportProgress("Загрузка данных");
-                bool isSuccess = await Register();
-                if (isSuccess == false) StatusInformer.ReportFailure("Невозможно зарегистрировать пользователя");
-                else StatusInformer.ReportSuccess("Успешная регистрация пользователя");
+                Pw1Txt.Focus();
+                ValidationHelper.SetShowErrors(Pw1Txt, true);
+                ValidationHelper.SetTouched(Pw1Txt, true);
+                ValidationHelper.ForceValidate(Pw1Txt, TextBox.TextProperty);
             }
-            catch (Exception exc)
+            else
             {
-                StatusInformer.ReportFailure("Невозможно зарегистрировать пользователя");
-                MessageBox.Show(exc.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            finally
-            {
-                IsInProgress = false;
+                Pw1Pwb.Focus();
+                ValidationHelper.SetShowErrors(Pw1Pwb, true);
+                ValidationHelper.SetTouched(Pw1Pwb, true);
+                ValidatePassword(Password1, Pw1Pwb);
             }
         }
-
-        private async void Page_Loaded(object sender, RoutedEventArgs e)
+        private void TogglePwd2Btn_Click(object sender, RoutedEventArgs e)
         {
-            IsInProgress = true;
-            Employees = new ObservableCollection<Employee>((await Services.Request.GetEmployeesUnregistered()).OrderBy(emp => emp.Surname));
-            IsInProgress = false;
+            IsPwd2On = !IsPwd2On;
+            if (IsPwd2On)
+            {
+                Pw2Txt.Focus();
+                ValidationHelper.SetShowErrors(Pw2Txt, true);
+                ValidationHelper.SetTouched(Pw2Txt, true);
+                ValidationHelper.ForceValidate(Pw2Txt, TextBox.TextProperty);
+            }
+            else
+            {
+                Pw2Pwb.Focus();
+                ValidationHelper.SetShowErrors(Pw2Pwb, true);
+                ValidationHelper.SetTouched(Pw2Pwb, true);
+                ValidatePassword(Password2, Pw2Pwb);
+            }
         }
     }
 }

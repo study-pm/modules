@@ -39,7 +39,22 @@
                          >
                     <Path Fill="{StaticResource InfoBrush}" Data="{StaticResource InfoCircleSolidPath}"/>
                 </Viewbox>
-                <Viewbox ToolTip="В процессе" Height="14" Width="10" x:Name="Prosess1" Visibility="Visible">
+                    <Viewbox ToolTip="Предупреждение"
+         Visibility="{Binding Status, Converter={StaticResource StatusToVisibilityConverter}, ConverterParameter=Warning}"
+         >
+                        <Path Fill="{StaticResource WarningBrush}" Data="{StaticResource ExclamationTriangleSolidPath}"/>
+                    </Viewbox>
+                    <Viewbox ToolTip="Ошибка"
+                             Visibility="{Binding Status, Converter={StaticResource StatusToVisibilityConverter}, ConverterParameter=Error}"
+                             >
+                        <Path Fill="{StaticResource ErrorBrush}" Data="{StaticResource ExclamationCircleSolidPath}"/>
+                    </Viewbox>
+                    <Viewbox ToolTip="Отмена"
+         Visibility="{Binding Status, Converter={StaticResource StatusToVisibilityConverter}, ConverterParameter=Cancel}"
+         >
+                        <Path Fill="{StaticResource CancelBrush}" Data="{StaticResource MinusCircleSolidPath}"/>
+                    </Viewbox>
+                    <Viewbox ToolTip="В процессе" Height="14" Width="10" x:Name="Prosess1" Visibility="Visible">
                     <Path Fill="{StaticResource AwaitingBrush}" Data="{StaticResource HourglassStartSolidPath}"/>
                 </Viewbox>
                 <Viewbox ToolTip="В процессе" Height="14" Width="10" x:Name="Prosess2" Visibility="Collapsed">
@@ -47,21 +62,6 @@
                 </Viewbox>
                 <Viewbox ToolTip="В процессе" Height="14" Width="10" x:Name="Prosess3" Visibility="Collapsed">
                     <Path Fill="{StaticResource AwaitingBrush}" Data="{StaticResource HourglassEndSolidPath}"/>
-                </Viewbox>
-                <Viewbox ToolTip="Предупреждение"
-                         Visibility="{Binding Status, Converter={StaticResource StatusToVisibilityConverter}, ConverterParameter=Warning}"
-                         >
-                    <Path Fill="{StaticResource WarningBrush}" Data="{StaticResource ExclamationTriangleSolidPath}"/>
-                </Viewbox>
-                <Viewbox ToolTip="Ошибка"
-                         Visibility="{Binding Status, Converter={StaticResource StatusToVisibilityConverter}, ConverterParameter=Error}"
-                         >
-                    <Path Fill="{StaticResource ErrorBrush}" Data="{StaticResource ExclamationCircleSolidPath}"/>
-                </Viewbox>
-                <Viewbox ToolTip="Отмена"
-                         Visibility="{Binding Status, Converter={StaticResource StatusToVisibilityConverter}, ConverterParameter=Cancel}"
-                         >
-                    <Path Fill="{StaticResource CancelBrush}" Data="{StaticResource MinusCircleSolidPath}"/>
                 </Viewbox>
                 </StackPanel>
                 <TextBlock Text="{Binding Timestamp, StringFormat=yyyy-MM-dd HH:mm:ss}" FontWeight="Light" />

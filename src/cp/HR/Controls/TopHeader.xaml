@@ -12,22 +12,26 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Res/TopMenuStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <utils:NavigationDataConverter x:Key="NavigationDataConverter" />
+            <local:NavigationDataConverter x:Key="NavDataConv" />
+            <local:NavigationDataMultiConverter x:Key="NavigationDataConverter" />
+            <utils:CapitalizeFirstLetterConverter x:Key="CapFirstLetConv" />
             <utils:PageToIsCheckedConverter x:Key="CheckedConverter" />
             <utils:PageToIsEnabledConverter x:Key="EnabledConverter" />
             <BooleanToVisibilityConverter x:Key="BoolToVis" />
             <utils:InverseBoolToVisibilityConverter x:Key="InverseBoolToVis" />
             <Style x:Key="SubMenuItem" TargetType="MenuItem" BasedOn="{StaticResource CheckMenuItemStyle}">
-                <Setter Property="Header" Value="{Binding Title}" />
+                <Setter Property="Header" Value="{Binding Title, Converter={StaticResource CapFirstLetConv}}" />
                 <Setter Property="IsChecked" Value="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 <Setter Property="Command" Value="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                 <Setter Property="CommandParameter">
                     <Setter.Value>
                         <MultiBinding Converter="{StaticResource NavigationDataConverter}">
-                            <!-- Pass the entire Values collection -->
-                            <Binding Path="ItemsSource" RelativeSource="{RelativeSource AncestorType=ItemsControl, AncestorLevel=1}" />
-                            <!-- Pass Uri from the parent MenuItem Tag -->
-                            <Binding RelativeSource="{RelativeSource AncestorType=MenuItem, AncestorLevel=1}" Path="Tag" />
+                            <!-- Current element from ItemsSource -->
+                            <Binding />
+                            <!-- All filters collection -->
+                            <Binding Path="DataContext.MenuVM.Filters" RelativeSource="{RelativeSource AncestorType=Window}" />
+                            <!-- Filter index from attached property -->
+                            <Binding Path="(local:MenuItemExtensions.FilterIndex)" RelativeSource="{RelativeSource AncestorType=MenuItem, AncestorLevel=1}" />
                         </MultiBinding>
                     </Setter.Value>
                 </Setter>
@@ -84,43 +88,38 @@
                               CommandParameter="Pages/HomePg.xaml"
                               CommandTarget="{Binding ElementName=mainFrame}"
                               />
-                    <MenuItem Header="_Сотрудники"
-                              IsChecked="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource CheckedConverter}, ConverterParameter='WorkersPg'}"
-                              Command="NavigationCommands.GoToPage"
-                              CommandParameter="Pages/WorkersPg.xaml"
-                              CommandTarget="{Binding ElementName=mainFrame}"
+                    <MenuItem Header="_Сотрудники" Tag="Pages/StaffPg.xaml" local:MenuItemExtensions.FilterIndex="0"
+                              IsChecked="{Binding DataContext.MenuVM.Filters[0].IsChecked, RelativeSource={RelativeSource AncestorType=Window}}"
                               >
-                        <MenuItem Header="Все" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" IsChecked="True" />
-                        <MenuItem Header="_Руководство" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
-                        <MenuItem Header="_Учителя" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
-                        <MenuItem Header="П_едагоги" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
-                        <MenuItem Header="_Воспитатели" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
-                        <MenuItem Header="Вспо_могательный персонал" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
+                        <MenuItem.ItemsSource>
+                            <Binding Path="DataContext.MenuVM.Filters[0].Values" RelativeSource="{RelativeSource AncestorType=Window}" />
+                        </MenuItem.ItemsSource>
+                        <MenuItem.ItemContainerStyle>
+                            <StaticResource ResourceKey="SubMenuItem"/>
+                        </MenuItem.ItemContainerStyle>
                     </MenuItem>
-                    <MenuItem Header="По_дразделения">
-                        <MenuItem Header="Все" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" IsChecked="True" />
-                        <MenuItem Header="_Администрация" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
-                        <MenuItem Header="МО _начальных классов" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
-                        <MenuItem Header="МО _математики и информатики" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
-                        <MenuItem Header="МО _филологического образования" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
-                        <MenuItem Header="МО _иностранного языка" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
-                        <MenuItem Header="МО _естественнонаучного цикла" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
-                        <MenuItem Header="МО _общественных дисциплин" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
-                        <MenuItem Header="МО _эстетического цикла" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
-                        <MenuItem Header="МО физической _культуры" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
-                        <MenuItem Header="_Педагоги-организаторы" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
-                        <MenuItem Header="Педагоги _дополнительного образования" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
-                        <MenuItem Header="_Служба сопровождения" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
-                        <MenuItem Header="_Воспитатели группы продленного дня" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
-                        <MenuItem Header="Медиа_тека" Style="{StaticResource SubMenuItemStyle}" IsCheckable="True" />
+                    <MenuItem Header="Под_разделения" Tag="Pages/StaffPg.xaml" local:MenuItemExtensions.FilterIndex="1"
+                              IsChecked="{Binding DataContext.MenuVM.Filters[1].IsChecked, RelativeSource={RelativeSource AncestorType=Window}}"
+                              >
+                        <MenuItem.ItemsSource>
+                            <Binding Path="DataContext.MenuVM.Filters[1].Values" RelativeSource="{RelativeSource AncestorType=Window}" />
+                        </MenuItem.ItemsSource>
+                        <MenuItem.ItemContainerStyle>
+                            <StaticResource ResourceKey="SubMenuItem"/>
+                        </MenuItem.ItemContainerStyle>
                     </MenuItem>
-                    <MenuItem Header="_Учебная работа">
-                        <MenuItem Header="_Предметы" Style="{StaticResource SubMenuItemStyle}" />
-                        <MenuItem Header="П_реподаватели" Style="{StaticResource SubMenuItemStyle}" />
+                    <MenuItem Header="_Должности" Tag="Pages/StaffPg.xaml" local:MenuItemExtensions.FilterIndex="2"
+                              IsChecked="{Binding DataContext.MenuVM.Filters[2].IsChecked, RelativeSource={RelativeSource AncestorType=Window}}"
+                              >
+                        <MenuItem.ItemsSource>
+                            <Binding Path="DataContext.MenuVM.Filters[2].Values" RelativeSource="{RelativeSource AncestorType=Window}" />
+                        </MenuItem.ItemsSource>
+                        <MenuItem.ItemContainerStyle>
+                            <StaticResource ResourceKey="SubMenuItem"/>
+                        </MenuItem.ItemContainerStyle>
                     </MenuItem>
-                    <MenuItem Header="_Классы"
-                              IsChecked="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource CheckedConverter}, ConverterParameter='ClassesPg'}"
-                              Tag="Pages/ClassesPg.xaml" 
+                    <MenuItem Header="Пред_меты" Tag="Pages/StaffPg.xaml" local:MenuItemExtensions.FilterIndex="3"
+                              IsChecked="{Binding DataContext.MenuVM.Filters[3].IsChecked, RelativeSource={RelativeSource AncestorType=Window}}"
                               >
                         <MenuItem.ItemsSource>
                             <Binding Path="DataContext.MenuVM.Filters[3].Values" RelativeSource="{RelativeSource AncestorType=Window}" />
@@ -129,9 +128,15 @@
                             <StaticResource ResourceKey="SubMenuItem"/>
                         </MenuItem.ItemContainerStyle>
                     </MenuItem>
-                    <MenuItem Header="_Дополнительное образование">
-                        <MenuItem Header="_Педагоги ОДОД" Style="{StaticResource SubMenuItemStyle}" />
-                        <MenuItem Header="_Кружки и секции" Style="{StaticResource SubMenuItemStyle}" />
+                    <MenuItem Header="_Классы" Tag="Pages/ClassesPg.xaml" local:MenuItemExtensions.FilterIndex="4"
+                              IsChecked="{Binding DataContext.MenuVM.Filters[4].IsChecked, RelativeSource={RelativeSource AncestorType=Window}}"
+                              >
+                        <MenuItem.ItemsSource>
+                            <Binding Path="DataContext.MenuVM.Filters[4].Values" RelativeSource="{RelativeSource AncestorType=Window}" />
+                        </MenuItem.ItemsSource>
+                        <MenuItem.ItemContainerStyle>
+                            <StaticResource ResourceKey="SubMenuItem"/>
+                        </MenuItem.ItemContainerStyle>
                     </MenuItem>
                     <MenuItem Header="_Пользователь"
                               IsChecked="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl},
@@ -186,14 +191,26 @@
                                 </Viewbox>
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="П_редпочтения"
+                        <MenuItem Header="Настройки"
                                   Style="{StaticResource SubMenuItemStyle}"
                                   Command="NavigationCommands.GoToPage"
                                   CommandParameter="Pages/PreferencesPg.xaml"
                                   CommandTarget="{Binding ElementName=mainFrame}"
                                   IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=PreferencesPg}"
                                   Visibility="{Binding IsAuth, Source={x:Static Application.Current}, Converter={StaticResource BoolToVis}}"
-                                  />
+                                  >
+                            <MenuItem.Icon>
+                                <Viewbox Height="16" Width="16" ToolTip="Настройки приложения">
+                                    <Canvas Height="512" Width="512">
+                                        <Path Fill="DodgerBlue" Data="{StaticResource UserGearSolidPath}">
+                                            <Path.RenderTransform>
+                                                <TranslateTransform X="0" Y="0"/>
+                                            </Path.RenderTransform>
+                                        </Path>
+                                    </Canvas>
+                                </Viewbox>
+                            </MenuItem.Icon>
+                        </MenuItem>
                         <MenuItem Header="Про_филь"
                                   Style="{StaticResource SubMenuItemStyle}"
                                   Command="NavigationCommands.GoToPage"
@@ -201,19 +218,11 @@
                                   CommandTarget="{Binding ElementName=mainFrame}"
                                   IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=ProfilePg}"
                                   Visibility="{Binding IsAuth, Source={x:Static Application.Current}, Converter={StaticResource BoolToVis}}"
-                                  />
-                        <MenuItem Header="Пользователи"
-                                  Style="{StaticResource SubMenuItemStyle}"
-                                  Command="NavigationCommands.GoToPage"
-                                  CommandParameter="Pages/UsersPg.xaml"
-                                  CommandTarget="{Binding ElementName=mainFrame}"
-                                  IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=UsersPg}"
-                                  Visibility="{Binding IsAuth, Source={x:Static Application.Current}, Converter={StaticResource BoolToVis}}"
                                   >
                             <MenuItem.Icon>
-                                <Viewbox Height="16" Width="16" ToolTip="Управление пользователями">
+                                <Viewbox Height="16" Width="16" ToolTip="Профиль">
                                     <Canvas Height="512" Width="512">
-                                        <Path Fill="DodgerBlue" Data="{StaticResource UsersCogSolidPath}">
+                                        <Path Fill="DodgerBlue" Data="{StaticResource UserTagSolidPath}">
                                             <Path.RenderTransform>
                                                 <TranslateTransform X="0" Y="0"/>
                                             </Path.RenderTransform>
@@ -242,6 +251,26 @@
                                 </Viewbox>
                             </MenuItem.Icon>
                         </MenuItem>
+                        <MenuItem Header="Пользователи"
+                                  Style="{StaticResource SubMenuItemStyle}"
+                                  Command="NavigationCommands.GoToPage"
+                                  CommandParameter="Pages/UsersPg.xaml"
+                                  CommandTarget="{Binding ElementName=mainFrame}"
+                                  IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=UsersPg}"
+                                  Visibility="{Binding IsAuth, Source={x:Static Application.Current}, Converter={StaticResource BoolToVis}}"
+                                  >
+                            <MenuItem.Icon>
+                                <Viewbox Height="16" Width="16" ToolTip="Управление пользователями">
+                                    <Canvas Height="512" Width="512">
+                                        <Path Fill="DodgerBlue" Data="{StaticResource UsersCogSolidPath}">
+                                            <Path.RenderTransform>
+                                                <TranslateTransform X="0" Y="0"/>
+                                            </Path.RenderTransform>
+                                        </Path>
+                                    </Canvas>
+                                </Viewbox>
+                            </MenuItem.Icon>
+                        </MenuItem>
                         <MenuItem Header="Вы_ход"
                                   Style="{StaticResource SubMenuItemStyle}"
                                   Click="LogoutItem_Click"
@@ -260,7 +289,7 @@
                             </MenuItem.Icon>
                         </MenuItem>
                     </MenuItem>
-                    <MenuItem Header="Сп_равка"
+                    <MenuItem Header="Спра_вка"
                               IsChecked="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource CheckedConverter}, ConverterParameter='HelpPg'}"
                               IsEnabled="{Binding CurrentPage, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource EnabledConverter}, ConverterParameter=HelpPg}"
                               Command="NavigationCommands.GoToPage"

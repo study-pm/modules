@@ -14,9 +14,26 @@ using System.Collections.ObjectModel;
 using System.Windows.Media;
 using System.Data.Entity;
 using HR.Pages;
+using System.Globalization;
+using System.Windows.Data;
 
 namespace HR.Controls
 {
+    public static class MenuItemExtensions
+    {
+        public static readonly DependencyProperty FilterIndexProperty =
+            DependencyProperty.RegisterAttached(
+                "FilterIndex",
+                typeof(int),
+                typeof(MenuItemExtensions),
+                new PropertyMetadata(-1));
+
+        public static void SetFilterIndex(UIElement element, int value)
+            => element.SetValue(FilterIndexProperty, value);
+
+        public static int GetFilterIndex(UIElement element)
+            => (int)element.GetValue(FilterIndexProperty);
+    }
     public class NavigationData : DependencyObject
     {
         public static readonly DependencyProperty ParameterProperty =
@@ -36,6 +53,56 @@ namespace HR.Controls
         }
 
         public string Name { get; set; }
+    }
+    public class NavigationDataConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            Console.WriteLine($"NavigationDataConverter {value.GetType().Name}");
+            var filter = value as MenuFilter;
+            if (filter == null)
+                return null;
+
+            return new NavigationData
+            {
+                Uri = filter.PageUri,
+                Parameter = value,
+            };
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+    public class NavigationDataMultiConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (values.Length < 3)
+                return null;
+
+            var filterValue = values[0] as FilterValue; // текущий элемент из ItemsSource
+            var filters = values[1] as IList<MenuFilter>; // коллекция фильтров
+            var indexObj = values[2];
+
+            if (filterValue == null || filters == null || indexObj == null)
+                return null;
+
+            if (!int.TryParse(indexObj.ToString(), out int index) || index < 0 || index >= filters.Count)
+                return null;
+
+            var menuFilter = filters[index];
+
+            return new NavigationData
+            {
+                Uri = menuFilter.PageUri,
+                Parameter = menuFilter
+            };
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+            => throw new NotImplementedException();
     }
     public abstract class NavCtl : UserControl, INotifyPropertyChanged
     {
@@ -92,10 +159,18 @@ namespace HR.Controls
             {
                 // Handle collection param here
             }
-            if (navigationParameter is FilterValue filterValue)
+            else if (navigationParameter is FilterValue filterValue)
             {
                 // Page subpath
                 PageParam = filterValue.Title;
+            }
+            else if (navigationParameter is MenuFilter filter)
+            {
+                // Handle MuneFilter value
+            }
+            else
+            {
+                // Handle other value
             }
         }
     }

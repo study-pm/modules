@@ -51,6 +51,37 @@ namespace HR.Utilities
             throw new NotImplementedException();
         }
     }
+    public class CapitalizeFirstLetterConverter : IValueConverter
+    {
+        /// <summary>
+        /// Converts a string so that its first character is uppercase and the rest are lowercase.
+        /// </summary>
+        /// <param name="value">The input value, expected to be a string.</param>
+        /// <param name="targetType">The target binding type.</param>
+        /// <param name="parameter">Optional parameter (not used).</param>
+        /// <param name="culture">The culture info.</param>
+        /// <returns>The capitalized string or the original value if not a string.</returns>
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is string input && !string.IsNullOrWhiteSpace(input))
+            {
+                if (input.Length == 1)
+                    return input.ToUpper(culture);
+
+                return char.ToUpper(input[0], culture) + input.Substring(1);
+            }
+
+            return value;
+        }
+
+        /// <summary>
+        /// ConvertBack is not implemented and throws NotSupportedException.
+        /// </summary>
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException("ConvertBack is not supported.");
+        }
+    }
     public class CollectionToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -61,10 +92,20 @@ namespace HR.Utilities
                 // Try parsing param as bool
                 if (bool.TryParse(paramString, out bool parsed)) notInverse = parsed;
             }
-            var collection = value as ICollection;
-            if (collection != null && collection.Count > 0)
+            if (value is ICollection collection)
             {
-                return notInverse ? Visibility.Visible : Visibility.Collapsed;
+                if (collection.Count > 0)
+                    return notInverse ? Visibility.Visible : Visibility.Collapsed;
+                else
+                    return notInverse ? Visibility.Collapsed : Visibility.Hidden;
+            }
+            else if (value is IEnumerable enumerable)
+            {
+                bool hasAny = enumerable.Cast<object>().Any();
+                if (hasAny)
+                    return notInverse ? Visibility.Visible : Visibility.Collapsed;
+                else
+                    return notInverse ? Visibility.Collapsed : Visibility.Hidden;
             }
             return notInverse ? Visibility.Collapsed : Visibility.Hidden;
         }
@@ -244,31 +285,40 @@ namespace HR.Utilities
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
             => throw new NotImplementedException();
     }
-    public class NavigationDataConverter : IMultiValueConverter
+    public class IntToSymbolConverter : IValueConverter
     {
-        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (values.Length < 2)
-                return null;
-
-            var filterValues = values[0] as IEnumerable<FilterValue>;
-            var uri = values[1] as string;
-
-            if (filterValues == null || string.IsNullOrEmpty(uri))
-                return null;
-
-            // Можно скопировать коллекцию или передать как есть
-            var selectedValues = filterValues.Where(fv => fv.IsChecked).ToList();
-
-            return new NavigationData
+            if (value is int intValue && intValue != 0)
             {
-                Uri = uri,
-                Parameter = selectedValues
-            };
+                string symbol = parameter as string ?? ": ";
+                return symbol;
+            }
+            return string.Empty;
         }
 
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-            => throw new NotImplementedException();
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+    public class IntToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is int intValue)
+            {
+                // Если значение 0, скрываем элемент
+                return intValue == 0 ? Visibility.Collapsed : Visibility.Visible;
+            }
+            // Если значение не int или null, скрываем элемент
+            return Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
     }
     public class NotNullToBoolConverter : IValueConverter
     {
@@ -280,6 +330,19 @@ namespace HR.Utilities
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotSupportedException();
+        }
+    }
+    public class NullOrEmptyToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var str = value as string;
+            return string.IsNullOrEmpty(str) ? Visibility.Collapsed : Visibility.Visible;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
     public class PageToIsEnabledConverter : IValueConverter
@@ -313,7 +376,7 @@ namespace HR.Utilities
             string pagesParam = parameter as string;
 
             if (string.IsNullOrEmpty(currentPage) || string.IsNullOrEmpty(pagesParam))
-                return true;
+                return false;
 
             var pages = pagesParam.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                                   .Select(p => p.Trim());

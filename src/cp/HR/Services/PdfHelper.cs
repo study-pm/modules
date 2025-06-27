@@ -392,6 +392,200 @@ namespace HR.Services
             return document;
         }
         /// <summary>
+        /// Creates a <see cref="Document"/> from the specified <see cref="ICollectionView"/>, generating a table representation of the collection's items.
+        /// </summary>
+        /// <param name="collectionView">The collection view containing the data to be rendered into the document.</param>
+        /// <param name="documentTitle">An optional title to display at the top of the document.</param>
+        /// <param name="skipProperties">An optional collection of property names to exclude from the table columns.</param>
+        /// <param name="customHeaders">An optional dictionary mapping property names to custom column header titles.</param>
+        /// <param name="customConverters">An optional dictionary mapping property names to custom converter functions for cell text formatting.
+        /// The converter function takes the raw property value and the current item, and returns a string representation.</param>
+        /// <param name="columnWidths">An optional dictionary specifying column widths in centimeters for given property names.
+        /// Columns without specified widths will share remaining space equally.</param>
+        /// <param name="addRowNumbers">If true, adds a leading column with row numbers.</param>
+        /// <param name="isLandscape">If true, sets the page orientation to landscape (A4 size).</param>
+        /// <returns>A <see cref="Document"/> object representing the collection data formatted as a table.</returns>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="collectionView"/> is null.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if the collection view is empty.</exception>
+        public static Document CreateDocumentFromCollectionView(
+            ICollectionView collectionView,
+            string documentTitle = null,
+            IEnumerable<string> skipProperties = null,
+            Dictionary<string, string> customHeaders = null,
+            Dictionary<string, Func<object, object, string>> customConverters = null,
+            Dictionary<string, double> columnWidths = null,
+            bool addRowNumbers = false,
+            bool isLandscape = false
+            )
+        {
+            if (collectionView == null)
+                throw new ArgumentNullException(nameof(collectionView));
+
+            var enumerator = collectionView.GetEnumerator();
+            if (!enumerator.MoveNext())
+                throw new InvalidOperationException("CollectionView is empty.");
+
+            var itemType = enumerator.Current.GetType();
+
+            var skipSet = new HashSet<string>(skipProperties ?? Enumerable.Empty<string>(), StringComparer.OrdinalIgnoreCase);
+            customHeaders = customHeaders ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            customConverters = customConverters ?? new Dictionary<string, Func<object, object, string>>(StringComparer.OrdinalIgnoreCase);
+            columnWidths = columnWidths ?? new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
+
+            var properties = itemType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                                     .Where(p => !skipSet.Contains(p.Name))
+                                     .ToArray();
+
+            var document = new Document();
+            var section = document.AddSection();
+
+            // Clone page setup to access margins and size to get access to page margins and size
+            section.PageSetup = document.DefaultPageSetup.Clone();
+
+            if (isLandscape)
+            {
+                // Set page size for landscape orientation
+                section.PageSetup.PageWidth = Unit.FromCentimeter(29.7); // ширина A4 в альбомной ориентации
+                section.PageSetup.PageHeight = Unit.FromCentimeter(21.0); // высота A4 в альбомной ориентации
+            }
+
+            // Set margins to 1 cm
+            section.PageSetup.LeftMargin = Unit.FromCentimeter(1);
+            section.PageSetup.RightMargin = Unit.FromCentimeter(1);
+            section.PageSetup.TopMargin = Unit.FromCentimeter(1);
+            section.PageSetup.BottomMargin = Unit.FromCentimeter(1);
+
+            // Add document title if provided
+            if (!string.IsNullOrEmpty(documentTitle))
+            {
+                var titleParagraph = section.AddParagraph(documentTitle);
+                titleParagraph.Format.Font.Size = 16;
+                titleParagraph.Format.Font.Bold = true;
+                titleParagraph.Format.SpaceAfter = Unit.FromCentimeter(0.5);
+                titleParagraph.Format.Alignment = ParagraphAlignment.Center;
+            }
+
+            var table = section.AddTable();
+            table.Borders.Width = 0.5;
+            table.Format.SpaceBefore = Unit.FromCentimeter(0.1);
+            table.Format.SpaceAfter = Unit.FromCentimeter(0.1);
+
+            // Available width (page with excluding margins width)
+            Unit pageWidth = section.PageSetup.PageWidth;
+            Unit leftMargin = section.PageSetup.LeftMargin;
+            Unit rightMargin = section.PageSetup.RightMargin;
+            Unit usableWidth = pageWidth - leftMargin - rightMargin;
+
+            // Calculate column widths
+            Unit totalSpecifiedWidth = Unit.FromCentimeter(0);
+            int unspecifiedCount = 0;
+            foreach (var prop in properties)
+            {
+                if (columnWidths.TryGetValue(prop.Name, out double widthCm))
+                    totalSpecifiedWidth += Unit.FromCentimeter(widthCm);
+                else
+                    unspecifiedCount++;
+            }
+
+            // In there is a numeration column, reduce available width
+            if (addRowNumbers)
+                usableWidth -= Unit.FromCentimeter(0.5);
+
+            // Distribute remaining space equally between unset width columns
+            Unit remainingWidth = usableWidth - totalSpecifiedWidth;
+            if (remainingWidth < 0)
+                remainingWidth = Unit.FromCentimeter(0); // negative width protection
+            Unit defaultColWidth = unspecifiedCount > 0 ? remainingWidth / unspecifiedCount : Unit.FromCentimeter(0);
+
+            // Minimum column width
+            Unit minColWidth = Unit.FromCentimeter(1);
+
+            // Add column for auto numeration
+            if (addRowNumbers)
+            {
+                table.AddColumn(Unit.FromCentimeter(0.75)); // auto number column width
+            }
+            // Add columns setting their widths
+            foreach (var prop in properties)
+            {
+                Unit colWidth;
+                if (columnWidths.TryGetValue(prop.Name, out double widthCm))
+                    colWidth = Unit.FromCentimeter(widthCm);
+                else
+                    colWidth = defaultColWidth;
+
+                // Ensure minimum width
+                if (colWidth < minColWidth)
+                    colWidth = minColWidth;
+
+                table.AddColumn(colWidth);
+            }
+
+            // Table header
+            var headerRow = table.AddRow();
+            headerRow.Shading.Color = MigraDoc.DocumentObjectModel.Colors.LightGray;
+            headerRow.HeadingFormat = true;
+            headerRow.Format.Font.Bold = true;
+            headerRow.Format.Alignment = ParagraphAlignment.Center;
+            headerRow.VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Center;
+
+            int cellIndex = 0;
+
+            if (addRowNumbers)
+            {
+                headerRow.Cells[cellIndex].AddParagraph("№");
+                headerRow.Cells[cellIndex].Format.Alignment = ParagraphAlignment.Center;
+                headerRow.Cells[cellIndex].VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Center;
+                cellIndex++;
+            }
+
+            for (int i = 0; i < properties.Length; i++, cellIndex++)
+            {
+                var prop = properties[i];
+                string headerText = customHeaders.TryGetValue(prop.Name, out var customHeader) ? customHeader : prop.Name;
+                headerRow.Cells[cellIndex].AddParagraph(headerText);
+                headerRow.Cells[cellIndex].Format.Alignment = ParagraphAlignment.Center;
+                headerRow.Cells[cellIndex].VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Center;
+            }
+
+            // Add data
+            enumerator.Reset();
+            if (!enumerator.MoveNext())
+                return document;
+
+            int rowNumber = 1;
+            do
+            {
+                var row = table.AddRow();
+                row.VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Center;
+
+                cellIndex = 0;
+                if (addRowNumbers)
+                {
+                    row.Cells[cellIndex].AddParagraph(rowNumber.ToString());
+                    row.Cells[cellIndex].Format.Alignment = ParagraphAlignment.Center;
+                    row.Cells[cellIndex].VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Top;
+                    cellIndex++;
+                }
+                for (int i = 0; i < properties.Length; i++, cellIndex++)
+                {
+                    var prop = properties[i];
+                    object rawValue = prop.GetValue(enumerator.Current);
+                    string text = customConverters.TryGetValue(prop.Name, out var conv) ? conv(rawValue, enumerator.Current) : (rawValue?.ToString() ?? "");
+
+                    // Add text to cell
+                    var paragraph = row.Cells[cellIndex].AddParagraph(text);
+                    paragraph.Format.Font.Size = 10;
+
+                    row.Cells[cellIndex].Format.Alignment = ParagraphAlignment.Left;
+                    row.Cells[cellIndex].VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Top;
+                }
+                rowNumber++;
+            } while (enumerator.MoveNext());
+
+            return document;
+        }
+        /// <summary>
         /// Saves the specified <see cref="Document"/> as a PDF file to the given file path.
         /// </summary>
         /// <param name="document">The <see cref="Document"/> to render and save as PDF.</param>

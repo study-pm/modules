@@ -1,0 +1,27 @@
+﻿<Page x:Class="HR.Pages.RegisteredPg"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:HR.Pages"
+      xmlns:uc="clr-namespace:HR.Controls"
+      mc:Ignorable="d"
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="RegisteredPg">
+
+    <ScrollViewer Style="{StaticResource MainView}">
+        <StackPanel>
+            <uc:Header HeaderText="Пользователь зарегистрирован"></uc:Header>
+            <TextBlock Style="{StaticResource Paragraph}">
+                Поздравляем с успешной регистрацией!
+            </TextBlock>
+            <TextBlock Style="{StaticResource Paragraph}">
+                Теперь вы можете <Hyperlink NavigateUri="AuthPg.xaml"><Bold>войти в приложение</Bold></Hyperlink> под своим учетным именем,
+                для чего используйте пароль, указанный при регистрации.
+            </TextBlock>
+            <TextBlock Style="{StaticResource Paragraph}">
+                После этого рекомендуется настроить безопасный вход в разделе «Безопасность».
+            </TextBlock>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

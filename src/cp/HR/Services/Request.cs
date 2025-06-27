@@ -209,7 +209,6 @@ namespace HR.Services
                 return new List<Data.Models.User>();  // Возврат значения при ошибке
             }
         }
-
         public static async Task<List<Role>> GetRoles()
         {
             try
@@ -242,6 +241,122 @@ namespace HR.Services
                 StatusInformer.ReportFailure($"Ошибка удаления файла пользователя: {ex.Message}");
             }
         }
+        internal static async Task<string> LoadLastState(int userId)
+        {
+            string filePath = Path.Combine(UserAppState.cacheFolder, $"{userId}.xml");
+
+            var state = await XmlHelper.LoadAsync<UserAppState>(filePath);
+
+            return state.LastState ?? string.Empty;
+        }
+        public static async Task<List<Degree>> LoadDegrees()
+        {
+            using (var db = new HREntities())
+            {
+                return await db.Degrees
+                    .OrderBy(deg => deg.Id)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+            }
+        }
+        public static async Task<List<Department>> LoadDepartments()
+        {
+            using (var db = new HREntities())
+            {
+                return await db.Departments
+                    .OrderBy(dep => dep.Id)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+            }
+        }
+        public static async Task<List<Employee>> LoadEmployees()
+        {
+            using (var db = new HREntities())
+            {
+                return await db.Employees.Include("Staffs.Position").Include("Staffs.Assignments").Include("Staffs.Department")
+                    .OrderBy(emp => emp.Surname)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+            }
+        }
+        public static async Task<List<Employee>> LoadEmployees(bool isCtx)
+        {
+            if (isCtx) return await ctx.Employees.OrderBy(emp => emp.Surname).ToListAsync();
+            return await ctx.Employees.Include("Staffs.Position").Include("Staffs.Assignments").Include("Staffs.Department")
+                    .OrderBy(emp => emp.Surname)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+        }
+        public static async Task<List<Employee>> LoadEmployeesLight()
+        {
+            using (var db = new HREntities())
+            {
+                return await db.Employees
+                    .OrderBy(emp => emp.Id)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+            }
+        }
+        public static async Task<List<Grade>> LoadGrades()
+        {
+            using (var db = new HREntities())
+            {
+                return await db.Grades
+                    .OrderBy(g => g.Id)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+            }
+        }
+        public static async Task<List<Position>> LoadPositions()
+        {
+            using (var db = new HREntities())
+            {
+                return await db.Positions
+                    .OrderBy(x => x.Title)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+            }
+        }
+        public static async Task<List<Qualification>> LoadQualifications()
+        {
+            using (var db = new HREntities())
+            {
+                return await db.Qualifications
+                    .OrderBy(x => x.Title)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+            }
+        }
+        public static async Task<List<Role>> LoadRoles()
+        {
+            using (var db = new HREntities())
+            {
+                return await db.Roles
+                    .OrderBy(g => g.Id)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+            }
+        }
+        public static async Task<List<Specialty>> LoadSpecialties()
+        {
+            using (var db = new HREntities())
+            {
+                return await db.Specialties
+                    .OrderBy(sp => sp.Title)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+            }
+        }
+        public static async Task<List<Subject>> LoadSubjects()
+        {
+            using (var db = new HREntities())
+            {
+                return await db.Subjects
+                    .OrderBy(s => s.Title)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+            }
+        }
         /// <summary>
         /// Asynchronously simulates an operation that completes after a specified delay.
         /// </summary>
@@ -265,6 +380,15 @@ namespace HR.Services
             timer.Start();
 
             return tcs.Task;
+        }
+        internal static bool SaveLastState(int userId, string uri)
+        {
+            string filePath = Path.Combine(UserAppState.cacheFolder, $"{userId}.xml");
+
+            var state = new UserAppState { LastState = uri };
+
+            XmlHelper.Save(state, filePath);
+            return true;
         }
         internal static async Task SaveUidToFileAsync(int userId, string uidFilePath)
         {
