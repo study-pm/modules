@@ -39,6 +39,7 @@ namespace HR.Data.Models
         {
             get => string.Join(" ", new[] { Surname, GivenName, Patronymic }.Where(s => !string.IsNullOrWhiteSpace(s)));
         }
+        public string MainEducationTitle => Educations?.FirstOrDefault()?.Qualification?.Title ?? string.Empty;
         public string MainPositionTitle => Staffs?.FirstOrDefault()?.Position?.Title ?? string.Empty;
         public IEnumerable<Subject> Subjects
         {
