@@ -536,7 +536,6 @@
     <Resource Include="Static\Img\no-photo-male.jpg" />
     <Resource Include="Images\ФоминскаяЕЮ.jpg" />
     <Resource Include="Images\ШураеваАС.jpg" />
-    <Resource Include="Images\ТелюкинаЮС.jpg" />
     <Resource Include="Images\ПилипенкоВА.jpg" />
     <Resource Include="Images\ПолетаеваНВ.jpg" />
     <Resource Include="Images\КислинскаяТС.jpg" />
@@ -560,11 +559,6 @@
     <Resource Include="Images\ГорюноваТЮ.jpg" />
     <Resource Include="Images\ГорячеваЛА.jpg" />
     <Resource Include="Images\ДанилюкИГ.jpg" />
-    <Resource Include="Images\АболмасоваЛВ.jpg" />
-    <Resource Include="Images\БасановаМВ.jpg" />
-    <Resource Include="Images\БерезинаАН.jpg" />
-    <Resource Include="Images\БогачеваЕИ.jpg" />
-    <Resource Include="Images\БратухинаЕВ.jpg" />
     <Resource Include="Images\ВодопьяноваОИ.jpg" />
     <Resource Include="Images\ВоронинаЕН.jpg" />
   </ItemGroup>
