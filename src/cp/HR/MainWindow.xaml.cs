@@ -253,10 +253,10 @@ namespace HR
             else if (width < MediumWidth)
             {
                 if (App.Current.Preferences != null)
-                    SetLeftSide(App.Current.Preferences.IsLeftAsideOff ? false : true);
+                    SetRightSide(App.Current.Preferences.IsRightAsideOff ? false : true);
                 else
-                    SetLeftSide(false);
-                SetRightSide(true);
+                    SetRightSide(true);
+                SetLeftSide(false);
                 TopHeader.SetNarrowMode(false);
             }
             else
