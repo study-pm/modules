@@ -68,7 +68,7 @@ namespace HR.Utilities
                 if (input.Length == 1)
                     return input.ToUpper(culture);
 
-                return char.ToUpper(input[0], culture) + input.Substring(1).ToLower(culture);
+                return char.ToUpper(input[0], culture) + input.Substring(1);
             }
 
             return value;
@@ -92,10 +92,20 @@ namespace HR.Utilities
                 // Try parsing param as bool
                 if (bool.TryParse(paramString, out bool parsed)) notInverse = parsed;
             }
-            var collection = value as ICollection;
-            if (collection != null && collection.Count > 0)
+            if (value is ICollection collection)
             {
-                return notInverse ? Visibility.Visible : Visibility.Collapsed;
+                if (collection.Count > 0)
+                    return notInverse ? Visibility.Visible : Visibility.Collapsed;
+                else
+                    return notInverse ? Visibility.Collapsed : Visibility.Hidden;
+            }
+            else if (value is IEnumerable enumerable)
+            {
+                bool hasAny = enumerable.Cast<object>().Any();
+                if (hasAny)
+                    return notInverse ? Visibility.Visible : Visibility.Collapsed;
+                else
+                    return notInverse ? Visibility.Collapsed : Visibility.Hidden;
             }
             return notInverse ? Visibility.Collapsed : Visibility.Hidden;
         }
