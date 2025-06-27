@@ -31,8 +31,11 @@
             <StackPanel Style="{StaticResource Form}">
 
                 <StackPanel Style="{StaticResource FormElement}">
-                    <Label>Сотрудник</Label>
-                    <ComboBox x:Name="EmployeeCmb" Style="{StaticResource FormComboBox}"
+                    <StackPanel Orientation="Horizontal">
+                        <Label>Сотрудник</Label>
+                        <uc:Details Type="Asterisk" ToolTip="Обязательно для заполнения"/>
+                    </StackPanel>
+                    <ComboBox x:Name="EmployeeCmb" Style="{StaticResource FormComboBox}" Margin="0"
                               IsTextSearchEnabled="True" TextSearch.TextPath="FullName"
                               IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
                               utils:ValidationHelper.AutoErrorVisibility="True"
@@ -59,7 +62,11 @@
                 </StackPanel>
 
                 <StackPanel Style="{StaticResource FormElement}">
-                    <Label>Регистрационное имя (Логин)</Label>
+                    <StackPanel Orientation="Horizontal">
+                        <Label>Регистрационное имя (Логин)</Label>
+                        <uc:Details Type="Asterisk" ToolTip="Обязательно для заполнения"/>
+                        <uc:Details Type="Question" ToolTip="Должно быть не менее 4 и не более 32 символов"/>
+                    </StackPanel>
                     <TextBox x:Name="LoginTxb"
                              IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
                              utils:ValidationHelper.AutoErrorVisibility="True"
@@ -72,6 +79,8 @@
                                      >
                                 <Binding.ValidationRules>
                                     <utils:NotEmptyValidationRule/>
+                                    <utils:MaxLengthValidationRule MaxLength="32" />
+                                    <utils:MinLengthValidationRule MinLength="4" />
                                 </Binding.ValidationRules>
                             </Binding>
                         </TextBox.Text>
@@ -79,7 +88,13 @@
                 </StackPanel>
 
                 <StackPanel Style="{StaticResource FormElement}">
-                    <Label>Пароль</Label>
+                    <StackPanel Orientation="Horizontal">
+                        <Label>Пароль</Label>
+                        <uc:Details Type="Asterisk" ToolTip="Обязательно для заполнения"/>
+                        <uc:Details Type="Question"
+                                    ToolTip="Не менее 8 знаков, включая буквы в разных регистрах, цифры и спецсимволы"
+                                    />
+                    </StackPanel>
                     <Grid>
                         <PasswordBox x:Name="Pw1Pwb" Padding="5 0 25 0"
                                      IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
