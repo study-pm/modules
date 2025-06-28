@@ -130,9 +130,13 @@
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5">
                                 <RadioButton Content="м" Style="{StaticResource FormRadioButton}"
-                     IsChecked="{Binding Gender, Mode=TwoWay, Converter={StaticResource GenderToBoolConverter}, ConverterParameter=Male}" />
+                                             IsChecked="{Binding Gender, Mode=TwoWay, Converter={StaticResource GenderToBoolConverter}, ConverterParameter=Male}"
+                                             IsEnabled="{Binding IsProgress, Converter={StaticResource InvBoolConv}}"
+                                             />
                                 <RadioButton Content="ж" Style="{StaticResource FormRadioButton}"
-                     IsChecked="{Binding Gender, Mode=TwoWay, Converter={StaticResource GenderToBoolConverter}, ConverterParameter=Female}" />
+                                             IsChecked="{Binding Gender, Mode=TwoWay, Converter={StaticResource GenderToBoolConverter}, ConverterParameter=Female}"
+                                             IsEnabled="{Binding IsProgress, Converter={StaticResource InvBoolConv}}"
+                                             />
                             </StackPanel>
                         </StackPanel>
                     </StackPanel>
