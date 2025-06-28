@@ -459,6 +459,12 @@
                         <Trigger Property="IsChecked" Value="False">
                             <Setter TargetName="Dot" Property="Visibility" Value="Collapsed"/>
                         </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Dot" Property="Fill" Value="Gray"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="True">
+                            <Setter TargetName="Dot" Property="Fill" Value="{StaticResource magentaDarkBrush}"/>
+                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
