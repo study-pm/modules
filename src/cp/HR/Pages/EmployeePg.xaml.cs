@@ -56,6 +56,121 @@ namespace HR.Pages
             return Binding.DoNothing;
         }
     }
+
+    public class EducationViewModel : INotifyPropertyChanged
+    {
+        private readonly Education _education;
+        public Education GetModel() => _education;
+        public EducationViewModel(Education education)
+        {
+            _education = education;
+        }
+        public int Id => _education.Id;
+        public int DegreeId
+        {
+            get => _education.DegreeId;
+            set
+            {
+                if (_education.DegreeId != value)
+                {
+                    _education.DegreeId = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public Degree Degree
+        {
+            get => _education.Degree;
+            set
+            {
+                if (_education.Degree != value)
+                {
+                    _education.Degree = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public int? OrganizationId
+        {
+            get => _education.OrganizationId;
+            set
+            {
+                if (_education.OrganizationId != value)
+                {
+                    _education.OrganizationId = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public Organization Organization
+        {
+            get => _education.Organization;
+            set
+            {
+                if (_education.Organization != value)
+                {
+                    _education.Organization = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public int? QualificationId
+        {
+            get => _education.QualificationId;
+            set
+            {
+                if (_education.QualificationId != value)
+                {
+                    _education.QualificationId = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public Qualification Qualification
+        {
+            get => _education.Qualification;
+            set
+            {
+                if (_education.Qualification != value)
+                {
+                    _education.Qualification = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public int? SpecialtyId
+        {
+            get => _education.SpecialtyId;
+            set
+            {
+                if (_education.SpecialtyId != value)
+                {
+                    _education.SpecialtyId = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public Specialty Specialty
+        {
+            get => _education.Specialty;
+            set
+            {
+                if (_education.Specialty != value)
+                {
+                    _education.Specialty = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
     public class StaffViewModel : INotifyPropertyChanged
     {
         private readonly Staff _staff;
@@ -103,7 +218,6 @@ namespace HR.Pages
                 }
             }
         }
-
         public Position Position
         {
             get => _staff.Position;
@@ -144,11 +258,32 @@ namespace HR.Pages
                 PositionId = s.PositionId
             }).OrderBy(s => s.Id).ToList();
         }
+        private List<EducationSnapshot> originalEducations;
+
+        private class EducationSnapshot
+        {
+            public int Id { get; set; }
+            public int DegreeId { get; set; }
+            public int? OrganizationId { get; set; }
+            public int? QualificationId { get; set; }
+            public int? SpecialtyId { get; set; }
+        }
+        private void SaveOriginalEducations(IEnumerable<Education> educationModels)
+        {
+            originalEducations = educationModels.Select(s => new EducationSnapshot
+            {
+                Id = s.Id,
+                DegreeId = s.DegreeId,
+                OrganizationId = s.OrganizationId,
+                QualificationId = s.QualificationId,
+                SpecialtyId = s.SpecialtyId
+            }).OrderBy(s => s.Id).ToList();
+        }
 
         private Employee dm;
         public bool IsChanged => GivenName != dm.GivenName || Patronymic != dm.Patronymic || Surname != dm.Surname || Image != dm.Image ||
                     Gender != dm.Gender ||
-                    CareerStart != dm.CareerStart || !AreStaffCollectionsEqual(Staffs);
+                    CareerStart != dm.CareerStart || !AreStaffCollectionsEqual(Staffs) || !AreEducationCollectionsEqual(Educations);
         public bool AreStaffCollectionsEqual(IEnumerable<StaffViewModel> col1)
         {
             var current = col1.OrderBy(s => s.Id).ToList();
@@ -163,6 +298,25 @@ namespace HR.Pages
                 if (s1.Id != s2.Id) return false;
                 if (s1.DepartmentId != s2.DepartmentId) return false;
                 if (s1.PositionId != s2.PositionId) return false;
+            }
+            return true;
+        }
+        public bool AreEducationCollectionsEqual(IEnumerable<EducationViewModel> col1)
+        {
+            var current = col1.OrderBy(s => s.Id).ToList();
+            if (originalEducations == null || current.Count != originalEducations.Count)
+                return false;
+
+            for (int i = 0; i < current.Count; i++)
+            {
+                var s1 = current[i];
+                var s2 = originalEducations[i];
+
+                if (s1.Id != s2.Id) return false;
+                if (s1.DegreeId != s2.DegreeId) return false;
+                if (s1.OrganizationId != s2.OrganizationId) return false;
+                if (s1.QualificationId != s2.QualificationId) return false;
+                if (s1.SpecialtyId != s2.SpecialtyId) return false;
             }
             return true;
         }
@@ -294,6 +448,19 @@ namespace HR.Pages
                 OnPropertyChanged(nameof(IsEnabled));
             }
         }
+        private ObservableCollection<EducationViewModel> educations;
+        public ObservableCollection<EducationViewModel> Educations
+        {
+            get => educations;
+            set
+            {
+                if (educations == value) return;
+                educations = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsChanged));
+                OnPropertyChanged(nameof(IsEnabled));
+            }
+        }
         private ObservableCollection<Department> departments;
         public ObservableCollection<Department> Departments
         {
@@ -305,6 +472,28 @@ namespace HR.Pages
                 OnPropertyChanged();
             }
         }
+        private ObservableCollection<Organization> organizations;
+        public ObservableCollection<Organization> Organizations
+        {
+            get => organizations;
+            set
+            {
+                if (organizations == value) return;
+                organizations = value;
+                OnPropertyChanged();
+            }
+        }
+        private ObservableCollection<Qualification> qualification;
+        public ObservableCollection<Qualification> Qualifications
+        {
+            get => qualification;
+            set
+            {
+                if (qualification == value) return;
+                qualification = value;
+                OnPropertyChanged();
+            }
+        }
         private ObservableCollection<Position> positions;
         public ObservableCollection<Position> Positions
         {
@@ -313,6 +502,28 @@ namespace HR.Pages
             {
                 if (positions == value) return;
                 positions = value;
+                OnPropertyChanged();
+            }
+        }
+        private ObservableCollection<Degree> degrees;
+        public ObservableCollection<Degree> Degrees
+        {
+            get => degrees;
+            set
+            {
+                if (degrees == value) return;
+                degrees = value;
+                OnPropertyChanged();
+            }
+        }
+        private ObservableCollection<Specialty> specialties;
+        public ObservableCollection<Specialty> Specialties
+        {
+            get => specialties;
+            set
+            {
+                if (specialties == value) return;
+                specialties = value;
                 OnPropertyChanged();
             }
         }
@@ -332,8 +543,12 @@ namespace HR.Pages
             dm = dataModel ?? new Employee();
 
             LoadStaffsFromModel(dm.Staffs);
-            SaveOriginalStaffs(dm.Staffs); // <-- только здесь!
+            SaveOriginalStaffs(dm.Staffs);
             SubscribeToStaffsCollectionChanged();
+
+            LoadEducationsFromModel(dm.Educations);
+            SaveOriginalEducations(dm.Educations);
+            SubscribeToEducationsCollectionChanged();
         }
         public void LoadStaffsFromModel(IEnumerable<Staff> staffModels)
         {
@@ -345,22 +560,12 @@ namespace HR.Pages
 
             var wrappers = staffModels.Select(s => new StaffViewModel(s)).ToList();
 
-            // Подписываемся на PropertyChanged каждого элемента
             foreach (var wrapper in wrappers)
             {
-                wrapper.PropertyChanged += StaffViewModel_PropertyChanged;
+                wrapper.PropertyChanged += ViewModel_PropertyChanged;
             }
 
             Staffs = new ObservableCollection<StaffViewModel>(wrappers);
-        }
-        private void StaffViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            // При любом изменении внутри StaffViewModel обновляем IsChanged
-            if (e.PropertyName != nameof(IsChanged))
-            {
-                OnPropertyChanged(nameof(IsChanged));
-                OnPropertyChanged(nameof(IsEnabled));
-            }
         }
         private void SubscribeToStaffsCollectionChanged()
         {
@@ -369,21 +574,63 @@ namespace HR.Pages
                 Staffs.CollectionChanged += Staffs_CollectionChanged;
             }
         }
-
         private void Staffs_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)
             {
                 foreach (StaffViewModel newItem in e.NewItems)
                 {
-                    newItem.PropertyChanged += StaffViewModel_PropertyChanged;
+                    newItem.PropertyChanged += ViewModel_PropertyChanged;
                 }
             }
             if (e.OldItems != null)
             {
                 foreach (StaffViewModel oldItem in e.OldItems)
                 {
-                    oldItem.PropertyChanged -= StaffViewModel_PropertyChanged;
+                    oldItem.PropertyChanged -= ViewModel_PropertyChanged;
+                }
+            }
+            OnPropertyChanged(nameof(IsChanged));
+            OnPropertyChanged(nameof(IsEnabled));
+        }
+        public void LoadEducationsFromModel(IEnumerable<Education> eductionModels)
+        {
+            if (eductionModels == null)
+            {
+                Educations = new ObservableCollection<EducationViewModel>();
+                return;
+            }
+
+            var wrappers = eductionModels.Select(s => new EducationViewModel(s)).ToList();
+
+            foreach (var wrapper in wrappers)
+            {
+                wrapper.PropertyChanged += ViewModel_PropertyChanged;
+            }
+
+            Educations = new ObservableCollection<EducationViewModel>(wrappers);
+        }
+        private void SubscribeToEducationsCollectionChanged()
+        {
+            if (Educations != null)
+            {
+                Educations.CollectionChanged += Educations_CollectionChanged;
+            }
+        }
+        private void Educations_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (EducationViewModel newItem in e.NewItems)
+                {
+                    newItem.PropertyChanged += ViewModel_PropertyChanged;
+                }
+            }
+            if (e.OldItems != null)
+            {
+                foreach (EducationViewModel oldItem in e.OldItems)
+                {
+                    oldItem.PropertyChanged -= ViewModel_PropertyChanged;
                 }
             }
             OnPropertyChanged(nameof(IsChanged));
@@ -398,17 +645,27 @@ namespace HR.Pages
             Gender = dm.Gender;
             Image = dm.Image;
 
-            // Восстанавливаем Staffs из originalStaffs, а не из dm.Staffs!
             var restoredStaffs = originalStaffs.Select(s => new Staff
             {
                 Id = s.Id,
                 DepartmentId = s.DepartmentId,
                 PositionId = s.PositionId,
-                // ... другие нужные свойства, если есть
             }).ToList();
 
             LoadStaffsFromModel(restoredStaffs);
             SubscribeToStaffsCollectionChanged();
+
+            var restoredEducations = originalEducations.Select(s => new Education
+            {
+                Id = s.Id,
+                DegreeId = s.DegreeId,
+                OrganizationId = s.OrganizationId,
+                QualificationId = s.QualificationId,
+                SpecialtyId = s.SpecialtyId,
+            }).ToList();
+
+            LoadEducationsFromModel(restoredEducations);
+            SubscribeToEducationsCollectionChanged();
 
             OnPropertyChanged(nameof(IsChanged));
             OnPropertyChanged(nameof(IsEnabled));
@@ -423,11 +680,22 @@ namespace HR.Pages
             dm.Image = Image;
 
             dm.Staffs = new ObservableCollection<Staff>(Staffs.Select(vm => vm.GetModel()));
+            dm.Educations = new ObservableCollection<Education>(Educations.Select(vm => vm.GetModel()));
 
             SaveOriginalStaffs(dm.Staffs); // <-- обновляем оригинал после сохранения
+            SaveOriginalEducations(dm.Educations); // <-- обновляем оригинал после сохранения
 
             OnPropertyChanged(nameof(IsChanged));
             OnPropertyChanged(nameof(IsEnabled));
+        }
+
+        private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != nameof(IsChanged))
+            {
+                OnPropertyChanged(nameof(IsChanged));
+                OnPropertyChanged(nameof(IsEnabled));
+            }
         }
     }
     /// <summary>
@@ -440,7 +708,9 @@ namespace HR.Pages
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
 
         public RelayCommand AddImgCmd { get; }
+        public RelayCommand AddEducationCmd { get; }
         public RelayCommand AddStaffCmd { get; }
+        public RelayCommand DelEducationCmd { get; }
         public RelayCommand DelStaffCmd { get; }
         public RelayCommand ResetCommand { get; }
         public RelayCommand SubmitCommand { get; }
@@ -477,6 +747,24 @@ namespace HR.Pages
                 },
                 _ => !vm.IsProgress
             );
+            AddEducationCmd = new RelayCommand(
+                _ =>
+                {
+                    Education newEducation = new Education
+                    {
+                        Degree = null,
+                        DegreeId = 0,
+                        Organization = null,
+                        OrganizationId = 0,
+                        Qualification = null,
+                        QualificationId = 0,
+                        Specialty = null,
+                        SpecialtyId = 0,
+                    };
+                    vm.Educations.Add(new EducationViewModel(newEducation));
+                },
+                _ => !vm.IsProgress
+            );
             AddStaffCmd = new RelayCommand(
                 _ =>
                 {
@@ -488,6 +776,14 @@ namespace HR.Pages
                         PositionId = 0
                     };
                     vm.Staffs.Add(new StaffViewModel(newStaff));
+                },
+                _ => !vm.IsProgress
+            );
+            DelEducationCmd = new RelayCommand(
+                execute: param =>
+                {
+                    if (!(param is EducationViewModel educationVm)) return;
+                    vm.Educations.Remove(educationVm);
                 },
                 _ => !vm.IsProgress
             );
@@ -592,6 +888,25 @@ namespace HR.Pages
                     });
                     return;
                 }
+                // --- Educations syncing ---
+                var newEducations = vm.Educations.Select(vmEducation => vmEducation.GetModel()).ToList();
+                SyncEducationsCollection(data, newEducations);
+
+                if (!Request.ctx.ChangeTracker.Entries().Any(e => e.State != EntityState.Unchanged))
+                {
+                    Debug.WriteLine("No changes detected", "EmployeePg");
+                    RaiseAppEvent(new AppEventArgs
+                    {
+                        Category = cat,
+                        Name = name,
+                        Op = op,
+                        Scope = scope,
+                        Type = EventType.Cancel,
+                        Message = "Отмена сохранения данных",
+                        Details = "Изменения отсутствуют"
+                    });
+                    return;
+                }
                 await Request.ctx.SaveChangesAsync();
                 await Request.ctx.Entry(data).Collection(e => e.Staffs).LoadAsync();
                 vm.LoadStaffsFromModel(data.Staffs);
@@ -663,16 +978,24 @@ namespace HR.Pages
                     Message = "Загрузка данных"
                 });
                 // Run tasks in parallel
+                var degreesTask = Request.LoadDegrees();
                 var departmentsTask = Request.LoadDepartments();
+                var organizationsTask = Request.LoadOrganizations();
+                var qualificationsTask = Request.LoadQualifications();
                 var positionsTask = Request.LoadPositions();
+                var specialtiesTask = Request.LoadSpecialties();
 
                 await Task.WhenAll(departmentsTask);
 
                 // Update UI via Dispatcher
                 await Dispatcher.InvokeAsync(() =>
                 {
+                    vm.Degrees = new ObservableCollection<Degree>(degreesTask.Result);
                     vm.Departments = new ObservableCollection<Department>(departmentsTask.Result);
+                    vm.Organizations = new ObservableCollection<Organization>(organizationsTask.Result);
+                    vm.Qualifications = new ObservableCollection<Qualification>(qualificationsTask.Result);
                     vm.Positions = new ObservableCollection<Position>(positionsTask.Result);
+                    vm.Specialties = new ObservableCollection<Specialty>(specialtiesTask.Result);
                 });
                 vm.Reset();
                 RaiseAppEvent(new AppEventArgs
@@ -728,6 +1051,34 @@ namespace HR.Pages
                 {
                     staff.DepartmentId = updated.DepartmentId;
                     staff.PositionId = updated.PositionId;
+                }
+            }
+        }
+        private void SyncEducationsCollection(Employee employee, IEnumerable<Education> newEducations)
+        {
+            // Delete missing
+            var toRemove = employee.Educations.Where(s => !newEducations.Any(ns => ns.Id == s.Id)).ToList();
+            foreach (var education in toRemove)
+            {
+                employee.Educations.Remove(education);
+                Request.ctx.Educations.Remove(education); // Remove from EF context
+            }
+
+            // Add new
+            var toAdd = newEducations.Where(ns => !employee.Educations.Any(s => s.Id == ns.Id)).ToList();
+            foreach (var education in toAdd)
+                employee.Educations.Add(education);
+
+            // Update existing
+            foreach (var education in employee.Educations)
+            {
+                var updated = newEducations.FirstOrDefault(ns => ns.Id == education.Id);
+                if (updated != null)
+                {
+                    education.DegreeId = updated.DegreeId;
+                    education.OrganizationId = updated.OrganizationId;
+                    education.QualificationId = updated.QualificationId;
+                    education.SpecialtyId = updated.SpecialtyId;
                 }
             }
         }
