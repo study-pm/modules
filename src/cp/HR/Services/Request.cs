@@ -307,11 +307,11 @@ namespace HR.Services
                     .ConfigureAwait(false);
             }
         }
-        public static async Task<List<Position>> LoadPositions()
+        public static async Task<List<Organization>> LoadOrganizations()
         {
             using (var db = new HREntities())
             {
-                return await db.Positions
+                return await db.Organizations
                     .OrderBy(x => x.Title)
                     .ToListAsync()
                     .ConfigureAwait(false);
@@ -322,6 +322,16 @@ namespace HR.Services
             using (var db = new HREntities())
             {
                 return await db.Qualifications
+                    .OrderBy(x => x.Title)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+            }
+        }
+        public static async Task<List<Position>> LoadPositions()
+        {
+            using (var db = new HREntities())
+            {
+                return await db.Positions
                     .OrderBy(x => x.Title)
                     .ToListAsync()
                     .ConfigureAwait(false);
