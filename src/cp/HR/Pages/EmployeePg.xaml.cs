@@ -242,7 +242,6 @@ namespace HR.Pages
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
 
         private List<StaffSnapshot> originalStaffs;
-
         private class StaffSnapshot
         {
             public int Id { get; set; }
@@ -707,6 +706,8 @@ namespace HR.Pages
         protected void OnPropertyChanged([CallerMemberName] string prop = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
 
+        private NavigationService _navigationService;
+
         public RelayCommand AddImgCmd { get; }
         public RelayCommand AddEducationCmd { get; }
         public RelayCommand AddStaffCmd { get; }
@@ -735,6 +736,8 @@ namespace HR.Pages
         public EmployeePg(Employee employee = null)
         {
             InitializeComponent();
+            Unloaded += Page_Unloaded;
+
             controls = new List<Control> { SurnameTxb, GivenNameTxb, PatronymicTxb };
             vm = new EmployeeViewModel(employee);
             DataContext = vm;
@@ -816,6 +819,13 @@ namespace HR.Pages
 
             // Subscribe to validation errors
             Validation.AddErrorHandler(SurnameTxb, ValidationErrorHandler);
+
+            // Subscribe to navigation events for the main frame
+            _navigationService = MainWindow.frame.NavigationService;
+            if (_navigationService != null)
+            {
+                _navigationService.Navigating += NavigationService_Navigating;
+            }
         }
 
         private void ChangeImage()
@@ -1123,9 +1133,27 @@ namespace HR.Pages
 
             ImgHelper.OpenImgPopup(btn);
         }
+
+        private void NavigationService_Navigating(object sender, NavigatingCancelEventArgs e)
+        {
+            if (e.Content == this) return; // Skip if navigation to current page
+
+            if (!vm.IsChanged) return;
+            var result = MessageBox.Show("Форма содержит несохраненные изменения. Вы действительно хотите уйти без сохранения данных?", "Несохраненные изменения", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result != MessageBoxResult.Yes)
+                e.Cancel = true; // Cancel navigation
+        }
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             await SetData();
+        }
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            if (_navigationService != null)
+            {
+                _navigationService.Navigating -= NavigationService_Navigating;
+                _navigationService = null;
+            }
         }
     }
 }
