@@ -278,6 +278,7 @@
                                             <DataTemplate>
                                                 <TextBlock Text="{Binding Title}" VerticalAlignment="Center"
                                                            TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                                                           ToolTip="{Binding Title}"
                                                            />
                                             </DataTemplate>
                                         </ComboBox.ItemTemplate>
@@ -305,6 +306,7 @@
                                             <DataTemplate>
                                                 <TextBlock Text="{Binding Title}" VerticalAlignment="Center"
                                                            TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                                                           ToolTip="{Binding Title}"
                                                 />
                                             </DataTemplate>
                                         </ComboBox.ItemTemplate>
@@ -331,6 +333,7 @@
                                             <DataTemplate>
                                                 <TextBlock Text="{Binding Title}" VerticalAlignment="Center"
                                                            TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                                                           ToolTip="{Binding Title}"
                                                 />
                                             </DataTemplate>
                                         </ComboBox.ItemTemplate>
@@ -390,7 +393,9 @@
                                         <ComboBox.ItemTemplate>
                                             <DataTemplate>
                                                 <TextBlock Text="{Binding Title}" VerticalAlignment="Center"
-                                                           TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                                           TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                                                           ToolTip="{Binding Title}"
+                                                           />
                                             </DataTemplate>
                                         </ComboBox.ItemTemplate>
                                         <ComboBox.SelectedValue>
@@ -413,7 +418,7 @@
                                             <StackPanel>
                                                 <Viewbox Stretch="Fill" Width="14" Height="16">
                                                     <Path Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
-                                                  Data="{StaticResource MinusSolidNewPath}">
+                                                          Data="{StaticResource MinusSolidNewPath}">
                                                         <Path.RenderTransform>
                                                             <TranslateTransform X="0" Y="-100"/>
                                                         </Path.RenderTransform>
@@ -423,18 +428,19 @@
                                         </Button>
                                     </DockPanel>
                                     <ComboBox Style="{StaticResource FormComboBox}"
-                                      IsTextSearchEnabled="True"
-                                      IsEnabled="{Binding DataContext.IsProgress, RelativeSource={RelativeSource AncestorType=ItemsControl}, Converter={StaticResource InvBoolConv}}"
-                                      ItemsSource="{Binding DataContext.Positions, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                      SelectedValuePath="Id"
-                                      utils:ValidationHelper.AutoErrorVisibility="True"
-                                      utils:ValidationHelper.EnableTouchedTracking="True"
-                                      >
+                                              IsTextSearchEnabled="True"
+                                              IsEnabled="{Binding DataContext.IsProgress, RelativeSource={RelativeSource AncestorType=ItemsControl}, Converter={StaticResource InvBoolConv}}"
+                                              ItemsSource="{Binding DataContext.Positions, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                              SelectedValuePath="Id"
+                                              utils:ValidationHelper.AutoErrorVisibility="True"
+                                              utils:ValidationHelper.EnableTouchedTracking="True"
+                                              >
                                         <ComboBox.ItemTemplate>
                                             <DataTemplate>
                                                 <TextBlock Text="{Binding Title}" VerticalAlignment="Center"
-                                                   TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
-                                        />
+                                                           TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                                                           ToolTip="{Binding Title}"
+                                                           />
                                             </DataTemplate>
                                         </ComboBox.ItemTemplate>
                                         <ComboBox.SelectedValue>
