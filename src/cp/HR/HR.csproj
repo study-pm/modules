@@ -514,7 +514,9 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Images\" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Static\Img\graduation-cap-solid.png" />
   </ItemGroup>
@@ -534,18 +536,6 @@
     </Content>
     <Resource Include="Static\Img\no-photo-female.jpg" />
     <Resource Include="Static\Img\no-photo-male.jpg" />
-    <Resource Include="Images\ФоминскаяЕЮ.jpg" />
-    <Resource Include="Images\ШураеваАС.jpg" />
-    <Resource Include="Images\ПилипенкоВА.jpg" />
-    <Resource Include="Images\ПолетаеваНВ.jpg" />
-    <Resource Include="Images\КостюкЛИ.jpg" />
-    <Resource Include="Images\КрасовскаяАС.jpg" />
-    <Resource Include="Images\КузнецоваТО.jpg" />
-    <Resource Include="Images\КушакВС.jpg" />
-    <Resource Include="Images\ЛуцикНВ.jpg" />
-    <Resource Include="Images\МажниковаЕВ.jpg" />
-    <Resource Include="Images\МироноваМА.jpg" />
-    <Resource Include="Images\НазарянЛЮ.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
