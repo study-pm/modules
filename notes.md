@@ -76,6 +76,9 @@
   - [Вывод данных](#вывод-данных)
   - [Фильтрация, поиск, сортировка](#фильтрация-поиск-сортировка)
   - [Формирование qr кода](#формирование-qr-кода)
+    - [BarcodeWriter](#barcodewriter)
+      - [Разбор кода метода `LoadQR()`](#разбор-кода-метода-loadqr)
+      - [Зависимости](#зависимости)
   - [Формирование pdf документа](#формирование-pdf-документа)
   - [Добавление, редактирование, удаление](#добавление-редактирование-удаление)
     - [Реализация функции добавления](#реализация-функции-добавления)
@@ -2370,6 +2373,82 @@ private void btn1_Click(object sender, RoutedEventArgs e)
   a++;
 }
 ```
+
+#### BarcodeWriter
+
+##### Разбор кода метода `LoadQR()`
+Этот метод создает QR-код из заданного URL и отображает его в элементе `imgQr` (это `Image` в WPF). После написания метода, его необходимо вызвать при загрузки страницы.
+
+Пошаговое объяснение:
+1. **Создание объекта `BarcodeWriter`**:
+
+    ```cs
+    var writer = new BarcodeWriter
+    {
+        Format = BarcodeFormat.QR_CODE,
+        Options = new ZXing.Common.EncodingOptions
+        {
+            Width = 300,
+            Height = 300
+        }
+    };
+    ```
+
+     - Создается объект для генерации штрих-кодов/QR-кодов
+     - Устанавливается формат QR-кода (BarcodeFormat.QR_CODE)
+     - Задаются размеры изображения (300x300 пикселей)
+
+2. **Генерация QR-кода**:
+
+    ```cs
+    var result = writer.Write(@"https://learn.microsoft.com/ru-ru/dotnet/api/system.timespan?view=net-8.0");
+    ```
+
+    - Генерируется QR-код, содержащий URL документации .NET по TimeSpan
+    - Результат — объект Bitmap (из пространства имен System.Drawing)
+
+3. **Подготовка `BitmapImage` для WPF**:
+
+    ```cs
+    var bitmap = new BitmapImage();
+    ```
+
+    - Создается `BitmapImage` — это WPF-совместимое представление изображения
+
+4. **Конвертация `System.Drawing.Bitmap` в `BitmapImage`**:
+
+    ```cs
+    using (var memoryStream = new MemoryStream())
+    {
+        result.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
+        memoryStream.Position = 0;
+        bitmap.BeginInit();
+        bitmap.StreamSource = memoryStream;
+        bitmap.CacheOption = BitmapCacheOption.OnLoad;
+        bitmap.EndInit();
+        bitmap.Freeze();
+    }
+    ```
+
+    - `Bitmap` сохраняется в `MemoryStream` в формате PNG
+    - Поток перематывается в начало
+    - Инициализируется `BitmapImage` из этого потока
+    - `CacheOption.OnLoad` загружает изображение сразу, а не лениво
+    - `Freeze()` делает объект неизменяемым (потокобезопасным)
+
+5. **Отображение QR-кода**:
+
+    ```cs
+    imgQr.Source = bitmap;
+    ```
+
+    - Сгенерированное изображение устанавливается как источник для элемента `Image`
+
+##### Зависимости
+Для работы этого кода требуются:
+1. Библиотека `ZXing.Net` (для генерации QR-кодов)
+2. Ссылки на `System.Drawing` (для работы с `Bitmap`)
+3. Элемент `Image` в XAML с именем imgQr
 
 ### Формирование pdf документа
 [67a508be5040133e8429ee4e](https://e-learn.petrocollege.ru/mod/resource/view.php?id=329512)
