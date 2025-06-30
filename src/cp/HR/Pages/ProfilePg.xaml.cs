@@ -29,6 +29,21 @@ namespace HR.Pages
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         internal Data.Models.User dm;
         public string EmployeeName => dm.Employee?.FullName ?? "—";
+        private Employee _employee;
+        public Employee Employee
+        {
+            get => _employee;
+            set
+            {
+                if (_employee == value) return;
+                _employee = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsChanged));
+                OnPropertyChanged(nameof(IsEnabled));
+            }
+        }
+        public ObservableCollection<Employee> Employees { get; set; }
+
         private string _login;
         public string Login
         {
@@ -42,6 +57,7 @@ namespace HR.Pages
                 OnPropertyChanged(nameof(IsEnabled));
             }
         }
+
         private Role _role;
         public Role Role
         {
@@ -56,7 +72,8 @@ namespace HR.Pages
             }
         }
         public ObservableCollection<Role> Roles { get; set; }
-        public bool IsChanged => dm.Role != Role;
+
+        public bool IsChanged => dm.Login != Login;
         public bool IsEnabled => IsChanged && !IsInProgress;
         private bool _isInProgress;
         public bool IsInProgress
@@ -85,17 +102,21 @@ namespace HR.Pages
         public UserViewModel(Data.Models.User dataModel)
         {
             dm = dataModel;
+            Employee = dm.Employee;
+            Login = dm.Login;
             Role = dm.Role;
         }
         public async Task InitializeAsync()
         {
             IsInProgress = true;
+            Employees = new ObservableCollection<Employee>(await Services.Request.GetEmployees());
             Roles = new ObservableCollection<Role>(await Services.Request.GetRoles());
             OnPropertyChanged(nameof(Roles));
             IsInProgress = false;
         }
         public void Reset()
         {
+            Employee = dm.Employee;
             Login = dm.Login;
             Role = dm.Role;
         }
