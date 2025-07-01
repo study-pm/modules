@@ -74,7 +74,7 @@ namespace HR.Utilities
         {
             var str = value as string ?? string.Empty;
 
-            if (str.Length < 5)
+            if (str.Length < MinLength)
                 return new ValidationResult(false, $"Должно быть не менее {MinLength} символов");
 
             return new ValidationResult(true, null);

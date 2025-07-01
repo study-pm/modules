@@ -123,8 +123,45 @@ namespace HR.Utilities
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (!(value is string) || String.IsNullOrWhiteSpace((string)value)) return fallbackImgPath;
-            return $"/{basePath}/{value}.{extension}";
+            if (!(value is string imageName) || String.IsNullOrWhiteSpace(imageName))
+                return fallbackImgPath;
+
+            // Add default extension if imageName has none
+            if (!Path.HasExtension(imageName)) imageName += "." + extension;
+
+            // 1. If imageName is an absolute path and exists, load from file
+            if (File.Exists(imageName))
+                return Fs.CreateBitmapImageFromFile(imageName);
+
+            // 2. Search beside the executive file (i.e. Images/imageName)
+            string appDir = AppDomain.CurrentDomain.BaseDirectory;
+            string filePath = Path.Combine(appDir, basePath, imageName);
+            // Try adding the default extension if file not found
+            if (!File.Exists(filePath) && !Path.HasExtension(filePath))
+                filePath += "." + extension;
+
+            if (File.Exists(filePath))
+                return Fs.CreateBitmapImageFromFile(filePath);
+
+            // 3. Search Images in parent project's folders (ascending)
+            string projectRootImages = Fs.FindInParentDirectories(appDir, basePath, imageName, extension);
+            if (projectRootImages != null)
+                return Fs.CreateBitmapImageFromFile(projectRootImages);
+
+            // Try to load as pack resource (legacy images)
+            string resourcePath = $"pack://application:,,,/{basePath}/{imageName}";
+            if (!resourcePath.EndsWith($".{extension}"))
+                resourcePath += $".{extension}";
+
+            try
+            {
+                return Fs.CreateBitmapImage(resourcePath);
+            }
+            catch
+            {
+                // Fallback if nothing found
+                return Fs.CreateBitmapImage(fallbackImgPath);
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

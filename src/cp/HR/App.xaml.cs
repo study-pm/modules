@@ -32,7 +32,7 @@ namespace HR
     public partial class App : Application, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string prop = null)
+        public void OnPropertyChanged([CallerMemberName] string prop = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         public static new App Current => (App)Application.Current;
         public ICommand LogOutCommand { get; }
