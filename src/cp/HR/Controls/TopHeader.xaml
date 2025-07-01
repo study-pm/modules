@@ -15,6 +15,8 @@
             <local:NavigationDataConverter x:Key="NavDataConv" />
             <local:NavigationDataMultiConverter x:Key="NavigationDataConverter" />
             <utils:CapitalizeFirstLetterConverter x:Key="CapFirstLetConv" />
+            <utils:ImagePathConverter x:Key="ImgPathConv" />
+            <utils:NotNullToBoolConverter  x:Key="NotNullToBoolConverter"/>
             <utils:PageToIsCheckedConverter x:Key="CheckedConverter" />
             <utils:PageToIsEnabledConverter x:Key="EnabledConverter" />
             <BooleanToVisibilityConverter x:Key="BoolToVis" />
@@ -68,13 +70,39 @@
                 </StackPanel>
             </local:IconHighlightButton>
             <local:IconHighlightButton DockPanel.Dock="Right" Margin="0 20 20 10" Width="75" Height="75"
-                                       Click="PreferencesItem_Click" ToolTip="Настройки"
+                                       Click="PreferencesItem_Click" ToolTip="Перейти в настройки"
                                        Visibility="{Binding IsAuth, Source={x:Static Application.Current}, Converter={StaticResource BoolToVis}}"
                                        >
                 <StackPanel DockPanel.Dock="Right">
                     <Viewbox Stretch="Fill" Width="40" Height="40">
                         <Path Fill="{StaticResource cyanDarkBrush}" Data="{StaticResource UserCircleSolidPath}"/>
+                        <Viewbox.Style>
+                            <Style TargetType="Viewbox">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CurrentUser.Image, Source={x:Static Application.Current}, Converter={StaticResource NotNullToBoolConverter}}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Viewbox.Style>
                     </Viewbox>
+                    <Ellipse Width="40" Height="40">
+                        <Ellipse.Style>
+                            <Style TargetType="Ellipse">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CurrentUser.Image, Source={x:Static Application.Current}, Converter={StaticResource NotNullToBoolConverter}}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Ellipse.Style>
+                        <Ellipse.Fill>
+                            <ImageBrush ImageSource="{Binding CurrentUser.Image, Source={x:Static Application.Current}, Converter={StaticResource ImgPathConv}}"
+                           Stretch="UniformToFill"/>
+                        </Ellipse.Fill>
+                    </Ellipse>
                     <TextBlock HorizontalAlignment="Center" Margin="5" Foreground="Beige" FontSize="12" TextTrimming="CharacterEllipsis"
                                Text="{Binding CurrentUser.Login, Source={x:Static Application.Current}}"
                                />
