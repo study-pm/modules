@@ -1,11 +1,16 @@
 ﻿using HR.Data.Models;
 using HR.Models;
+using HR.Services;
+using HR.Utilities;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,6 +24,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static HR.Services.AppEventHelper;
 
 namespace HR.Pages
 {
@@ -27,7 +33,9 @@ namespace HR.Pages
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string prop = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+
         internal Data.Models.User dm;
+
         public string EmployeeName => dm.Employee?.FullName ?? "—";
         private Employee _employee;
         public Employee Employee
@@ -43,6 +51,23 @@ namespace HR.Pages
             }
         }
         public ObservableCollection<Employee> Employees { get; set; }
+
+        public bool HasImage => Image != null;
+
+        private string _image;
+        public string Image
+        {
+            get => _image;
+            set
+            {
+                if (_image == value) return;
+                _image = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsChanged));
+                OnPropertyChanged(nameof(IsEnabled));
+                OnPropertyChanged(nameof(HasImage));
+            }
+        }
 
         private string _login;
         public string Login
@@ -74,15 +99,15 @@ namespace HR.Pages
         public ObservableCollection<Role> Roles { get; set; }
 
         public bool IsChanged => dm.Login != Login;
-        public bool IsEnabled => IsChanged && !IsInProgress;
-        private bool _isInProgress;
-        public bool IsInProgress
+        public bool IsEnabled => IsChanged && !IsProgress;
+        private bool _isProgress;
+        public bool IsProgress
         {
-            get => _isInProgress;
+            get => _isProgress;
             set
             {
-                if (_isInProgress == value) return;
-                _isInProgress = value;
+                if (_isProgress == value) return;
+                _isProgress = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(IsEnabled));
             }
@@ -103,27 +128,29 @@ namespace HR.Pages
         {
             dm = dataModel;
             Employee = dm.Employee;
+            Image = dm.Image;
             Login = dm.Login;
             Role = dm.Role;
         }
         public async Task InitializeAsync()
         {
-            IsInProgress = true;
+            IsProgress = true;
             Employees = new ObservableCollection<Employee>(await Services.Request.GetEmployees());
             Roles = new ObservableCollection<Role>(await Services.Request.GetRoles());
             OnPropertyChanged(nameof(Roles));
-            IsInProgress = false;
+            IsProgress = false;
         }
         public void Reset()
         {
             Employee = dm.Employee;
+            Image = dm.Image;
             Login = dm.Login;
             Role = dm.Role;
         }
         public void Set()
         {
+            dm.Image = Image;
             dm.Login = Login;
-            dm.Role = Role;
             OnPropertyChanged(nameof(IsChanged));
             OnPropertyChanged(nameof(IsEnabled));
         }
@@ -139,7 +166,12 @@ namespace HR.Pages
 
         private NavigationService _navigationService;
 
+        public RelayCommand AddImgCmd { get; }
+        public RelayCommand ResetCmd { get; }
+        public RelayCommand SubmitCmd { get; }
+
         private Data.Models.User user = ((App)(Application.Current)).CurrentUser;
+
         private UserViewModel _vm;
         public UserViewModel vm
         {
@@ -179,45 +211,43 @@ namespace HR.Pages
 
             vm = new UserViewModel(user);
             DataContext = vm;
+
+            AddImgCmd = new RelayCommand(
+                _ =>
+                {
+                    ChangeImage();
+                    Save();
+                },
+                _ => !vm.IsProgress
+            );
+            ResetCmd = new RelayCommand(
+                _ => {
+                    vm.Reset();
+                },
+                _ => vm.IsEnabled
+            );
+            SubmitCmd = new RelayCommand(
+                _ => Save(),
+                _ => vm.IsEnabled
+            );
+        }
+        private void ChangeImage()
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Title = "Выберите изображение";
+            ofd.Filter = "Изображения (*.jpeg;*.png;*.gif;*jpg)|*.jpeg;*.png;*.gif;*jpg";
+            if (ofd.ShowDialog() != true)
+                return;
+            string imgPath = ofd.FileName;
+            string imgFullName = Guid.NewGuid().ToString() + System.IO.Path.GetExtension(imgPath).ToLower();
+            ImgHelper.SetPreviewImage(imgPath, UserImg);
+            vm.Image = ImgHelper.SaveImg(imgPath, 40);
         }
         private void EnlargeImageButton_Click(object sender, RoutedEventArgs e)
         {
             if (!(sender is Button btn)) return;
 
-            // Search for the thumb Image inside the Button
-            var image = btn.Content as Image;
-            if (image == null) return;
-
-            // Search for the parent Grid
-            DependencyObject grid = VisualTreeHelper.GetParent(btn);
-            while (grid != null && !(grid is Grid))
-            {
-                grid = VisualTreeHelper.GetParent(grid);
-            }
-            if (grid == null) return;
-
-            // Find a Popup inside the Grid
-            Popup popup = null;
-            int childrenCount = VisualTreeHelper.GetChildrenCount(grid);
-            for (int i = 0; i < childrenCount; i++)
-            {
-                var child = VisualTreeHelper.GetChild(grid, i);
-                if (child is Popup p)
-                {
-                    popup = p;
-                    break;
-                }
-            }
-            if (popup == null) return;
-
-            // Search for a full-scale Image inside the Popup
-            if (!(popup.Child is Border border)) return;
-            if (!(border.Child is ScrollViewer scrollViewer)) return;
-            if (!(scrollViewer.Content is Image popupImage)) return;
-
-            // Set image source and open Popup
-            popupImage.Source = image.Source;
-            popup.IsOpen = true;
+            ImgHelper.OpenImgPopup(btn);
         }
         private void RoleChangeBtn_Click(object sender, RoutedEventArgs e) => vm.IsRoleChange = true;
 
@@ -230,6 +260,54 @@ namespace HR.Pages
         {
             MessageBox.Show("Заявка на изменение роли отправлена администратору", "Уведомление", MessageBoxButton.OK, MessageBoxImage.Information);
             vm.IsRoleChange = false;
+        }
+        private async void Save()
+        {
+            var (cat, name, op, scope) = (EventCategory.Data, "Update", 2, "Профиль пользователя");
+            try
+            {
+                vm.IsProgress = true;
+                vm.Set();
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Progress,
+                    Message = "Обновление данных"
+                });
+                await Request.ctx.SaveChangesAsync();
+                App.Current.OnPropertyChanged(nameof(App.CurrentUser)); // Notify app about changes
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Success,
+                    Message = "Данные успешно обновлены"
+                });
+            }
+            catch (Exception exc)
+            {
+                Debug.WriteLine(exc, "ProfilePg");
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Error,
+                    Message = "Ошибка обновления данных",
+                    Details = exc.Message
+                });
+                MessageBox.Show($"Ошибка обновления данных: {exc.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                vm.IsProgress = false;
+            }
         }
 
         private void ChangePwdLink_Click(object sender, RoutedEventArgs e)
