@@ -48,15 +48,15 @@ namespace HR.Pages
             }
         }
         public bool IsChanged => dm?.Is2faOn != Is2FA;
-        public bool IsEnabled => IsChanged && !IsInProgress;
-        private bool _isInProgress;
-        public bool IsInProgress
+        public bool IsEnabled => IsChanged && !IsProgress;
+        private bool _isProgress;
+        public bool IsProgress
         {
-            get => _isInProgress;
+            get => _isProgress;
             set
             {
-                if (_isInProgress == value) return;
-                _isInProgress = value;
+                if (_isProgress == value) return;
+                _isProgress = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(IsEnabled));
             }
@@ -135,7 +135,7 @@ namespace HR.Pages
             this.SizeChanged += SettingsPg_SizeChanged;
             Loaded += SettingsPg_Loaded;
             vm = new SettingsViewModel();
-            DataContext = vm;
+            DataContext = this;
         }
         private void AdjustGridLayout(double availableWidth)
         {
@@ -400,6 +400,10 @@ namespace HR.Pages
 
             // Hiding animation
             CopiedTextBlock.BeginAnimation(UIElement.OpacityProperty, fadeOut);
+        }
+        private void TipBtn_Click(object sender, RoutedEventArgs e)
+        {
+            TipPopup.IsOpen = !TipPopup.IsOpen; // переключаем видимость Popup
         }
     }
 }

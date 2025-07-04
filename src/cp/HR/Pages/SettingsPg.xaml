@@ -11,7 +11,7 @@
       Title="SettingsPg">
     <Page.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
-        <utils:InverseBoolToVisibilityConverter x:Key="InvBoolConv"/>
+        <utils:InverseBoolToVisibilityConverter x:Key="InvBoolToVisConv"/>
     </Page.Resources>
     <ScrollViewer Style="{StaticResource MainView}">
         <StackPanel>
@@ -97,8 +97,8 @@
                                 Click="SubmitBtn_Click"
                                 >
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Сохранить" Visibility="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}" />
-                                <uc:Dots Visibility="{Binding IsInProgress, Converter={StaticResource BoolToVis}}" />
+                                <TextBlock Text="Сохранить" Visibility="{Binding IsProgress, Converter={StaticResource InvBoolToVisConv}}" />
+                                <uc:Dots Visibility="{Binding IsProgress, Converter={StaticResource BoolToVis}}" />
                             </StackPanel>
                         </Button>
                     </Grid>
@@ -110,6 +110,7 @@
                                     ToolTip="Для обеспечения безопасного входа рекомендуется настроить и подключить двухфакторную аутентификацию"
                                     />
                     </StackPanel>
+                    <StackPanel Visibility="{Binding vm.IsSecret, Converter={StaticResource InvBoolToVisConv}}">
                     <TextBlock Style="{StaticResource Paragraph}">
                         Безопасный вход в приложение обеспечивается за счет применения двухфакторной аутентификации,
                         для подключения которой следуйте шагам, описанным ниже.
@@ -145,11 +146,35 @@
                                     </BlockUIContainer>
                                     <BlockUIContainer>
                                         <StackPanel Style="{StaticResource FormElement}"
-                                                    Visibility="{Binding IsSecret, Converter={StaticResource BoolToVis}}"
+                                                    Visibility="{Binding vm.IsSecret, Converter={StaticResource BoolToVis}}"
                                                     >
                                             <Label>Секретный ключ</Label>
                                             <Grid>
-                                                <TextBox x:Name="SecretTxb" Text="{Binding Secret}" Padding="5 0 25 0" />
+                                                <TextBox x:Name="SecretTxb" Text="{Binding vm.Secret}" Padding="5 0 25 0" />
+                                                <Button x:Name="TipBtn" Style="{StaticResource IconButton}" HorizontalAlignment="Right" Margin="0 0 25 0"
+                                                        ToolTip="Скопируйте и сохраните секретный ключ для восстановления доступа при потере устройства с аутентификатором."
+                                                        Click="TipBtn_Click"
+                                                        >
+                                                    <StackPanel>
+                                                        <Viewbox Stretch="Fill" Width="12" Height="16">
+                                                            <Path Fill="Goldenrod" Data="{StaticResource LightbulbSolidPath}"/>
+                                                        </Viewbox>
+                                                    </StackPanel>
+                                                </Button>
+                                                <Popup x:Name="TipPopup"
+                                                        PlacementTarget="{Binding ElementName=SecretTxb}" Placement="Bottom"
+                                                        StaysOpen="False" AllowsTransparency="True" PopupAnimation="Fade"
+                                                        HorizontalOffset="50" VerticalOffset="5"
+                                                       >
+                                                    <Border Background="#DE1A7580" Padding="10" CornerRadius="5"
+                                                            BorderBrush="Transparent" BorderThickness="1"
+                                                            Opacity="0.95"
+                                                            >
+                                                        <TextBlock Text="Скопируйте и сохраните секретный ключ для восстановления доступа при потере устройства с аутентификатором."
+                                                                   TextWrapping="Wrap" Width="300" Foreground="White"
+                                                                   />
+                                                    </Border>
+                                                </Popup>
                                                 <Button x:Name="CopySecretBtn" Style="{StaticResource IconButton}" HorizontalAlignment="Right"
                                                         Click="CopySecretBtn_Click"
                                                         >
@@ -202,11 +227,11 @@
                     </RichTextBox>
 
                     <StackPanel Style="{StaticResource FormElement}" HorizontalAlignment="Center" Margin="0"
-                                Visibility="{Binding IsSecret, Converter={StaticResource BoolToVis}}"
+                                Visibility="{Binding vm.IsSecret, Converter={StaticResource BoolToVis}}"
                                 >
                         <Label HorizontalAlignment="Center">Код</Label>
                         <TextBox x:Name="CodeTxb" Width="70"
-                                 IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
+                                 IsEnabled="{Binding vm.IsProgress, Converter={StaticResource InvBoolToVisConv}}"
                                  utils:ValidationHelper.AutoErrorVisibility="True"
                                  utils:ValidationHelper.EnableTouchedTracking="True" TextChanged="CodeTxb_TextChanged"
                                 >
@@ -222,8 +247,9 @@
                             </TextBox.Text>
                         </TextBox>
                     </StackPanel>
+                    </StackPanel>
 
-                    <RichTextBox>
+                    <RichTextBox Visibility="Collapsed">
                         <FlowDocument>
                             <List>
                                 <ListItem Margin="10">
@@ -241,7 +267,7 @@
                                         <LineBreak/>
                                         • По завершении настройки двухэтапной аутентификации вы сможете включать и выключать ее по своему усмотрению в этом же разделе.
                                         <LineBreak/>
-                                        • Кроме того, можно запоминать состояние аутентификации, чтобы не приходилось входить в учетную запись при каждом запуске приложения. Это можно сделать, включив настройку «Оставаться в системе» в разделе «Предпочтения».
+                                        • 
                                     </Paragraph>
                                 </ListItem>
                             </List>
@@ -261,11 +287,18 @@
                         </FlowDocument>
                     </RichTextBox>
 
-                    <StackPanel Orientation="Horizontal">
-                        <CheckBox Content="Включить двухэтапную аутентификацию"
-                              IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
-                              IsChecked="{Binding Is2FA}"
+                    <StackPanel Orientation="Horizontal" Visibility="{Binding vm.IsSecret, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Style="{StaticResource Paragraph}">
+                            Двухфакторной аутентификации успешно настроена.
+                            Режим входа в приложение может быть изменен в любой момент времени.
+                            Можно запоминать состояние аутентификации, чтобы не приходилось входить в учетную запись при каждом запуске приложения, включив настройку «Оставаться в системе» в разделе «Предпочтения».
+                        </TextBlock>
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox Content="Включить двухэтапную аутентификацию"
+                              IsEnabled="{Binding vm.IsProgress, Converter={StaticResource InvBoolToVisConv}}"
+                              IsChecked="{Binding vm.Is2FA}"
                               />
+                        </StackPanel>
                     </StackPanel>
                 </StackPanel>
             </Grid>
