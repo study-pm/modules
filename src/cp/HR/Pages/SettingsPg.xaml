@@ -107,13 +107,12 @@
                     <StackPanel Orientation="Horizontal">
                         <Label Foreground="{StaticResource magentaDarkBrush}" FontSize="16">Безопасный вход</Label>
                         <uc:Details Type="Question"
-                                    ToolTip="Для обеспечения безопасного входа рекомендуется настроить и подключить двухэтапную аутентификацию"
+                                    ToolTip="Для обеспечения безопасного входа рекомендуется настроить и подключить двухфакторную аутентификацию"
                                     />
                     </StackPanel>
                     <TextBlock Style="{StaticResource Paragraph}">
-                        Безопасный вход в приложение обеспечивается за счет применения двухэтапной аутентификации с двумя факторами.
-                        В качестве первого фактора используется пароль к учетной записи, второй этап подразумевает использование второго фактора — одноразовых кодов TOTP (Time-based One-Time Password), для генерации которых может быть использовано любое приложение, поддерживающее TOTP (Google Authenticator, Microsoft Authenticator, LastPass Authenticator, Яндекс.Ключ).
-                        Для подключения двухэтапной аутентификации с использованием второго фактора следуйте шагам, описанным ниже
+                        Безопасный вход в приложение обеспечивается за счет применения двухфакторной аутентификации,
+                        для подключения которой следуйте шагам, описанным ниже.
                     </TextBlock>
                     <RichTextBox x:Name="ManualRtb" IsReadOnly="True" IsDocumentEnabled="True" VerticalScrollBarVisibility="Auto" Margin="0" Padding="0" BorderThickness="0">
                         <FlowDocument>
@@ -195,7 +194,7 @@
                                 </ListItem>
                                 <ListItem Margin="10">
                                     <Paragraph FontSize="14">
-                                        <Bold>Введите шестизначный код</Bold> из приложения TOTP в поле для подтверждения подключения 2FA:
+                                        <Bold>Введите шестизначный код</Bold> из приложения TOTP в поле для подтверждения подключения 2FA.
                                     </Paragraph>
                                 </ListItem>
                             </List>
