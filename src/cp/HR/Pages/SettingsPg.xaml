@@ -384,45 +384,6 @@
                         </TextBox>
                     </StackPanel>
                     </StackPanel>
-
-                    <RichTextBox Visibility="Collapsed">
-                        <FlowDocument>
-                            <List>
-                                <ListItem Margin="10">
-                                    <Paragraph FontSize="14">
-                                        <Bold>На этом настройка завершена.</Bold>
-                                        <LineBreak/>
-                                        • После этого двухфакторная аутентификация будет включена автоматически.
-                                        <LineBreak/>
-                                        • Теперь при входе в аккаунт после введения пароля дополнительно будет нужно вводить код из приложения.
-                                    </Paragraph>
-                                </ListItem>
-                                <ListItem Margin="10">
-                                    <Paragraph FontSize="14">
-                                        <Bold>Вы всегда можете изменить режим входа в приложение.</Bold>
-                                        <LineBreak/>
-                                        • По завершении настройки двухэтапной аутентификации вы сможете включать и выключать ее по своему усмотрению в этом же разделе.
-                                        <LineBreak/>
-                                        • 
-                                    </Paragraph>
-                                </ListItem>
-                            </List>
-
-                            <Paragraph FontWeight="Bold" Margin="0,10,0,5">Советы:</Paragraph>
-                            <List MarkerStyle="Disc" Margin="20,0,0,0">
-                                <ListItem>
-                                    <Paragraph>Сохраните резервные коды или секретный ключ для восстановления доступа при потере телефона.</Paragraph>
-                                </ListItem>
-                                <ListItem>
-                                    <Paragraph>Убедитесь, что время на смартфоне синхронизировано автоматически для корректной генерации кодов.</Paragraph>
-                                </ListItem>
-                                <ListItem>
-                                    <Paragraph>При смене телефона перенесите аккаунты Google Authenticator согласно инструкции приложения.</Paragraph>
-                                </ListItem>
-                            </List>
-                        </FlowDocument>
-                    </RichTextBox>
-
                     <StackPanel Visibility="{Binding vm.IsSecret, Converter={StaticResource BoolToVis}}">
                         <TextBlock Style="{StaticResource Paragraph}" Margin="0">
                             Двухфакторная аутентификация успешно настроена.
