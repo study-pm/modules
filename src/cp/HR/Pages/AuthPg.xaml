@@ -7,7 +7,7 @@
       xmlns:uc="clr-namespace:HR.Controls"
       xmlns:utils="clr-namespace:HR.Utilities"
       mc:Ignorable="d"
-      d:DesignHeight="500" d:DesignWidth="800"
+      d:DesignHeight="700" d:DesignWidth="800"
       Title="AuthPg"
       >
     <Page.Resources>
@@ -15,18 +15,23 @@
         <utils:InverseBooleanConverter x:Key="InvBoolConv"/>
         <utils:InverseBoolToVisibilityConverter x:Key="InvBoolVis"/>
         <utils:NotEmptyValidationRule x:Key="NotEmptyValidationRule"/>
+        <utils:NotNullOrEmptyToVisibilityConverter x:Key="NotEmptyToVisConv"/>
     </Page.Resources>
     <ScrollViewer Style="{StaticResource MainView}">
     <StackPanel>
 
-        <uc:Header HeaderText="Аутентификация"></uc:Header>
+        <uc:Header HeaderText="Аутентификация" Visibility="{Binding IsSecondStep, Converter={StaticResource InvBoolVis}}"></uc:Header>
+        <uc:Header HeaderText="Двухфакторная аутентификация" Visibility="{Binding IsSecondStep, Converter={StaticResource BoolToVis}}"></uc:Header>
 
-        <TextBlock Style="{StaticResource Paragraph}">
+         <TextBlock Style="{StaticResource Paragraph}" Visibility="{Binding IsSecondStep, Converter={StaticResource InvBoolVis}}">
             Введите свои учетные данные для входа. Все поля должны быть заполнены.
         </TextBlock>
 
-        <StackPanel Style="{StaticResource Form}">
+        <TextBlock Style="{StaticResource Paragraph}" Visibility="{Binding IsSecondStep, Converter={StaticResource BoolToVis}}">
+            Введите шестизначный код из приложения-аутентификатора.
+        </TextBlock>
 
+            <StackPanel Style="{StaticResource Form}" Visibility="{Binding IsSecondStep, Converter={StaticResource InvBoolVis}}">
             <StackPanel Style="{StaticResource FormElement}">
                 <Label>Пользователь</Label>
                 <TextBox x:Name="LoginTxb"
@@ -124,6 +129,32 @@
             </TextBlock>
 
         </StackPanel>
-    </StackPanel>
+
+
+            <StackPanel Style="{StaticResource Form}" Visibility="{Binding IsSecondStep, Converter={StaticResource BoolToVis}}">
+                <StackPanel Style="{StaticResource FormElement}" HorizontalAlignment="Center" Margin="0"
+                            Visibility="{Binding Secret, Converter={StaticResource NotEmptyToVisConv}}"
+                            >
+                    <Label HorizontalAlignment="Center">Код</Label>
+                    <TextBox x:Name="CodeTxb" Width="70"
+                             IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolVis}}"
+                             utils:ValidationHelper.AutoErrorVisibility="True"
+                             utils:ValidationHelper.EnableTouchedTracking="True"
+                             TextChanged="CodeTxb_TextChanged"
+                             >
+                        <TextBox.Text>
+                            <Binding Path="Code" UpdateSourceTrigger="PropertyChanged"
+                                     ValidatesOnDataErrors="True" NotifyOnValidationError="True">
+                                <Binding.ValidationRules>
+                                    <utils:DigitsOnlyValidationRule/>
+                                    <utils:ExactLengthValidationRule/>
+                                    <utils:NotEmptyValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
     </ScrollViewer>
 </Page>
