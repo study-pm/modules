@@ -290,19 +290,19 @@ namespace HR.Pages
         }
         public void ResetFields()
         {
-            // 1. Очистка свойств
+            // 1. Clear props
             Login = string.Empty;
             Password = string.Empty;
             OnPropertyChanged(nameof(Login));
             OnPropertyChanged(nameof(Password));
 
-            // 2. Очистка TextBox
+            // 2. Clear TextBox
             LoginTxb.Text = string.Empty;
 
-            // 3. Очистка PasswordBox
+            // 3. Clear PasswordBox
             PasswordPwb.Password = string.Empty;
 
-            // 4. Сброс ошибок валидации для TextBox
+            // 4. Reset TextBox validation errors
             var loginBinding = LoginTxb.GetBindingExpression(TextBox.TextProperty);
             if (loginBinding != null)
             {
@@ -310,7 +310,7 @@ namespace HR.Pages
                 loginBinding.UpdateSource();
             }
 
-            // 5. Сброс ошибок валидации для PasswordBox (вы используете TagProperty для binding)
+            // 5. Reset PasswordBox validation errors (TagProperty is used for binding)
             var passwordBinding = PasswordPwb.GetBindingExpression(PasswordBox.TagProperty);
             if (passwordBinding != null)
             {
@@ -329,33 +329,33 @@ namespace HR.Pages
         private void PasswordPwb_PasswordChanged(object sender, RoutedEventArgs e)
         {
             var pb = (PasswordBox)sender;
-            // Например, если DataContext - ваша ViewModel:
+            // E.g. if DataContext is ViewModel:
             if (DataContext is AuthPg vm)
                 vm.Password = pb.Password;
             // the same as: Password = PassPwb.Password;
         }
         private async void SignInBtn_Click(object sender, RoutedEventArgs e)
         {
-            // 0. Синхронизируем Password свойство с PasswordBox
+            // 0. Sync Password prop with PasswordBox
             Password = PasswordPwb.Password;
 
-            // 1. Принудительно показываем ошибки (эмулируем "Touched" и "ShowErrors")
+            // 1. Force errors display (emulating "Touched" and "ShowErrors")
             HR.Utilities.ValidationHelper.SetShowErrors(LoginTxb, true);
             HR.Utilities.ValidationHelper.SetShowErrors(PasswordPwb, true);
             HR.Utilities.ValidationHelper.SetTouched(LoginTxb, true);
             HR.Utilities.ValidationHelper.SetTouched(PasswordPwb, true);
 
-            // 2. Принудительно обновляем биндинги (если вдруг не обновились)
+            // 2. Force bindings update (if not updated automatically)
             ValidationHelper.ForceValidate(LoginTxb, TextBox.TextProperty);
             // ValidationHelper.ForceValidate(PasswordPwb, PasswordBox.TagProperty); -- это не делаем, т.к. Password валидируется отдельно
             // ЯВНО вызываем ValidatePassword, чтобы ошибка обновилась
             ValidatePassword();
 
-            // 3. Проверяем наличие ошибок
+            // 3. Check for errors
             bool hasLoginError = Validation.GetHasError(LoginTxb);
             bool hasPasswordError = Validation.GetHasError(PasswordPwb);
 
-            // Принудительно обновляем UI в случае ошибок
+            // Force UI update in case of errors
             if (hasLoginError)
             {
                 LoginTxb.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.Render);
@@ -374,7 +374,7 @@ namespace HR.Pages
                 return;
             }
 
-            // 4. Если ошибок нет, проверяем пользователя, 2FA и выполняем вход
+            // 4. If there are no errors, check user, 2FA and log in if no 2FA used (or wait for user to enter 2FA pin)
             IsInProgress = true;
             StatusInformer.ReportProgress("Проверка данных пользователя");
             App app = Application.Current as App;
