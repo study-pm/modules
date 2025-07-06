@@ -27,6 +27,11 @@ using PdfSharp.Xps;
 using System.Diagnostics;
 using OtpNet;
 using System.Windows.Media.Animation;
+using static HR.Services.AppEventHelper;
+using System.Globalization;
+using System.Data.Entity.Validation;
+using HR.Models;
+using Microsoft.Win32;
 
 namespace HR.Pages
 {
@@ -35,7 +40,7 @@ namespace HR.Pages
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string prop = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
-        internal User dm;
+        internal HR.Data.Models.User dm;
         private string _code;
         public string Code
         {
@@ -48,15 +53,15 @@ namespace HR.Pages
             }
         }
         public bool IsChanged => dm?.Is2faOn != Is2FA;
-        public bool IsEnabled => IsChanged && !IsInProgress;
-        private bool _isInProgress;
-        public bool IsInProgress
+        public bool IsEnabled => IsChanged && !IsProgress;
+        private bool _isProgress;
+        public bool IsProgress
         {
-            get => _isInProgress;
+            get => _isProgress;
             set
             {
-                if (_isInProgress == value) return;
-                _isInProgress = value;
+                if (_isProgress == value) return;
+                _isProgress = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(IsEnabled));
             }
@@ -88,22 +93,20 @@ namespace HR.Pages
             }
         }
 
-        public SettingsViewModel()
-        {
-            Is2FA = false;
-        }
-        public SettingsViewModel(User dataModel)
+        public SettingsViewModel(HR.Data.Models.User dataModel)
         {
             dm = dataModel;
-            Is2FA = dm.Is2faOn;
+            Reset();
         }
         public void Reset()
         {
             Is2FA = dm.Is2faOn;
+            Secret = dm.Secret;
         }
         public void Set()
         {
             dm.Is2faOn = Is2FA;
+            dm.Secret = Secret;
             OnPropertyChanged(nameof(IsChanged));
             OnPropertyChanged(nameof(IsEnabled));
         }
@@ -116,9 +119,123 @@ namespace HR.Pages
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string prop = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
-        private int uid = ((App)(Application.Current)).CurrentUser.Id;
+
         private const double MinColumnWidth = 350;
-        private byte[] secret;
+
+        public RelayCommand ResetCmd { get; }
+        public RelayCommand SubmitCmd { get; }
+
+        private Data.Models.User user = ((App)(Application.Current)).CurrentUser;
+
+        private byte[] secretBytes;
+        private string secret;
+        public string Secret
+        {
+            get => secret;
+            set
+            {
+                if (secret == value) return;
+                secret = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _password;
+        public string Password
+        {
+            get => _password;
+            set
+            {
+                if (_password == value) return;
+                _password = value;
+                OnPropertyChanged();
+                CheckPassword();
+            }
+        }
+        private bool _isPwdValid;
+        public bool IsPwdValid
+        {
+            get => _isPwdValid;
+            set
+            {
+                if (_isPwdValid == value) return;
+                _isPwdValid = value;
+                OnPropertyChanged(nameof(IsPwdValid));
+            }
+        }
+        private bool _isPwdOn;
+        public bool IsPwdOn
+        {
+            get => _isPwdOn;
+            set
+            {
+                if (_isPwdOn == value) return;
+                _isPwdOn = value;
+                if (!_isPwdOn)
+                {
+                    // Update PasswordBox value when toggling its visibility on
+                    PwdPwb.Password = Password;
+                }
+                OnPropertyChanged(nameof(IsPwdOn));
+            }
+        }
+        private string _password1;
+        public string Password1
+        {
+            get => _password1;
+            set
+            {
+                if (_password1 == value) return;
+                _password1 = value;
+                OnPropertyChanged();
+                ValidatePassword(Password1, Pw1Pwb);
+            }
+        }
+        private bool _isPwd1On;
+        public bool IsPwd1On
+        {
+            get => _isPwd1On;
+            set
+            {
+                if (_isPwd1On == value) return;
+                _isPwd1On = value;
+                if (!_isPwd1On)
+                {
+                    // Update PasswordBox value when toggling its visibility on
+                    Pw1Pwb.Password = Password1;
+                }
+                OnPropertyChanged(nameof(IsPwd1On));
+            }
+        }
+        private string _password2;
+        public string Password2
+        {
+            get => _password2;
+            set
+            {
+                if (_password2 == value) return;
+                _password2 = value;
+                OnPropertyChanged();
+                ValidatePassword(Password2, Pw2Pwb);
+            }
+        }
+        private bool _isPwd2On;
+        public bool IsPwd2On
+        {
+            get => _isPwd2On;
+            set
+            {
+                if (_isPwd2On == value) return;
+                _isPwd2On = value;
+                if (!_isPwd2On)
+                {
+                    // Update PasswordBox value when toggling its visibility on
+                    Pw2Pwb.Password = Password2;
+                }
+                OnPropertyChanged(nameof(IsPwd2On));
+            }
+        }
+
         private SettingsViewModel _vm;
         public SettingsViewModel vm
         {
@@ -129,13 +246,42 @@ namespace HR.Pages
                 OnPropertyChanged();
             }
         }
+        private readonly Dictionary<string, List<string>> _errors = new Dictionary<string, List<string>>();
+        public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
+        protected virtual void OnErrorsChanged(string propertyName)
+        {
+            ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
+        }
         public SettingsPg()
         {
             InitializeComponent();
             this.SizeChanged += SettingsPg_SizeChanged;
             Loaded += SettingsPg_Loaded;
-            vm = new SettingsViewModel();
-            DataContext = vm;
+            vm = new SettingsViewModel(user);
+            DataContext = this;
+
+            ResetCmd = new RelayCommand(
+                _ => Reset(),
+                _ => !vm.IsProgress && IsPwdValid
+            );
+            SubmitCmd = new RelayCommand(
+                _ =>
+                {
+                    if (!Validate()) return;
+                    if (!CheckPasswordMatch())
+                    {
+                        MessageBox.Show("Пароли должны совпадать!", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+
+                    var (hash, salt) = Cypher(Password1);
+                    user.PasswordHash = hash;
+                    user.Salt = salt;
+
+                    SavePassword();
+                },
+                _ => !vm.IsProgress && IsPwdValid
+            );
         }
         private void AdjustGridLayout(double availableWidth)
         {
@@ -169,78 +315,193 @@ namespace HR.Pages
                 Grid.SetColumn(SecondSection, 0);
             }
         }
-        private async void SettingsPg_Loaded(object sender, RoutedEventArgs e)
+        private void CheckPassword()
         {
-            AdjustGridLayout(this.ActualWidth);
-            await SaveSecret();
-        }
+            var hash = Crypto.HashPassword(Password, user.Salt);
+            Debug.WriteLine("0x" + BitConverter.ToString(hash).Replace("-", ""));
+            var bindingExpression = PwdPwb.GetBindingExpression(PasswordBox.TagProperty);
+            if (bindingExpression == null) return;
 
-        private void SettingsPg_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            AdjustGridLayout(e.NewSize.Width);
-        }
-        private void ResetBtn_Click(object sender, RoutedEventArgs e)
-        {
-            vm.Reset();
-        }
-        private FlowDocument CloneFlowDocument(FlowDocument original)
-        {
-            if (original == null) return null;
-
-            // Сериализуем в XAML строку
-            string xaml = System.Windows.Markup.XamlWriter.Save(original);
-
-            // Загружаем из XAML обратно — создаём копию
-            using (var stringReader = new System.IO.StringReader(xaml))
-            using (var xmlReader = System.Xml.XmlReader.Create(stringReader))
+            if (hash.SequenceEqual(user.PasswordHash))
             {
-                return (FlowDocument)System.Windows.Markup.XamlReader.Load(xmlReader);
+                Validation.ClearInvalid(bindingExpression);
+                ValidationHelper.SetShowErrors(PwdPwb, false);
+                IsPwdValid = true;
+            }
+            else
+            {
+                var rule = new PasswordLengthValidationRule();
+                var validationError = new ValidationError(rule, bindingExpression)
+                {
+                    ErrorContent = "Неверный пароль"
+                };
+                Validation.MarkInvalid(bindingExpression, validationError);
+
+                ValidationHelper.SetShowErrors(PwdPwb, true);
+                ValidationHelper.SetTouched(PwdPwb, true);
+                IsPwdValid = false;
             }
         }
-        private void ExportToPdf(FlowDocument doc, string fileName)
+        private bool CheckPasswordMatch() => Password1 == Password2;
+        private (byte[] hash, byte[] salt) Cypher(string password)
         {
+            byte[] salt = Crypto.GenerateSalt();
+            byte[] hash = Crypto.HashPassword(password, salt);
+            string hexString = BitConverter.ToString(hash).Replace("-", "");
+            string sqlValue = "0x" + hexString;
+            return (hash, salt);
+        }
+        public void ClearAllErrors()
+        {
+            ClearErrors(nameof(Password));
+            ClearErrors(nameof(Password1));
+            ClearErrors(nameof(Password2));
+            // Raise ErrorsChanged for all properties cleared
+            OnErrorsChanged(nameof(Password));
+            OnErrorsChanged(nameof(Password1));
+            OnErrorsChanged(nameof(Password2));
+        }
+        private void ClearErrors(string propertyName)
+        {
+            if (_errors.ContainsKey(propertyName))
+                _errors.Remove(propertyName);
+        }
+        private async Task<string> GetEncryptedSecret(string plainText)
+        {
+            var (cat, name, op, scope) = (EventCategory.Data, "Auth", 1, "Пользователь");
             try
             {
-                // Открываем диалог сохранения PDF
-                var dlg = new Microsoft.Win32.SaveFileDialog
+                vm.IsProgress = true;
+                RaiseAppEvent(new AppEventArgs
                 {
-                    FileName = fileName,
-                    DefaultExt = ".pdf",
-                    Filter = "Документы PDF (.pdf)|*.pdf"
-                };
-
-                if (dlg.ShowDialog() == true)
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Progress,
+                    Message = "Шифрование данных"
+                });
+                string basePath = Fs.GetFullRootPath(Crypto.keysPath);
+                var (key, iv) = await Fs.LoadKeysParallelAsync(basePath, "aes_key.bin", "aes_iv.bin");
+                string encrypted = Crypto.Encrypt(plainText, key, iv);
+                RaiseAppEvent(new AppEventArgs
                 {
-                    // Путь к файлу
-                    string pdfFilePath = dlg.FileName;
-                    // Создаем временный файл для XPS
-                    string tempXpsFile = System.IO.Path.Combine(System.IO.Path.GetTempPath(), Guid.NewGuid() + ".xps");
-
-                    // Сохраняем FlowDocument из RichTextBox в XPS
-                    // Создаем XPS-документ через WPF
-                    using (Package package = Package.Open(tempXpsFile, FileMode.Create))
-                    {
-                        System.Windows.Xps.Packaging.XpsDocument xpsDoc = new System.Windows.Xps.Packaging.XpsDocument(package);
-                        // Создаем XpsDocumentWriter через статический метод XpsDocument.CreateXpsDocumentWriter
-                        var xpsWriter = System.Windows.Xps.Packaging.XpsDocument.CreateXpsDocumentWriter(xpsDoc);
-                        // Пагинатор документа
-                        var paginator = ((IDocumentPaginatorSource)doc).DocumentPaginator;
-                        xpsWriter.Write(paginator);
-                        xpsDoc.Close();
-                    }
-
-                    // Конвертируем XPS в PDF с помощью PDFSharp.Xps
-                    PdfSharp.Xps.XpsConverter.Convert(tempXpsFile, pdfFilePath, 0);
-
-                    // Удаляем временный XPS файл
-                    File.Delete(tempXpsFile);
-
-                    MessageBox.Show("Экспорт в PDF выполнен успешно!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Success,
+                    Message = "Данные успешно зашифрованы"
+                });
+                return encrypted;
             }
-            catch (Exception ex)
+            catch (Exception exc)
             {
-                MessageBox.Show("Ошибка при экспорте в PDF:\n" + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                Debug.WriteLine(exc, "SettingsPg");
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Error,
+                    Message = "Ошибка шифрования данных",
+                    Details = exc.Message
+                });
+                MessageBox.Show($"Ошибка шифрования данных: {exc.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return "";
+            }
+            finally
+            {
+                vm.IsProgress = false;
+            }
+        }
+        private void Reset()
+        {
+            // Clear validation errors in ViewModel
+            ClearAllErrors();
+
+            // Clear data
+            Password = string.Empty;
+            Password1 = string.Empty;
+            Password2 = string.Empty;
+            OnPropertyChanged(nameof(Password));
+            OnPropertyChanged(nameof(Password1));
+            OnPropertyChanged(nameof(Password2));
+
+            // Clear PasswordBoxes
+            PwdPwb.Password = string.Empty;
+            Pw1Pwb.Password = string.Empty;
+            Pw2Pwb.Password = string.Empty;
+
+            // Get controls list
+            List<Control> controls = new List<Control> { PwdPwb, Pw1Pwb, Pw2Pwb };
+
+            // Clear control elements
+            ValidationHelper.ResetInvalid(PwdPwb, PasswordBox.TagProperty);
+            ValidationHelper.ResetInvalid(Pw1Pwb, PasswordBox.TagProperty);
+            ValidationHelper.ResetInvalid(Pw2Pwb, PasswordBox.TagProperty);
+
+            // Reset errors display
+            ValidationHelper.ForceErrorsDisplay(controls, false);
+        }
+        private async Task<bool> Save()
+        {
+            var (cat, name, op, scope) = (EventCategory.Auth, "Update", 2, "Пользователь");
+            try
+            {
+                vm.IsProgress = true;
+                vm.Set();
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Progress,
+                    Message = "Обновление данных"
+                });
+                await Request.ctx.SaveChangesAsync();
+                App.Current.OnPropertyChanged(nameof(App.CurrentUser)); // Notify app about changes
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Success,
+                    Message = "Данные успешно обновлены"
+                });
+                return true;
+            }
+            catch (Exception exc)
+            {
+                Debug.WriteLine(exc, "SettingsPg");
+                RaiseAppEvent(new AppEventArgs
+                {
+                    Category = cat,
+                    Name = name,
+                    Op = op,
+                    Scope = scope,
+                    Type = EventType.Error,
+                    Message = "Ошибка обновления данных",
+                    Details = exc.Message
+                });
+                MessageBox.Show($"Ошибка обновления данных: {exc.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+            finally
+            {
+                vm.IsProgress = false;
+            }
+        }
+        private async void SavePassword()
+        {
+            bool res = await Save();
+            if (res)
+            {
+                Reset();
+                MessageBox.Show("Новый пароль успешно сохранен. Для входа в приложение используйте новый пароль.", "Смена пароля", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
         private void SetQrCode(byte[] qrCodeBytes)
@@ -248,97 +509,105 @@ namespace HR.Pages
             imgQrCode.Source = Fs.LoadImage(qrCodeBytes);
             imgQrCode.Visibility = Visibility.Visible;
         }
-        private void SubmitBtn_Click(object sender, RoutedEventArgs e)
+        private bool Validate()
         {
-            // vm.Set();
+            // Sync Password property with PasswordBox
+            Password1 = Pw1Pwb.Password;
+            Password2 = Pw2Pwb.Password;
+
+            // Get controls list
+            List<Control> controls = new List<Control> { Pw1Pwb, Pw2Pwb };
+
+            // Force errors display
+            ValidationHelper.ForceErrorsDisplay(controls);
+
+            // Force validate for password boxes
+            ValidatePassword(Password1, Pw1Pwb);
+            ValidatePassword(Password2, Pw2Pwb);
+
+            // Get validity state
+            Dictionary<Control, bool> validity = ValidationHelper.GetValidityState(controls);
+
+            // Force update UI if error
+            foreach (var state in validity)
+                if (!state.Value) ValidationHelper.ForceUpdateUI(state.Key);
+
+            // Display validation warning popup
+            if (validity.Values.Contains(false))
+            {
+                ValidationMessage.Text = "Проверьте правильность введенных значений";
+                ValidationPopup.IsOpen = true;
+                return false;
+            }
+            return true;
         }
+        private void ValidatePassword(string password, PasswordBox pwdBx)
+        {
+            var rules = new List<ValidationRule> {
+                new PasswordLengthValidationRule { MinLength = 8 },
+                new StrongPasswordValidationRule()
+            };
+
+            ValidationResult result = new ValidationResult(true, null);
+            foreach (var rule in rules)
+            {
+                result = rule.Validate(password, CultureInfo.CurrentCulture);
+
+                var bindingExpression = pwdBx.GetBindingExpression(PasswordBox.TagProperty);
+                if (result.IsValid)
+                {
+                    Validation.ClearInvalid(bindingExpression);
+                }
+                else
+                {
+                    var validationError = new ValidationError(rule, bindingExpression)
+                    {
+                        ErrorContent = result.ErrorContent
+                    };
+                    Validation.MarkInvalid(bindingExpression, validationError);
+                }
+                if (!result.IsValid) break;
+            }
+        }
+
         private void GetQrBtn_Click(object sender, RoutedEventArgs e)
         {
             // Generate secret
-            (secret, vm.Secret) = Crypto.GenerateSecret();
+            (secretBytes, Secret) = Crypto.GenerateSecret();
             // Get and display QR code in Image
-            SetQrCode(Utils.GetQrCode(secret, "root"));
+            SetQrCode(Utils.GetQrCode(secretBytes, user.Login));
         }
-        private async Task SaveSecret()
+        private void SettingsPg_Loaded(object sender, RoutedEventArgs e)
         {
-            string basePath = Fs.GetFullRootPath(Crypto.keysPath);
-            var (key, iv) = await Fs.LoadKeysParallelAsync(basePath, "aes_key.bin", "aes_iv.bin");
-            string originalString = "abc123";
-            string encryptedString = Crypto.Encrypt(originalString, key, iv);
-            string decryptedString = Crypto.Decrypt(encryptedString, key, iv);
+            AdjustGridLayout(this.ActualWidth);
         }
-        FlowDocument CreateReceiptDocument()
+
+        private void SettingsPg_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            var doc = new FlowDocument();
-
-            doc.PagePadding = new Thickness(20);
-            doc.ColumnWidth = double.PositiveInfinity; // чтобы не разбивался на колонки
-
-            // Заголовок
-            var header = new Paragraph(new Bold(new Run("КАССОВЫЙ ЧЕК")));
-            header.FontSize = 24;
-            header.TextAlignment = TextAlignment.Center;
-            doc.Blocks.Add(header);
-
-            // Дата и время
-            var dateParagraph = new Paragraph(new Run($"Дата: {DateTime.Now:dd.MM.yyyy HH:mm}"));
-            dateParagraph.FontSize = 14;
-            dateParagraph.TextAlignment = TextAlignment.Right;
-            doc.Blocks.Add(dateParagraph);
-
-            // Таблица с товарами
-            var table = new Table();
-            table.CellSpacing = 0;
-            table.Columns.Add(new TableColumn() { Width = new GridLength(200) });
-            table.Columns.Add(new TableColumn() { Width = new GridLength(60) });
-            table.Columns.Add(new TableColumn() { Width = new GridLength(80) });
-
-            var rowGroup = new TableRowGroup();
-            table.RowGroups.Add(rowGroup);
-
-            // Заголовок таблицы
-            var headerRow = new TableRow();
-            headerRow.Cells.Add(new TableCell(new Paragraph(new Bold(new Run("Товар")))));
-            headerRow.Cells.Add(new TableCell(new Paragraph(new Bold(new Run("Кол-во")))));
-            headerRow.Cells.Add(new TableCell(new Paragraph(new Bold(new Run("Цена")))));
-            rowGroup.Rows.Add(headerRow);
-
-            // Пример строки товара
-            var itemRow = new TableRow();
-            itemRow.Cells.Add(new TableCell(new Paragraph(new Run("Молоко 1л"))));
-            itemRow.Cells.Add(new TableCell(new Paragraph(new Run("2"))));
-            itemRow.Cells.Add(new TableCell(new Paragraph(new Run("120 ₽"))));
-            rowGroup.Rows.Add(itemRow);
-
-            // Итого
-            var totalParagraph = new Paragraph(new Bold(new Run("Итого: 240 ₽")));
-            totalParagraph.FontSize = 16;
-            totalParagraph.TextAlignment = TextAlignment.Right;
-            doc.Blocks.Add(table);
-            doc.Blocks.Add(totalParagraph);
-
-            return doc;
+            AdjustGridLayout(e.NewSize.Width);
         }
 
-        private void Hyperlink_Click(object sender, RoutedEventArgs e)
-        {
-            //ExportToPdf(CloneFlowDocument(ManualRtb.Document), "2FA_manual");
-            var receiptDoc = CreateReceiptDocument();
-            ExportToPdf(receiptDoc, "чек");
-        }
-
-        private void CodeTxb_TextChanged(object sender, TextChangedEventArgs e)
+        private async void CodeTxb_TextChanged(object sender, TextChangedEventArgs e)
         {
             TextBox txb = (TextBox)sender;
             if (Validation.GetHasError(txb)) return;
+
             try
             {
-                var totp = new Totp(secret);
+                var totp = new Totp(secretBytes);
                 bool isValid = totp.VerifyTotp(vm.Code, out long timeStepMatched, new VerificationWindow(2, 2));
                 if (isValid)
                 {
+                    string encryptedSecret = await GetEncryptedSecret(Secret);
+                    if (string.IsNullOrWhiteSpace(encryptedSecret)) return;
+
+                    vm.Secret = encryptedSecret;
+                    vm.Is2FA = true;
+                    bool res = await Save();
+                    if (!res) return;
+
                     StatusInformer.ReportSuccess($"Успешное подключение 2FA");
-                    MessageBox.Show("Двухэтапная аутентификация успешно подключена!\n\n" +
+                    MessageBox.Show("Двухфакторная аутентификация успешно подключена!\n\n" +
                         "Теперь ваша учетная запись защищена дополнительным уровнем безопасности.\n\n" +
                         "• При каждом входе в систему после ввода пароля вам потребуется ввести шестизначный код из приложения Authenticator на вашем смартфоне.\n" +
                         "• Код обновляется каждые 30 секунд, так что вводите актуальный.\n\n" +
@@ -353,7 +622,7 @@ namespace HR.Pages
                 else
                 {
                     StatusInformer.ReportFailure($"Ошибка проверки кода регистрации 2FA");
-                    MessageBox.Show("Ошибка проверки кода двухэтапной аутентификации.\n\n" +
+                    MessageBox.Show("Ошибка проверки кода двухфакторной аутентификации.\n\n" +
                         "Введённый код неверен. Проверьте код из приложения Google Authenticator и попробуйте снова.\n\n" +
                         "• Убедитесь, что время на вашем устройстве синхронизировано и установлено правильно.\n" +
                         "• Введите актуальный шестизначный код, который обновляется каждые 30 секунд.\n" +
@@ -372,7 +641,7 @@ namespace HR.Pages
                     "Ошибка 2FA",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
-                }
+            }
         }
 
         private async void CopySecretBtn_Click(object sender, RoutedEventArgs e)
@@ -400,6 +669,83 @@ namespace HR.Pages
 
             // Hiding animation
             CopiedTextBlock.BeginAnimation(UIElement.OpacityProperty, fadeOut);
+        }
+        private void PwdPwb_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            var pb = (PasswordBox)sender;
+            Password = pb.Password;
+        }
+        private void Pw1Pwb_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            var pb = (PasswordBox)sender;
+            Password1 = pb.Password;
+        }
+        private void Pw2Pwb_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            Password2 = ((PasswordBox)sender).Password;
+        }
+        private void TipBtn_Click(object sender, RoutedEventArgs e)
+        {
+            TipPopup.IsOpen = !TipPopup.IsOpen; // переключаем видимость Popup
+        }
+        private void TogglePwdBtn_Click(object sender, RoutedEventArgs e)
+        {
+            IsPwdOn = !IsPwdOn;
+            if (IsPwdOn)
+            {
+                PwdTxt.Focus();
+                ValidationHelper.SetShowErrors(PwdTxt, true);
+                ValidationHelper.SetTouched(PwdTxt, true);
+                ValidationHelper.ForceValidate(PwdTxt, TextBox.TextProperty);
+            }
+            else
+            {
+                PwdPwb.Focus();
+                ValidationHelper.SetShowErrors(PwdPwb, true);
+                ValidationHelper.SetTouched(PwdPwb, true);
+                ValidatePassword(Password, PwdPwb);
+            }
+        }
+        private void TogglePwd1Btn_Click(object sender, RoutedEventArgs e)
+        {
+            IsPwd1On = !IsPwd1On;
+            if (IsPwd1On)
+            {
+                Pw1Txt.Focus();
+                ValidationHelper.SetShowErrors(Pw1Txt, true);
+                ValidationHelper.SetTouched(Pw1Txt, true);
+                ValidationHelper.ForceValidate(Pw1Txt, TextBox.TextProperty);
+            }
+            else
+            {
+                Pw1Pwb.Focus();
+                ValidationHelper.SetShowErrors(Pw1Pwb, true);
+                ValidationHelper.SetTouched(Pw1Pwb, true);
+                ValidatePassword(Password1, Pw1Pwb);
+            }
+        }
+        private void TogglePwd2Btn_Click(object sender, RoutedEventArgs e)
+        {
+            IsPwd2On = !IsPwd2On;
+            if (IsPwd2On)
+            {
+                Pw2Txt.Focus();
+                ValidationHelper.SetShowErrors(Pw2Txt, true);
+                ValidationHelper.SetTouched(Pw2Txt, true);
+                ValidationHelper.ForceValidate(Pw2Txt, TextBox.TextProperty);
+            }
+            else
+            {
+                Pw2Pwb.Focus();
+                ValidationHelper.SetShowErrors(Pw2Pwb, true);
+                ValidationHelper.SetTouched(Pw2Pwb, true);
+                ValidatePassword(Password2, Pw2Pwb);
+            }
+        }
+
+        private async void TfaChbx_Click(object sender, RoutedEventArgs e)
+        {
+            await Save();
         }
     }
 }

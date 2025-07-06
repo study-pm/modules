@@ -7,11 +7,13 @@
       xmlns:uc="clr-namespace:HR.Controls"
       xmlns:utils="clr-namespace:HR.Utilities"
       mc:Ignorable="d"
-      d:DesignHeight="500" d:DesignWidth="800"
+      d:DesignHeight="1000" d:DesignWidth="800"
       Title="SettingsPg">
     <Page.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
-        <utils:InverseBoolToVisibilityConverter x:Key="InvBoolConv"/>
+        <utils:InverseBooleanConverter x:Key="InvBoolConv"/>
+        <utils:InverseBoolToVisibilityConverter x:Key="InvBoolToVisConv"/>
+        <utils:NotNullOrEmptyToVisibilityConverter x:Key="NotEmptyToVisConv"/>
     </Page.Resources>
     <ScrollViewer Style="{StaticResource MainView}">
         <StackPanel>
@@ -19,101 +21,234 @@
             <TextBlock Style="{StaticResource Paragraph}">
                 Данный раздел содержит информацию о пользовательских настройках, определяющих способ доступа к учетной записи.
                 Здесь можно поменять текущий пароль.
-                Для обеспечения большей безопасности рекомендуется включить двухэтапную аутентификацию.
+                Для обеспечения большей безопасности рекомендуется включить двухфакторную аутентификацию.
             </TextBlock>
-            <Grid x:Name="MainGrid" Margin="0 30 0 0">
+            <Grid x:Name="MainGrid" Margin="0 10 0 0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <StackPanel x:Name="FirstSection" MinWidth="300" Margin="5" HorizontalAlignment="Stretch">
-                <StackPanel Orientation="Horizontal">
                     <Label Foreground="{StaticResource magentaDarkBrush}" FontSize="16">Смена пароля</Label>
-                    <uc:Details Type="Question"
-                                ToolTip="Для смены пароля необходимо введение текущего используемого пароля и нового пароля с подтверждением (повторным введением). Устанавливаемый пароль должен соответствовать основным требованиям безопасности. (содержать не менее 8 символов, включая буквы в разных регистрах, цифры и специальные символы)."
+                    <TextBlock Style="{StaticResource Paragraph}" Margin="5 5 5 10">
+                            Для смены пароля необходимо введение текущего используемого пароля и нового пароля с подтверждением (повторным введением).
+                    </TextBlock>
+                    <StackPanel Style="{StaticResource FormEl}">
+                        <StackPanel Orientation="Horizontal">
+                            <Label>Текущий пароль</Label>
+                            <uc:Details Type="Asterisk" ToolTip="Обязательно для заполнения"/>
+                        </StackPanel>
+                        <Grid>
+                            <PasswordBox x:Name="PwdPwb" Padding="5 0 25 0"
+                                         IsEnabled="{Binding vm.IsProgress, Converter={StaticResource InvBoolConv}}"
+                                         Tag="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Visibility="{Binding IsPwdOn, Converter={StaticResource InvBoolToVisConv}}"
+                                         utils:ValidationHelper.AutoErrorVisibility="True"
+                                         utils:ValidationHelper.EnableTouchedTracking="True"
+                                         PasswordChanged="PwdPwb_PasswordChanged"
+                                         />
+                            <TextBox x:Name="PwdTxt" Padding="5 0 25 0"
+                                     Visibility="{Binding IsPwdOn, Converter={StaticResource BoolToVis}}"
+                                     utils:ValidationHelper.AutoErrorVisibility="True"
+                                     utils:ValidationHelper.EnableTouchedTracking="True"
+                                     >
+                                <TextBox.Text>
+                                    <Binding Path="Password" UpdateSourceTrigger="PropertyChanged" Mode="TwoWay"
+                                             ValidatesOnDataErrors="True" NotifyOnValidationError="True"
+                                             ValidatesOnNotifyDataErrors="True"
+                                             >
+                                        <Binding.ValidationRules>
+                                            <utils:NotEmptyValidationRule />
+                                            <utils:StrongPasswordValidationRule />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Button ToolTip="Показать пароль" HorizontalAlignment="Right"
+                                    Style="{StaticResource IconButton}"
+                                    Visibility="{Binding IsPwdOn, Converter={StaticResource InvBoolToVisConv}}"
+                                    Click="TogglePwdBtn_Click"
+                                    >
+                                <StackPanel>
+                                    <Viewbox Stretch="Fill" Width="19" Height="14">
+                                        <Path Fill="{StaticResource cyanDarkBrush}" Data="{StaticResource EyeSolidPath}"/>
+                                    </Viewbox>
+                                </StackPanel>
+                            </Button>
+                            <Button ToolTip="Скрыть пароль" HorizontalAlignment="Right"  Margin="5 2 0 0"
+                                    Style="{StaticResource IconButton}"
+                                    Visibility="{Binding IsPwdOn, Converter={StaticResource BoolToVis}}"
+                                    Click="TogglePwd1Btn_Click"
+                                    >
+                                <StackPanel>
+                                    <Viewbox Stretch="Fill" Width="20" Height="16">
+                                        <Path Fill="{StaticResource cyanDarkBrush}" Data="{StaticResource EyeSlashSolidPath}"/>
+                                    </Viewbox>
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+                    </StackPanel>
+
+                    <StackPanel Style="{StaticResource FormEl}">
+                        <StackPanel Orientation="Horizontal">
+                            <Label>Новый пароль</Label>
+                            <uc:Details Type="Asterisk" ToolTip="Обязательно для заполнения"/>
+                            <uc:Details Type="Question"
+                            ToolTip="Не менее 8 знаков, включая буквы в разных регистрах, цифры и спецсимволы"
+                            />
+                        </StackPanel>
+                        <Grid>
+                            <PasswordBox x:Name="Pw1Pwb" Padding="5 0 25 0"
+                                         IsEnabled="{Binding vm.IsProgress, Converter={StaticResource InvBoolConv}}"
+                                         Tag="{Binding Password1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Visibility="{Binding IsPwd1On, Converter={StaticResource InvBoolToVisConv}}"
+                                         utils:ValidationHelper.AutoErrorVisibility="True"
+                                         utils:ValidationHelper.EnableTouchedTracking="True"
+                                         PasswordChanged="Pw1Pwb_PasswordChanged"
+                                         />
+                            <TextBox x:Name="Pw1Txt" Padding="5 0 25 0"
+                                     Visibility="{Binding IsPwd1On, Converter={StaticResource BoolToVis}}"
+                                     utils:ValidationHelper.AutoErrorVisibility="True"
+                                     utils:ValidationHelper.EnableTouchedTracking="True"
+                                     >
+                                <TextBox.Text>
+                                    <Binding Path="Password1" UpdateSourceTrigger="PropertyChanged" Mode="TwoWay"
+                                             ValidatesOnDataErrors="True" NotifyOnValidationError="True"
+                                             ValidatesOnNotifyDataErrors="True"
+                                             >
+                                        <Binding.ValidationRules>
+                                            <utils:NotEmptyValidationRule />
+                                            <utils:StrongPasswordValidationRule />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Button ToolTip="Показать пароль" HorizontalAlignment="Right"
+                                    Style="{StaticResource IconButton}"
+                                    Visibility="{Binding IsPwd1On, Converter={StaticResource InvBoolToVisConv}}"
+                                    Click="TogglePwd1Btn_Click"
+                                    >
+                                <StackPanel>
+                                    <Viewbox Stretch="Fill" Width="19" Height="14">
+                                        <Path Fill="{StaticResource cyanDarkBrush}" Data="{StaticResource EyeSolidPath}"/>
+                                    </Viewbox>
+                                </StackPanel>
+                            </Button>
+                            <Button ToolTip="Скрыть пароль" HorizontalAlignment="Right"  Margin="5 2 0 0"
+                                    Style="{StaticResource IconButton}"
+                                    Visibility="{Binding IsPwd1On, Converter={StaticResource BoolToVis}}"
+                                    Click="TogglePwd1Btn_Click"
+                                    >
+                                <StackPanel>
+                                    <Viewbox Stretch="Fill" Width="20" Height="16">
+                                        <Path Fill="{StaticResource cyanDarkBrush}" Data="{StaticResource EyeSlashSolidPath}"/>
+                                    </Viewbox>
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+                    </StackPanel>
+
+                    <StackPanel Style="{StaticResource FormEl}">
+                        <StackPanel Orientation="Horizontal">
+                            <Label>Повтор пароля</Label>
+                            <uc:Details Type="Asterisk" ToolTip="Обязательно для заполнения"/>
+                            <uc:Details Type="Question"
+                                ToolTip="Должен совпадать с новым паролем"
                                 />
-                </StackPanel>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" MaxWidth="300"/>
-                        <ColumnDefinition Width="2*" MaxWidth="400" />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-                    <Label Style="{StaticResource FormLabel}" ToolTip="Текущий пароль">Текущий пароль</Label>
-                    <DockPanel Grid.Column="1" Margin="0 10">
-                        <uc:IconHighlightButton Width="20" Height="20" Margin="10 5 30 5" ToolTip="Показать пароль" DockPanel.Dock="Right"
-                                >
-                            <StackPanel>
-                                <Viewbox Stretch="Fill" Width="20" Height="16">
-                                    <Path Fill="{StaticResource BlueBrush}" Data="{StaticResource EyeSolidPath}"/>
-                                </Viewbox>
-                            </StackPanel>
-                        </uc:IconHighlightButton>
-                        <PasswordBox x:Name="CurPwdPwb" />
-                    </DockPanel>
-                    <Label Grid.Row="1" Style="{StaticResource FormLabel}" ToolTip="Новый пароль">Новый пароль</Label>
-                    <DockPanel Grid.Column="1" Grid.Row="1" Margin="0 10">
-                        <uc:IconHighlightButton Width="20" Height="20" Margin="10 5 30 5" ToolTip="Показать пароль" DockPanel.Dock="Right"
-                                                >
-                            <StackPanel>
-                                <Viewbox Stretch="Fill" Width="20" Height="16">
-                                    <Path Fill="{StaticResource BlueBrush}" Data="{StaticResource EyeSolidPath}"/>
-                                </Viewbox>
-                            </StackPanel>
-                        </uc:IconHighlightButton>
-                        <PasswordBox x:Name="NewPwdPwb" />
-                    </DockPanel>
-                    <Label Grid.Row="2" Style="{StaticResource FormLabel}" ToolTip="Повтор пароля">Повтор пароля</Label>
-                    <DockPanel Grid.Column="1" Grid.Row="2" Margin="0 10">
-                        <uc:IconHighlightButton Width="20" Height="20" Margin="10 5 30 5" ToolTip="Показать пароль" DockPanel.Dock="Right"
-    >
-                            <StackPanel>
-                                <Viewbox Stretch="Fill" Width="20" Height="16">
-                                    <Path Fill="{StaticResource BlueBrush}" Data="{StaticResource EyeSolidPath}"/>
-                                </Viewbox>
-                            </StackPanel>
-                        </uc:IconHighlightButton>
-                        <PasswordBox x:Name="RepeatPwdPwb" />
-                    </DockPanel>
-                </Grid>
-                    <Grid Margin="0 10 0 0" HorizontalAlignment="Right">
+                        </StackPanel>
+                        <Grid>
+                            <PasswordBox x:Name="Pw2Pwb" Padding="5 0 25 0"
+                                         IsEnabled="{Binding IsProgress, Converter={StaticResource InvBoolConv}}"
+                                         Tag="{Binding Password2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Visibility="{Binding IsPwd2On, Converter={StaticResource InvBoolToVisConv}}"
+                                         utils:ValidationHelper.AutoErrorVisibility="True"
+                                         utils:ValidationHelper.EnableTouchedTracking="True"
+                                         PasswordChanged="Pw2Pwb_PasswordChanged"
+                                         />
+                            <TextBox x:Name="Pw2Txt" Padding="5 0 25 0"
+                                     Visibility="{Binding IsPwd2On, Converter={StaticResource BoolToVis}}"
+                                     utils:ValidationHelper.AutoErrorVisibility="True"
+                                     utils:ValidationHelper.EnableTouchedTracking="True"
+                                     >
+                                <TextBox.Text>
+                                    <Binding Path="Password2" UpdateSourceTrigger="PropertyChanged" Mode="TwoWay"
+                                             ValidatesOnDataErrors="True" NotifyOnValidationError="True"
+                                             ValidatesOnNotifyDataErrors="True"
+                                             >
+                                        <Binding.ValidationRules>
+                                            <utils:NotEmptyValidationRule />
+                                            <utils:StrongPasswordValidationRule />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Button ToolTip="Показать пароль" HorizontalAlignment="Right"
+                                    Style="{StaticResource IconButton}"
+                                    Visibility="{Binding IsPwd2On, Converter={StaticResource InvBoolToVisConv}}"
+                                    Click="TogglePwd2Btn_Click"
+                                    >
+                                <StackPanel>
+                                    <Viewbox Stretch="Fill" Width="19" Height="14">
+                                        <Path Fill="{StaticResource cyanDarkBrush}" Data="{StaticResource EyeSolidPath}"/>
+                                    </Viewbox>
+                                </StackPanel>
+                            </Button>
+                            <Button ToolTip="Скрыть пароль" HorizontalAlignment="Right"  Margin="5 2 0 0"
+                                    Style="{StaticResource IconButton}"
+                                    Visibility="{Binding IsPwd2On, Converter={StaticResource BoolToVis}}"
+                                    Click="TogglePwd2Btn_Click"
+                                    >
+                                <StackPanel>
+                                    <Viewbox Stretch="Fill" Width="20" Height="16">
+                                        <Path Fill="{StaticResource cyanDarkBrush}" Data="{StaticResource EyeSlashSolidPath}"/>
+                                    </Viewbox>
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+                    </StackPanel>
+                    <Grid Margin="5 20">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="5"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Button x:Name="ResetBtn" Grid.Column="0" Content="Отменить" IsCancel="True"
+                        <Button x:Name="ResetBtn" Grid.Column="0" Content="Сброс" IsCancel="True"
                                 Style="{StaticResource BlueBtn}"
-                                IsEnabled="{Binding IsEnabled}"
-                                Click="ResetBtn_Click"
+                                Command="{Binding ResetCmd, RelativeSource={RelativeSource AncestorType=Page}}"
                                 />
-                        <Button x:Name="SignInBtn" Grid.Column="2" IsDefault="True"
+                        <Button Grid.Column="2" IsDefault="True"
                                 Style="{StaticResource GreenBtn}"
-                                IsEnabled="{Binding IsEnabled}"
-                                Click="SubmitBtn_Click"
+                                Command="{Binding SubmitCmd, RelativeSource={RelativeSource AncestorType=Page}}"
                                 >
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Сохранить" Visibility="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}" />
-                                <uc:Dots Visibility="{Binding IsInProgress, Converter={StaticResource BoolToVis}}" />
+                                <TextBlock Text="Сменить"
+                                           Visibility="{Binding vm.IsProgress, Converter={StaticResource InvBoolToVisConv}}" />
+                                <uc:Dots Visibility="{Binding vm.IsProgress, Converter={StaticResource BoolToVis}}" />
                             </StackPanel>
                         </Button>
+                        <Popup x:Name="ValidationPopup"
+                               PlacementTarget="{Binding ElementName=RootGrid}" Placement="Center"
+                               VerticalOffset="40" StaysOpen="False" AllowsTransparency="True"
+                               IsOpen="False">
+                            <Border Background="#C0FF2200" Padding="8" CornerRadius="5" >
+                                <TextBlock x:Name="ValidationMessage" Foreground="White" FontSize="12"/>
+                            </Border>
+                        </Popup>
                     </Grid>
                 </StackPanel>
+
                 <StackPanel x:Name="SecondSection" MinWidth="300" Margin="5" HorizontalAlignment="Stretch">
                     <StackPanel Orientation="Horizontal">
                         <Label Foreground="{StaticResource magentaDarkBrush}" FontSize="16">Безопасный вход</Label>
                         <uc:Details Type="Question"
-                                    ToolTip="Для обеспечения безопасного входа рекомендуется настроить и подключить двухэтапную аутентификацию"
+                                    ToolTip="Для обеспечения безопасного входа рекомендуется настроить и подключить двухфакторную аутентификацию"
                                     />
                     </StackPanel>
+                    <StackPanel Margin="5">
+                    <StackPanel Visibility="{Binding vm.IsSecret, Converter={StaticResource InvBoolToVisConv}}">
                     <TextBlock Style="{StaticResource Paragraph}">
-                        Безопасный вход в приложение обеспечивается за счет применения двухэтапной аутентификации с двумя факторами.
-                        В качестве первого фактора используется пароль к учетной записи, второй этап подразумевает использование второго фактора — одноразовых кодов TOTP (Time-based One-Time Password), для генерации которых может быть использовано любое приложение, поддерживающее TOTP (Google Authenticator, Microsoft Authenticator, LastPass Authenticator, Яндекс.Ключ).
-                        Для подключения двухэтапной аутентификации с использованием второго фактора следуйте шагам, описанным ниже
+                        Безопасный вход в приложение обеспечивается за счет применения двухфакторной аутентификации,
+                        для подключения которой следуйте шагам, описанным ниже.
                     </TextBlock>
                     <RichTextBox x:Name="ManualRtb" IsReadOnly="True" IsDocumentEnabled="True" VerticalScrollBarVisibility="Auto" Margin="0" Padding="0" BorderThickness="0">
                         <FlowDocument>
@@ -146,11 +281,35 @@
                                     </BlockUIContainer>
                                     <BlockUIContainer>
                                         <StackPanel Style="{StaticResource FormElement}"
-                                                    Visibility="{Binding IsSecret, Converter={StaticResource BoolToVis}}"
+                                                    Visibility="{Binding Secret, Converter={StaticResource NotEmptyToVisConv}}"
                                                     >
                                             <Label>Секретный ключ</Label>
                                             <Grid>
                                                 <TextBox x:Name="SecretTxb" Text="{Binding Secret}" Padding="5 0 25 0" />
+                                                <Button x:Name="TipBtn" Style="{StaticResource IconButton}" HorizontalAlignment="Right" Margin="0 0 25 0"
+                                                        ToolTip="Скопируйте и сохраните секретный ключ для восстановления доступа при потере устройства с аутентификатором."
+                                                        Click="TipBtn_Click"
+                                                        >
+                                                    <StackPanel>
+                                                        <Viewbox Stretch="Fill" Width="12" Height="16">
+                                                            <Path Fill="Goldenrod" Data="{StaticResource LightbulbSolidPath}"/>
+                                                        </Viewbox>
+                                                    </StackPanel>
+                                                </Button>
+                                                <Popup x:Name="TipPopup"
+                                                        PlacementTarget="{Binding ElementName=SecretTxb}" Placement="Bottom"
+                                                        StaysOpen="False" AllowsTransparency="True" PopupAnimation="Fade"
+                                                        HorizontalOffset="50" VerticalOffset="5"
+                                                       >
+                                                    <Border Background="#DE1A7580" Padding="10" CornerRadius="5"
+                                                            BorderBrush="Transparent" BorderThickness="1"
+                                                            Opacity="0.95"
+                                                            >
+                                                        <TextBlock Text="Скопируйте и сохраните секретный ключ для восстановления доступа при потере устройства с аутентификатором."
+                                                                   TextWrapping="Wrap" Width="300" Foreground="White"
+                                                                   />
+                                                    </Border>
+                                                </Popup>
                                                 <Button x:Name="CopySecretBtn" Style="{StaticResource IconButton}" HorizontalAlignment="Right"
                                                         Click="CopySecretBtn_Click"
                                                         >
@@ -195,7 +354,7 @@
                                 </ListItem>
                                 <ListItem Margin="10">
                                     <Paragraph FontSize="14">
-                                        <Bold>Введите шестизначный код</Bold> из приложения TOTP в поле для подтверждения подключения 2FA:
+                                        <Bold>Введите шестизначный код</Bold> из приложения TOTP в поле для подтверждения подключения 2FA.
                                     </Paragraph>
                                 </ListItem>
                             </List>
@@ -203,16 +362,17 @@
                     </RichTextBox>
 
                     <StackPanel Style="{StaticResource FormElement}" HorizontalAlignment="Center" Margin="0"
-                                Visibility="{Binding IsSecret, Converter={StaticResource BoolToVis}}"
+                                Visibility="{Binding Secret, Converter={StaticResource NotEmptyToVisConv}}"
                                 >
                         <Label HorizontalAlignment="Center">Код</Label>
                         <TextBox x:Name="CodeTxb" Width="70"
-                                 IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
+                                 IsEnabled="{Binding vm.IsProgress, Converter={StaticResource InvBoolToVisConv}}"
                                  utils:ValidationHelper.AutoErrorVisibility="True"
-                                 utils:ValidationHelper.EnableTouchedTracking="True" TextChanged="CodeTxb_TextChanged"
+                                 utils:ValidationHelper.EnableTouchedTracking="True"
+                                 TextChanged="CodeTxb_TextChanged"
                                 >
                             <TextBox.Text>
-                                <Binding Path="Code" UpdateSourceTrigger="PropertyChanged"
+                                <Binding Path="vm.Code" UpdateSourceTrigger="PropertyChanged"
                                          ValidatesOnDataErrors="True" NotifyOnValidationError="True">
                                     <Binding.ValidationRules>
                                         <utils:DigitsOnlyValidationRule/>
@@ -223,51 +383,21 @@
                             </TextBox.Text>
                         </TextBox>
                     </StackPanel>
-
-                    <RichTextBox>
-                        <FlowDocument>
-                            <List>
-                                <ListItem Margin="10">
-                                    <Paragraph FontSize="14">
-                                        <Bold>На этом настройка завершена.</Bold>
-                                        <LineBreak/>
-                                        • После этого двухфакторная аутентификация будет включена автоматически.
-                                        <LineBreak/>
-                                        • Теперь при входе в аккаунт после введения пароля дополнительно будет нужно вводить код из приложения.
-                                    </Paragraph>
-                                </ListItem>
-                                <ListItem Margin="10">
-                                    <Paragraph FontSize="14">
-                                        <Bold>Вы всегда можете изменить режим входа в приложение.</Bold>
-                                        <LineBreak/>
-                                        • По завершении настройки двухэтапной аутентификации вы сможете включать и выключать ее по своему усмотрению в этом же разделе.
-                                        <LineBreak/>
-                                        • Кроме того, можно запоминать состояние аутентификации, чтобы не приходилось входить в учетную запись при каждом запуске приложения. Это можно сделать, включив настройку «Оставаться в системе» в разделе «Предпочтения».
-                                    </Paragraph>
-                                </ListItem>
-                            </List>
-
-                            <Paragraph FontWeight="Bold" Margin="0,10,0,5">Советы:</Paragraph>
-                            <List MarkerStyle="Disc" Margin="20,0,0,0">
-                                <ListItem>
-                                    <Paragraph>Сохраните резервные коды или секретный ключ для восстановления доступа при потере телефона.</Paragraph>
-                                </ListItem>
-                                <ListItem>
-                                    <Paragraph>Убедитесь, что время на смартфоне синхронизировано автоматически для корректной генерации кодов.</Paragraph>
-                                </ListItem>
-                                <ListItem>
-                                    <Paragraph>При смене телефона перенесите аккаунты Google Authenticator согласно инструкции приложения.</Paragraph>
-                                </ListItem>
-                            </List>
-                        </FlowDocument>
-                    </RichTextBox>
-
-                    <StackPanel Orientation="Horizontal">
-                        <CheckBox Content="Включить двухэтапную аутентификацию"
-                              IsEnabled="{Binding IsInProgress, Converter={StaticResource InvBoolConv}}"
-                              IsChecked="{Binding Is2FA}"
-                              />
                     </StackPanel>
+                    <StackPanel Visibility="{Binding vm.IsSecret, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Style="{StaticResource Paragraph}" Margin="0">
+                            Двухфакторная аутентификация успешно настроена.
+                            Режим входа в приложение может быть изменен в любой момент времени.
+                        </TextBlock>
+                        <StackPanel Orientation="Horizontal" Margin="0 20">
+                            <CheckBox x:Name="TfaChbx"
+                                      Content="Включить двухфакторную аутентификацию"
+                                      IsEnabled="{Binding vm.IsProgress, Converter={StaticResource InvBoolToVisConv}}"
+                                      IsChecked="{Binding vm.Is2FA}" Click="TfaChbx_Click"
+                                      />
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
                 </StackPanel>
             </Grid>
         </StackPanel>

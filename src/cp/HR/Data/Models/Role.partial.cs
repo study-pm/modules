@@ -17,11 +17,11 @@ namespace HR.Data.Models
                     case 1:
                         return "администратор";
                     case 2:
-                        return "сопровождающий";
-                    case 3:
                         return "редактор";
+                    case 3:
+                        return "корректор";
                     case 4:
-                        return "пользователь";
+                        return "читатель";
                     default:
                         return Title;
                 }

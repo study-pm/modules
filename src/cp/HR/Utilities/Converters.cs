@@ -40,7 +40,7 @@ namespace HR.Utilities
         {
             if (value is int index)
             {
-                // Чередуем цвет для чётных и нечётных строк
+                // Alterate color for even and odd rows
                 return (index % 2 == 0) ? Brushes.Transparent : new SolidColorBrush(Color.FromRgb(250, 250, 250)); // #F0F8FF
             }
             return Brushes.Transparent;
@@ -53,14 +53,6 @@ namespace HR.Utilities
     }
     public class CapitalizeFirstLetterConverter : IValueConverter
     {
-        /// <summary>
-        /// Converts a string so that its first character is uppercase and the rest are lowercase.
-        /// </summary>
-        /// <param name="value">The input value, expected to be a string.</param>
-        /// <param name="targetType">The target binding type.</param>
-        /// <param name="parameter">Optional parameter (not used).</param>
-        /// <param name="culture">The culture info.</param>
-        /// <returns>The capitalized string or the original value if not a string.</returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is string input && !string.IsNullOrWhiteSpace(input))
@@ -73,10 +65,6 @@ namespace HR.Utilities
 
             return value;
         }
-
-        /// <summary>
-        /// ConvertBack is not implemented and throws NotSupportedException.
-        /// </summary>
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotSupportedException("ConvertBack is not supported.");
@@ -254,8 +242,7 @@ namespace HR.Utilities
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
             => throw new NotImplementedException();
-            // Если не нужна двунаправленная привязка, можно вернуть Binding.DoNothing
-            // return Binding.DoNothing;
+            // return Binding.DoNothing; // if two way binding is not used
     }
     public class ListToStringConverter : IValueConverter
     {
@@ -345,16 +332,38 @@ namespace HR.Utilities
         {
             if (value is int intValue)
             {
-                // Если значение 0, скрываем элемент
+                // Hide element if valus is 0
                 return intValue == 0 ? Visibility.Collapsed : Visibility.Visible;
             }
-            // Если значение не int или null, скрываем элемент
+            // Hide element if value is not int or null
             return Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
+        }
+    }
+    public class NotNullOrEmptyToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null)
+                return Visibility.Collapsed;
+
+            if (value is string str)
+                return string.IsNullOrEmpty(str) ? Visibility.Collapsed : Visibility.Visible;
+
+            if (value is ICollection collection)
+                return collection.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+
+            // Check for null for other types
+            return Visibility.Visible;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException();
         }
     }
     public class NotNullToBoolConverter : IValueConverter
@@ -384,17 +393,17 @@ namespace HR.Utilities
     }
     public class PageToIsEnabledConverter : IValueConverter
     {
-        // value - имя текущей страницы (string)
-        // parameter - имя страницы для пункта меню (string)
+        // value - current page name (string)
+        // parameter - menu item page name (string)
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             string currentPage = value as string;
             string menuPage = parameter as string;
 
             if (string.IsNullOrEmpty(currentPage) || string.IsNullOrEmpty(menuPage))
-                return true; // пункт меню доступен по умолчанию
+                return true; // default available menu item
 
-            // Если текущая страница совпадает с пунктом меню - пункт не доступен (IsEnabled = false)
+            // Item is not available if current page matches menu item (IsEnabled = false)
             return !string.Equals(currentPage, menuPage, StringComparison.OrdinalIgnoreCase);
         }
 
@@ -405,8 +414,8 @@ namespace HR.Utilities
     }
     public class PageToIsCheckedConverter : IValueConverter
     {
-        // value - текущая страница (string)
-        // parameter - строка с перечнем страниц, связанных с пунктом меню, разделенных запятыми
+        // value - current page(string)
+        // parameter - string with comma-separated pages list associated with menu item
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             string currentPage = value as string;
@@ -439,7 +448,6 @@ namespace HR.Utilities
             if (pageParam == null || title == null)
                 return false;
 
-            // Логика сравнения, например:
             return pageParam.Equals(title, StringComparison.OrdinalIgnoreCase);
         }
 
