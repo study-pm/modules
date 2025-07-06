@@ -390,10 +390,11 @@
                             Режим входа в приложение может быть изменен в любой момент времени.
                         </TextBlock>
                         <StackPanel Orientation="Horizontal" Margin="0 20">
-                            <CheckBox Content="Включить двухфакторную аутентификацию"
-                              IsEnabled="{Binding vm.IsProgress, Converter={StaticResource InvBoolToVisConv}}"
-                              IsChecked="{Binding vm.Is2FA}"
-                              />
+                            <CheckBox x:Name="TfaChbx"
+                                      Content="Включить двухфакторную аутентификацию"
+                                      IsEnabled="{Binding vm.IsProgress, Converter={StaticResource InvBoolToVisConv}}"
+                                      IsChecked="{Binding vm.Is2FA}" Click="TfaChbx_Click"
+                                      />
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>

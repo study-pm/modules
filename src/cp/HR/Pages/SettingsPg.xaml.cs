@@ -31,6 +31,7 @@ using static HR.Services.AppEventHelper;
 using System.Globalization;
 using System.Data.Entity.Validation;
 using HR.Models;
+using Microsoft.Win32;
 
 namespace HR.Pages
 {
@@ -740,6 +741,11 @@ namespace HR.Pages
                 ValidationHelper.SetTouched(Pw2Pwb, true);
                 ValidatePassword(Password2, Pw2Pwb);
             }
+        }
+
+        private async void TfaChbx_Click(object sender, RoutedEventArgs e)
+        {
+            await Save();
         }
     }
 }
