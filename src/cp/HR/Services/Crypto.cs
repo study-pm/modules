@@ -10,7 +10,7 @@ using System.Windows.Input;
 
 namespace HR.Services
 {
-    internal static class Crypto
+    public static class Crypto
     {
         /// <summary>
         /// AES IV storage relative path
