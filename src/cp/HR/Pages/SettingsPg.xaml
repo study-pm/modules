@@ -78,7 +78,7 @@
                             <Button ToolTip="Скрыть пароль" HorizontalAlignment="Right"  Margin="5 2 0 0"
                                     Style="{StaticResource IconButton}"
                                     Visibility="{Binding IsPwdOn, Converter={StaticResource BoolToVis}}"
-                                    Click="TogglePwd1Btn_Click"
+                                    Click="TogglePwdBtn_Click"
                                     >
                                 <StackPanel>
                                     <Viewbox Stretch="Fill" Width="20" Height="16">
