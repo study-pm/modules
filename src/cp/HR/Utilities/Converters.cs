@@ -491,9 +491,11 @@ namespace HR.Utilities
                 case 0:
                     return Application.Current.TryFindResource("UserRegularPath") as Geometry;
                 case 1:
-                    return Application.Current.TryFindResource("CheckSolidPath") as Geometry;
+                    return Application.Current.TryFindResource("UserCheckSolidPath") as Geometry;
                 case 2:
-                    return Application.Current.TryFindResource("LockSolidPath") as Geometry;
+                    return Application.Current.TryFindResource("UserLockSolidPath") as Geometry;
+                case 3:
+                    return Application.Current.TryFindResource("UserTimesSolidPath") as Geometry;
                 default:
                     return null;
             }

@@ -114,6 +114,9 @@
     <Style x:Key="FormEl" TargetType="FrameworkElement">
         <Setter Property="Margin" Value="5"/>
     </Style>
+    <Style x:Key="FormElem" TargetType="FrameworkElement">
+        <Setter Property="Margin" Value="5 10"/>
+    </Style>
     <Style x:Key="FormElement" TargetType="FrameworkElement">
         <Setter Property="Margin" Value="0 10"/>
     </Style>
