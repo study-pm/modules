@@ -33,7 +33,7 @@
                     <TextBlock Style="{StaticResource Paragraph}" Margin="5 5 5 10">
                             Для смены пароля необходимо введение текущего используемого пароля и нового пароля с подтверждением (повторным введением).
                     </TextBlock>
-                    <StackPanel Style="{StaticResource FormEl}">
+                    <StackPanel Style="{StaticResource FormElem}">
                         <StackPanel Orientation="Horizontal">
                             <Label>Текущий пароль</Label>
                             <uc:Details Type="Asterisk" ToolTip="Обязательно для заполнения"/>
@@ -48,6 +48,7 @@
                                          PasswordChanged="PwdPwb_PasswordChanged"
                                          />
                             <TextBox x:Name="PwdTxt" Padding="5 0 25 0"
+                                     IsEnabled="{Binding vm.IsProgress, Converter={StaticResource InvBoolConv}}"
                                      Visibility="{Binding IsPwdOn, Converter={StaticResource BoolToVis}}"
                                      utils:ValidationHelper.AutoErrorVisibility="True"
                                      utils:ValidationHelper.EnableTouchedTracking="True"
@@ -67,6 +68,7 @@
                             <Button ToolTip="Показать пароль" HorizontalAlignment="Right"
                                     Style="{StaticResource IconButton}"
                                     Visibility="{Binding IsPwdOn, Converter={StaticResource InvBoolToVisConv}}"
+                                    IsEnabled="{Binding vm.IsProgress, Converter={StaticResource InvBoolConv}}"
                                     Click="TogglePwdBtn_Click"
                                     >
                                 <StackPanel>
@@ -78,6 +80,7 @@
                             <Button ToolTip="Скрыть пароль" HorizontalAlignment="Right"  Margin="5 2 0 0"
                                     Style="{StaticResource IconButton}"
                                     Visibility="{Binding IsPwdOn, Converter={StaticResource BoolToVis}}"
+                                    IsEnabled="{Binding vm.IsProgress, Converter={StaticResource InvBoolConv}}"
                                     Click="TogglePwdBtn_Click"
                                     >
                                 <StackPanel>
@@ -89,7 +92,7 @@
                         </Grid>
                     </StackPanel>
 
-                    <StackPanel Style="{StaticResource FormEl}">
+                    <StackPanel Style="{StaticResource FormElem}">
                         <StackPanel Orientation="Horizontal">
                             <Label>Новый пароль</Label>
                             <uc:Details Type="Asterisk" ToolTip="Обязательно для заполнения"/>
@@ -108,6 +111,7 @@
                                          />
                             <TextBox x:Name="Pw1Txt" Padding="5 0 25 0"
                                      Visibility="{Binding IsPwd1On, Converter={StaticResource BoolToVis}}"
+                                     IsEnabled="{Binding vm.IsProgress, Converter={StaticResource InvBoolConv}}"
                                      utils:ValidationHelper.AutoErrorVisibility="True"
                                      utils:ValidationHelper.EnableTouchedTracking="True"
                                      >
@@ -126,6 +130,7 @@
                             <Button ToolTip="Показать пароль" HorizontalAlignment="Right"
                                     Style="{StaticResource IconButton}"
                                     Visibility="{Binding IsPwd1On, Converter={StaticResource InvBoolToVisConv}}"
+                                    IsEnabled="{Binding vm.IsProgress, Converter={StaticResource InvBoolConv}}"
                                     Click="TogglePwd1Btn_Click"
                                     >
                                 <StackPanel>
@@ -137,6 +142,7 @@
                             <Button ToolTip="Скрыть пароль" HorizontalAlignment="Right"  Margin="5 2 0 0"
                                     Style="{StaticResource IconButton}"
                                     Visibility="{Binding IsPwd1On, Converter={StaticResource BoolToVis}}"
+                                    IsEnabled="{Binding vm.IsProgress, Converter={StaticResource InvBoolConv}}"
                                     Click="TogglePwd1Btn_Click"
                                     >
                                 <StackPanel>
@@ -148,7 +154,7 @@
                         </Grid>
                     </StackPanel>
 
-                    <StackPanel Style="{StaticResource FormEl}">
+                    <StackPanel Style="{StaticResource FormElem}">
                         <StackPanel Orientation="Horizontal">
                             <Label>Повтор пароля</Label>
                             <uc:Details Type="Asterisk" ToolTip="Обязательно для заполнения"/>
@@ -167,6 +173,7 @@
                                          />
                             <TextBox x:Name="Pw2Txt" Padding="5 0 25 0"
                                      Visibility="{Binding IsPwd2On, Converter={StaticResource BoolToVis}}"
+                                     IsEnabled="{Binding vm.IsProgress, Converter={StaticResource InvBoolConv}}"
                                      utils:ValidationHelper.AutoErrorVisibility="True"
                                      utils:ValidationHelper.EnableTouchedTracking="True"
                                      >
@@ -185,6 +192,7 @@
                             <Button ToolTip="Показать пароль" HorizontalAlignment="Right"
                                     Style="{StaticResource IconButton}"
                                     Visibility="{Binding IsPwd2On, Converter={StaticResource InvBoolToVisConv}}"
+                                    IsEnabled="{Binding vm.IsProgress, Converter={StaticResource InvBoolConv}}"
                                     Click="TogglePwd2Btn_Click"
                                     >
                                 <StackPanel>
@@ -196,6 +204,7 @@
                             <Button ToolTip="Скрыть пароль" HorizontalAlignment="Right"  Margin="5 2 0 0"
                                     Style="{StaticResource IconButton}"
                                     Visibility="{Binding IsPwd2On, Converter={StaticResource BoolToVis}}"
+                                    IsEnabled="{Binding vm.IsProgress, Converter={StaticResource InvBoolConv}}"
                                     Click="TogglePwd2Btn_Click"
                                     >
                                 <StackPanel>
