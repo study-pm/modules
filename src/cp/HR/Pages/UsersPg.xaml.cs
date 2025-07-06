@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data.Entity;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -27,6 +28,31 @@ using static HR.Services.AppEventHelper;
 
 namespace HR.Pages
 {
+    public class RoleToBrushConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is int roleId)
+            {
+                switch (roleId)
+                {
+                    case 1:
+                        return Brushes.Red;
+                    case 2:
+                        return Brushes.Orange;
+                    case 3:
+                        return Brushes.Blue;
+                    default:
+                        return Brushes.Green;
+                }
+            }
+            return Brushes.Gray;
+        }
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
     /// <summary>
     /// Interaction logic for UsersPg.xaml
     /// </summary>
@@ -39,10 +65,12 @@ namespace HR.Pages
         public ICommand DeleteCmd { get; }
         public ICommand ExportCmd { get; }
         public ICommand FilterCmd { get; }
+        public ICommand LockCmd { get; }
         public ICommand NavigateCmd { get; }
         public ICommand PrintCmd { get; }
         public ICommand ResetFilterCmd { get; }
         public ICommand ResetSearchCmd { get; }
+        public ICommand UnlockCmd { get; }
 
         private DataGridCellInfo? _lastRightClickedCell;
         private int _lastColumnIndex = -1;
@@ -89,17 +117,19 @@ namespace HR.Pages
             get => _selectedStatus;
             set { _selectedStatus = value; OnPropertyChanged(); }
         }
-        private int _statuses;
-        public int Status
+        public class StatusItem
         {
-            get => _statuses;
-            set
-            {
-                if (_statuses == value) return;
-                _statuses = value;
-                OnPropertyChanged();
-            }
+            public byte Id { get; set; }
+            public string Name { get; set; }
         }
+
+        public List<StatusItem> Statuses { get; } = new List<StatusItem>
+        {
+            new StatusItem { Id = 0, Name = "новый" },
+            new StatusItem { Id = 1, Name = "активный" },
+            new StatusItem { Id = 2, Name = "заблокирован" },
+            new StatusItem { Id = 3, Name = "удален" }
+        };
         private bool _isProgress;
         public bool IsProgress
         {
@@ -353,6 +383,86 @@ namespace HR.Pages
                     }
                 },
                 _ => !IsProgress
+            );
+            LockCmd = new RelayCommand(
+                param =>
+                {
+                    // Get list for deletion
+                    List<Data.Models.User> items = null;
+
+                    if (param is HR.Data.Models.User singleItem)
+                        items = new List<Data.Models.User> { singleItem };
+                    else if (param is IEnumerable<Data.Models.User> manyItems)
+                        items = manyItems.ToList();
+                    else if (param is IList list && list.Count > 0 && list[0] is Data.Models.User)
+                        items = list.Cast<Data.Models.User>().ToList();
+
+                    if (items == null || items.Count == 0)
+                        return;
+
+                    items.ForEach(async (item) =>
+                    {
+                        item.Status = 2;
+                        await SaveData(item);
+                    });
+                },
+                param =>
+                {
+                    // Get list for deletion
+                    List<Data.Models.User> items = null;
+
+                    if (param is HR.Data.Models.User singleItem)
+                        items = new List<Data.Models.User> { singleItem };
+                    else if (param is IEnumerable<Data.Models.User> manyItems)
+                        items = manyItems.ToList();
+                    else if (param is IList list && list.Count > 0 && list[0] is Data.Models.User)
+                        items = list.Cast<Data.Models.User>().ToList();
+
+                    if (items == null || items.Count == 0)
+                        return false;
+
+                    return items.Any(item => item.Status == 1);
+                }
+            );
+            UnlockCmd = new RelayCommand(
+               param =>
+               {
+                    // Get list for deletion
+                    List<Data.Models.User> items = null;
+
+                    if (param is HR.Data.Models.User singleItem)
+                        items = new List<Data.Models.User> { singleItem };
+                    else if (param is IEnumerable<Data.Models.User> manyItems)
+                        items = manyItems.ToList();
+                    else if (param is IList list && list.Count > 0 && list[0] is Data.Models.User)
+                        items = list.Cast<Data.Models.User>().ToList();
+
+                    if (items == null || items.Count == 0)
+                        return;
+
+                    items.ForEach(async (item) =>
+                    {
+                        item.Status = 1;
+                        await SaveData(item);
+                    });
+               },
+               param =>
+               {
+                    // Get list for deletion
+                    List<Data.Models.User> items = null;
+
+                    if (param is HR.Data.Models.User singleItem)
+                        items = new List<Data.Models.User> { singleItem };
+                    else if (param is IEnumerable<Data.Models.User> manyItems)
+                        items = manyItems.ToList();
+                    else if (param is IList list && list.Count > 0 && list[0] is Data.Models.User)
+                        items = list.Cast<Data.Models.User>().ToList();
+
+                    if (items == null || items.Count == 0)
+                        return false;
+
+                    return items.Any(item => item.Status == 2);
+               }
             );
             ResetFilterCmd = new RelayCommand(
                 _ => ResetFilter(),
